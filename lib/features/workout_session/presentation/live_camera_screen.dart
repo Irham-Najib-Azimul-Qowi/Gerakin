@@ -1,0 +1,379 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../exercise_library/models/full_exercise_definition.dart';
+import '../controllers/workout_session_controller.dart';
+import '../models/workout_state.dart';
+import '../models/movement_phase.dart';
+import '../widgets/exercise_card.dart';
+import '../widgets/realtime_coach_bubble.dart';
+import '../widgets/hold_progress_bar.dart';
+import '../widgets/dev_debug_overlay.dart';
+import '../widgets/camera_calibration_overlay.dart';
+import '../widgets/countdown_overlay.dart';
+
+/// Screen 3: Live Camera Screen (Halaman Terpenting Sesi Latihan Rehabilitasi AI).
+class LiveCameraScreen extends ConsumerStatefulWidget {
+  const LiveCameraScreen({
+    super.key,
+    required this.exercise,
+  });
+
+  final FullExerciseDefinition exercise;
+
+  @override
+  ConsumerState<LiveCameraScreen> createState() => _LiveCameraScreenState();
+}
+
+class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(workoutSessionControllerProvider(widget.exercise).notifier).startCalibration();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final uiState = ref.watch(workoutSessionControllerProvider(widget.exercise));
+    final controller = ref.read(workoutSessionControllerProvider(widget.exercise).notifier);
+
+    // Auto navigate to summary screen when completed
+    ref.listen<WorkoutSessionUIState>(
+      workoutSessionControllerProvider(widget.exercise),
+      (prev, next) {
+        if (next.workoutState == WorkoutState.completed && next.summary != null) {
+          context.pushReplacement('/workout-session/summary', extra: next.summary);
+        }
+      },
+    );
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 1. Full Screen Camera / AI Vision Simulation View
+            Container(
+              color: const Color(0xFF020617),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.videocam_rounded,
+                      size: 64,
+                      color: uiState.workoutState == WorkoutState.workout
+                          ? const Color(0xFF00E676)
+                          : Colors.blueAccent,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'AI CAMERA SENSOR FEED ACTIVE',
+                      style: TextStyle(
+                        color: uiState.workoutState == WorkoutState.workout
+                            ? const Color(0xFF00E676)
+                            : Colors.blueAccent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Fase: ${uiState.movementPhase.displayName}',
+                      style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 2. Top HUD Exercise Card
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: ExerciseCardHUD(
+                exerciseName: widget.exercise.name,
+                currentRep: uiState.currentRep,
+                targetReps: uiState.targetReps,
+                currentSet: uiState.currentSet,
+                targetSets: uiState.targetSets,
+                elapsedSeconds: uiState.elapsedSeconds,
+                currentAngle: uiState.currentAngle,
+                targetAngle: uiState.targetAngle,
+                poseConfidence: uiState.poseConfidence,
+              ),
+            ),
+
+            // 3. Realtime AI Coach Speech Bubble
+            Positioned(
+              top: 130,
+              left: 0,
+              right: 0,
+              child: RealtimeCoachBubble(
+                message: _getCoachMessage(uiState),
+                isMuted: uiState.isMuted,
+                onToggleMute: controller.toggleMute,
+              ),
+            ),
+
+            // 4. Isometric Hold Progress Ring / Bar
+            Positioned(
+              bottom: 120,
+              left: 0,
+              right: 0,
+              child: HoldProgressBar(
+                progress: uiState.holdProgress,
+                isHolding: uiState.movementPhase == MovementPhase.hold,
+              ),
+            ),
+
+            // 5. Developer Debug Overlay
+            if (uiState.isDevModeEnabled)
+              Positioned(
+                top: 210,
+                right: 16,
+                child: DevDebugOverlay(
+                  currentAngle: uiState.currentAngle,
+                  targetAngle: uiState.targetAngle,
+                  phase: uiState.movementPhase,
+                  state: uiState.workoutState,
+                  confidence: uiState.poseConfidence,
+                  fps: uiState.fps,
+                  repCount: uiState.currentRep,
+                  setCount: uiState.currentSet,
+                  processingTimeMs: uiState.lastProcessingTimeMs,
+                  landmarkCount: uiState.landmarks.length,
+                ),
+              ),
+
+            // 6. Action Control Buttons (Pause, Dev Mode, Emergency Stop, Exit)
+            Positioned(
+              bottom: 24,
+              left: 16,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // Exit Button
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Colors.white70, size: 28),
+                      onPressed: () {
+                        _showExitConfirmationDialog(context, controller);
+                      },
+                    ),
+
+                    // Developer Mode Toggle Button
+                    IconButton(
+                      icon: Icon(
+                        Icons.developer_mode_rounded,
+                        color: uiState.isDevModeEnabled ? Colors.cyanAccent : Colors.grey,
+                        size: 28,
+                      ),
+                      onPressed: controller.toggleDevMode,
+                    ),
+
+                    // Pause / Resume Button
+                    FloatingActionButton(
+                      heroTag: 'pause_btn',
+                      backgroundColor: const Color(0xFF00E676),
+                      foregroundColor: Colors.black,
+                      onPressed: () {
+                        if (uiState.workoutState == WorkoutState.paused) {
+                          controller.resumeWorkout();
+                        } else {
+                          controller.pauseWorkout();
+                        }
+                      },
+                      child: Icon(
+                        uiState.workoutState == WorkoutState.paused
+                            ? Icons.play_arrow_rounded
+                            : Icons.pause_rounded,
+                        size: 32,
+                      ),
+                    ),
+
+                    // Emergency Stop Button
+                    IconButton(
+                      icon: const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 28),
+                      onPressed: () {
+                        controller.cancelWorkout();
+                        context.pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 7. Camera Calibration Overlay
+            if (uiState.workoutState == WorkoutState.calibrating ||
+                uiState.workoutState == WorkoutState.ready)
+              CameraCalibrationOverlay(
+                calibrationResult: controller.engine.calibrationResult,
+                onStartWorkout: () {
+                  ref
+                      .read(workoutSessionControllerProvider(widget.exercise).notifier)
+                      .engine
+                      .startWorkoutAfterCountdown();
+                },
+              ),
+
+            // 8. Countdown Overlay (3, 2, 1, Mulai!)
+            if (uiState.workoutState == WorkoutState.countdown)
+              CountdownOverlay(
+                onCountdownComplete: () {
+                  controller.startCountdownComplete();
+                },
+              ),
+
+            // 9. Rest Timer Overlay
+            if (uiState.workoutState == WorkoutState.rest)
+              _buildRestOverlay(uiState, controller),
+
+            // 10. Paused Modal Overlay
+            if (uiState.workoutState == WorkoutState.paused)
+              _buildPausedOverlay(controller),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getCoachMessage(WorkoutSessionUIState state) {
+    if (state.workoutState == WorkoutState.calibrating) {
+      return state.calibrationInstruction;
+    }
+    switch (state.movementPhase) {
+      case MovementPhase.movingUp:
+        return 'Bagus! Naikkan lengan perlahan ke arah target.';
+      case MovementPhase.hold:
+        return 'Pertahankan posisi puncak, tahan isometric!';
+      case MovementPhase.movingDown:
+        return 'Turunkan perlahan dengan kontrol otot eksentrik.';
+      case MovementPhase.completed:
+        return 'Sempurna! Repetisi berhasil diselesaikan.';
+      default:
+        return 'Ambil posisi awal dan bersiaplah.';
+    }
+  }
+
+  Widget _buildRestOverlay(WorkoutSessionUIState state, WorkoutSessionController controller) {
+    return Container(
+      color: Colors.black87,
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.lightBlueAccent, width: 2),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.self_improvement_rounded, color: Colors.lightBlueAccent, size: 56),
+              const SizedBox(height: 12),
+              Text(
+                'WAKTU ISTIRAHAT SET ${state.currentSet - 1}',
+                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '${state.restSecondsRemaining}',
+                style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 64, fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 8),
+              const Text('detik', style: TextStyle(color: Colors.white70, fontSize: 14)),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: controller.skipRest,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.lightBlueAccent,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: const Text('LEWATI ISTIRAHAT (SKIP)', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPausedOverlay(WorkoutSessionController controller) {
+    return Container(
+      color: Colors.black.withValues(alpha: 0.77),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.pause_circle_filled_rounded, color: Color(0xFF00E676), size: 64),
+              const SizedBox(height: 12),
+              const Text('LATIHAN DI-PAUSE', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: controller.resumeWorkout,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00E676),
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: const Text('LANJUTKAN LATIHAN', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showExitConfirmationDialog(BuildContext context, WorkoutSessionController controller) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: const Text('Keluar dari Latihan?', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Kemajuan sesi saat ini tidak akan disimpan jika Anda keluar sebelum selesai.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('BATAL', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              controller.cancelWorkout();
+              context.pop();
+            },
+            child: const Text('YA, KELUAR', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+}

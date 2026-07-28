@@ -1,0 +1,70 @@
+name: gerakin
+description: "GERAKIN - Aplikasi Gerakan dan Aktivitas Kesehatan Indonesia"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^3.3.2
+  state_notifier: ^1.0.0
+
+  # Routing
+  go_router: ^17.2.3
+
+  # Database Lokal
+  objectbox: ^5.3.2
+  objectbox_flutter_libs: any
+  path_provider: ^2.1.1
+  path: ^1.9.0
+
+  # Cloud & Connectivity
+  firebase_core: ^3.3.0
+  cloud_firestore: ^5.3.0
+  connectivity_plus: ^6.0.5
+
+  # Camera & Vision
+  camera: ^0.12.0+2
+  google_mlkit_pose_detection: ^0.15.0
+
+  # Audio & Speech
+  flutter_tts: ^4.2.0
+
+  # Utilities
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+  equatable: ^2.1.0
+  intl: ^0.20.0
+  logger: ^2.5.0
+  csv: ^8.0.0
+  pdf: ^3.10.8
+
+  # UI
+  google_fonts: ^8.2.0
+  flutter_svg: ^2.0.17
+  gap: ^3.0.1
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Code Generation
+  build_runner: ^2.4.7
+  objectbox_generator: any
+  freezed: ^3.0.0
+  json_serializable: ^6.9.5
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/images/
+    - assets/exercises/

@@ -1,0 +1,1080 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:1809471273846234515",
+      "lastPropertyId": "10:6667302917521446077",
+      "name": "Achievement",
+      "properties": [
+        {
+          "id": "1:460991149556410187",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5963360625723571359",
+          "name": "achievementId",
+          "indexId": "1:8294754535911300021",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:744434101388485866",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "4:1053709702897066605",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "5:1441807281834072599",
+          "name": "iconPath",
+          "type": 9
+        },
+        {
+          "id": "6:6522944504809758127",
+          "name": "unlockedAt",
+          "type": 10
+        },
+        {
+          "id": "7:2375531551484717158",
+          "name": "isUnlocked",
+          "type": 1
+        },
+        {
+          "id": "8:819624051556406014",
+          "name": "progress",
+          "type": 8
+        },
+        {
+          "id": "9:2900356682421702611",
+          "name": "targetValue",
+          "type": 8
+        },
+        {
+          "id": "10:6667302917521446077",
+          "name": "currentValue",
+          "type": 8
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:7720552965221201129",
+      "lastPropertyId": "8:3466071463195356854",
+      "name": "RecoveryProgress",
+      "properties": [
+        {
+          "id": "1:4081703187586759506",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5372172329367074488",
+          "name": "date",
+          "type": 10
+        },
+        {
+          "id": "3:8131590251250218032",
+          "name": "perceivedPainLevel",
+          "type": 6
+        },
+        {
+          "id": "4:8961764563653268854",
+          "name": "fatigueLevel",
+          "type": 6
+        },
+        {
+          "id": "5:2602693096418540010",
+          "name": "sleepQualityScore",
+          "type": 6
+        },
+        {
+          "id": "6:7740585923780899912",
+          "name": "heartRateVariability",
+          "type": 8
+        },
+        {
+          "id": "7:5091936021872186205",
+          "name": "muscleSorenessScore",
+          "type": 6
+        },
+        {
+          "id": "8:3466071463195356854",
+          "name": "overallRecoveryScore",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:34499728857858148",
+      "lastPropertyId": "12:7505682605659433048",
+      "name": "WorkoutSession",
+      "properties": [
+        {
+          "id": "1:4875445001712288655",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:344089734038709266",
+          "name": "workoutId",
+          "type": 9
+        },
+        {
+          "id": "3:712746519429829624",
+          "name": "workoutName",
+          "type": 9
+        },
+        {
+          "id": "4:4327871714737801396",
+          "name": "startTime",
+          "type": 10
+        },
+        {
+          "id": "5:712648278093366042",
+          "name": "durationInSeconds",
+          "type": 6
+        },
+        {
+          "id": "6:7966799211909727535",
+          "name": "caloriesBurned",
+          "type": 8
+        },
+        {
+          "id": "7:1466505306569203478",
+          "name": "completedReps",
+          "type": 6
+        },
+        {
+          "id": "8:831036629714190635",
+          "name": "targetReps",
+          "type": 6
+        },
+        {
+          "id": "9:6683445909872560964",
+          "name": "accuracy",
+          "type": 8
+        },
+        {
+          "id": "10:6604165866757926663",
+          "name": "averageRom",
+          "type": 8
+        },
+        {
+          "id": "11:5334421983640420069",
+          "name": "isCompleted",
+          "type": 1
+        },
+        {
+          "id": "12:7505682605659433048",
+          "name": "recoveryScore",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:8927283799704076767",
+      "lastPropertyId": "4:1424761517993908223",
+      "name": "AppSetting",
+      "properties": [
+        {
+          "id": "1:5509951345531445950",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8212562393082786156",
+          "name": "languageCode",
+          "type": 9
+        },
+        {
+          "id": "3:104996908706266310",
+          "name": "isOfflineMode",
+          "type": 1
+        },
+        {
+          "id": "4:1424761517993908223",
+          "name": "lastBackupDate",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:4030532148025659640",
+      "lastPropertyId": "6:2213502122994727913",
+      "name": "AssessmentProfile",
+      "properties": [
+        {
+          "id": "1:4939908770656810425",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7663482655672921889",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:3868918332481047865",
+          "name": "upperBodyMobilityScore",
+          "type": 6
+        },
+        {
+          "id": "4:9011745585797489796",
+          "name": "coreStabilityScore",
+          "type": 6
+        },
+        {
+          "id": "5:5911270599224031045",
+          "name": "enduranceLevel",
+          "type": 6
+        },
+        {
+          "id": "6:2213502122994727913",
+          "name": "completedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:2536600988897456323",
+      "lastPropertyId": "6:3126157519125672549",
+      "name": "RehabilitationGoal",
+      "properties": [
+        {
+          "id": "1:7376344534202424718",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2419397411595949960",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:1405762238434954657",
+          "name": "goalType",
+          "type": 9
+        },
+        {
+          "id": "4:673966288896457108",
+          "name": "targetValue",
+          "type": 8
+        },
+        {
+          "id": "5:9220180162858354507",
+          "name": "currentValue",
+          "type": 8
+        },
+        {
+          "id": "6:3126157519125672549",
+          "name": "deadline",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:1972329715247964312",
+      "lastPropertyId": "6:1367727459289776383",
+      "name": "UserPreference",
+      "properties": [
+        {
+          "id": "1:8176073724006626377",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8096331681957560830",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:5258287402806981516",
+          "name": "themeMode",
+          "type": 9
+        },
+        {
+          "id": "4:1800678267608573843",
+          "name": "enableAudioCues",
+          "type": 1
+        },
+        {
+          "id": "5:303864395213128971",
+          "name": "enableTts",
+          "type": 1
+        },
+        {
+          "id": "6:1367727459289776383",
+          "name": "dailyReminderTime",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "8:1534983538093120716",
+      "lastPropertyId": "19:3593351626756145195",
+      "name": "UserProfile",
+      "properties": [
+        {
+          "id": "1:1508956693670850642",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2939814718348994108",
+          "name": "displayName",
+          "type": 9
+        },
+        {
+          "id": "3:6929267331063157044",
+          "name": "email",
+          "type": 9
+        },
+        {
+          "id": "4:3621588452409311146",
+          "name": "photoUrl",
+          "type": 9
+        },
+        {
+          "id": "5:4414186595009433414",
+          "name": "gender",
+          "type": 9
+        },
+        {
+          "id": "6:2469835182190506705",
+          "name": "birthDate",
+          "type": 10
+        },
+        {
+          "id": "7:7288152400462035423",
+          "name": "height",
+          "type": 8
+        },
+        {
+          "id": "8:2712715663918099169",
+          "name": "weight",
+          "type": 8
+        },
+        {
+          "id": "9:3168787993747385810",
+          "name": "wheelchairType",
+          "type": 9
+        },
+        {
+          "id": "10:2000581586870809743",
+          "name": "mobilityLevel",
+          "type": 9
+        },
+        {
+          "id": "11:4995693097628864571",
+          "name": "dominantHand",
+          "type": 9
+        },
+        {
+          "id": "12:7352408467797104426",
+          "name": "rehabilitationGoal",
+          "type": 9
+        },
+        {
+          "id": "13:28788893037054678",
+          "name": "medicalNotes",
+          "type": 9
+        },
+        {
+          "id": "14:239236883565678975",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "15:6027952016814087136",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "16:7422872572157541949",
+          "name": "lastSync",
+          "type": 10
+        },
+        {
+          "id": "17:3973931068373310945",
+          "name": "syncStatus",
+          "type": 9
+        },
+        {
+          "id": "18:3306846922388110478",
+          "name": "isGuest",
+          "type": 1
+        },
+        {
+          "id": "19:3593351626756145195",
+          "name": "isActive",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "9:6198926573882483905",
+      "lastPropertyId": "5:6742655775525409170",
+      "name": "WheelchairProfile",
+      "properties": [
+        {
+          "id": "1:5301537018901272208",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6748470798032410685",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:815193018982195334",
+          "name": "wheelchairType",
+          "type": 9
+        },
+        {
+          "id": "4:6307593301347753035",
+          "name": "axlePosition",
+          "type": 9
+        },
+        {
+          "id": "5:6742655775525409170",
+          "name": "hasAntiTippers",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "10:883720820964471524",
+      "lastPropertyId": "8:1707507368015814777",
+      "name": "SyncItem",
+      "properties": [
+        {
+          "id": "1:4042147749366458223",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7077150944984244806",
+          "name": "collection",
+          "type": 9
+        },
+        {
+          "id": "3:5895257988590242338",
+          "name": "documentId",
+          "type": 9
+        },
+        {
+          "id": "4:365928127705077524",
+          "name": "operation",
+          "type": 9
+        },
+        {
+          "id": "5:4865128932644117895",
+          "name": "payloadJson",
+          "type": 9
+        },
+        {
+          "id": "6:8631474127211353215",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "7:310214289939303001",
+          "name": "retryCount",
+          "type": 6
+        },
+        {
+          "id": "8:1707507368015814777",
+          "name": "lastError",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "11:301061752785083309",
+      "lastPropertyId": "3:8115226349745216987",
+      "name": "SyncStatus",
+      "properties": [
+        {
+          "id": "1:8671183234017541520",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4507527058271769649",
+          "name": "lastSyncTime",
+          "type": 10
+        },
+        {
+          "id": "3:8115226349745216987",
+          "name": "status",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "12:381009003108642267",
+      "lastPropertyId": "10:6640688002493298144",
+      "name": "Challenge",
+      "properties": [
+        {
+          "id": "1:5180016757269912158",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6338561695123715992",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "3:8494048424075323970",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "4:5483037395436652915",
+          "name": "xpReward",
+          "type": 6
+        },
+        {
+          "id": "5:6802377579243069867",
+          "name": "isCompleted",
+          "type": 1
+        },
+        {
+          "id": "6:5059640008451719544",
+          "name": "type",
+          "type": 9
+        },
+        {
+          "id": "7:8531518322963522077",
+          "name": "targetValue",
+          "type": 8
+        },
+        {
+          "id": "8:8319165229336972170",
+          "name": "currentValue",
+          "type": 8
+        },
+        {
+          "id": "9:8596465969585559779",
+          "name": "startDate",
+          "type": 10
+        },
+        {
+          "id": "10:6640688002493298144",
+          "name": "endDate",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "13:7760498006635118256",
+      "lastPropertyId": "7:5272092410631375064",
+      "name": "Goal",
+      "properties": [
+        {
+          "id": "1:1894619013819979804",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2659379123632959296",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:959439697371187887",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "4:4905553342309474375",
+          "name": "targetType",
+          "type": 9
+        },
+        {
+          "id": "5:3140322222088485540",
+          "name": "targetValue",
+          "type": 8
+        },
+        {
+          "id": "6:8291199563025009950",
+          "name": "currentValue",
+          "type": 8
+        },
+        {
+          "id": "7:5272092410631375064",
+          "name": "deadline",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "14:4804496403144819675",
+      "lastPropertyId": "9:4760800001722527010",
+      "name": "Mission",
+      "properties": [
+        {
+          "id": "1:1995135613152050797",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1768657518511569999",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "3:5086045895381971201",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "4:4268381017026488946",
+          "name": "xpReward",
+          "type": 6
+        },
+        {
+          "id": "5:1631206355006281904",
+          "name": "isCompleted",
+          "type": 1
+        },
+        {
+          "id": "6:4908298823331036225",
+          "name": "type",
+          "type": 9
+        },
+        {
+          "id": "7:4084456968062839832",
+          "name": "targetValue",
+          "type": 8
+        },
+        {
+          "id": "8:1520973089392941143",
+          "name": "currentValue",
+          "type": 8
+        },
+        {
+          "id": "9:4760800001722527010",
+          "name": "createdAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "15:7673622145179864741",
+      "lastPropertyId": "3:5922989999099292331",
+      "name": "MotivationMessage",
+      "properties": [
+        {
+          "id": "1:953992253156516275",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2933789190108262750",
+          "name": "message",
+          "type": 9
+        },
+        {
+          "id": "3:5922989999099292331",
+          "name": "category",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "16:6276239843839263785",
+      "lastPropertyId": "5:7666585545330596587",
+      "name": "Streak",
+      "properties": [
+        {
+          "id": "1:3739834348320399081",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:9213460816275554809",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:1837938779920622504",
+          "name": "currentStreak",
+          "type": 6
+        },
+        {
+          "id": "4:5206843233824675046",
+          "name": "longestStreak",
+          "type": 6
+        },
+        {
+          "id": "5:7666585545330596587",
+          "name": "lastActiveDate",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "17:5270908835298833147",
+      "lastPropertyId": "5:8492988669590828551",
+      "name": "UserLevel",
+      "properties": [
+        {
+          "id": "1:2415547820060639521",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:300663341318388737",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:8436428965625213248",
+          "name": "currentLevel",
+          "type": 6
+        },
+        {
+          "id": "4:4809402831206805373",
+          "name": "currentXP",
+          "type": 6
+        },
+        {
+          "id": "5:8492988669590828551",
+          "name": "nextLevelXP",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "18:9159220804124938045",
+      "lastPropertyId": "5:6756927187979812386",
+      "name": "XPTransaction",
+      "properties": [
+        {
+          "id": "1:7095051201365657876",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6050400542420410292",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:5518104073789631388",
+          "name": "amount",
+          "type": 6
+        },
+        {
+          "id": "4:3228018877752915144",
+          "name": "source",
+          "type": 9
+        },
+        {
+          "id": "5:6756927187979812386",
+          "name": "createdAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "19:8553800786176664931",
+      "lastPropertyId": "4:6790316005300085432",
+      "name": "CaregiverRelation",
+      "properties": [
+        {
+          "id": "1:4083996968571445443",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7275900914907181619",
+          "name": "caregiverId",
+          "type": 6
+        },
+        {
+          "id": "3:9197870089719166649",
+          "name": "patientId",
+          "type": 6
+        },
+        {
+          "id": "4:6790316005300085432",
+          "name": "relationType",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "20:5937156339360208341",
+      "lastPropertyId": "5:635069182462867156",
+      "name": "DataSharingPermission",
+      "properties": [
+        {
+          "id": "1:2294482581434245175",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1481845353516992766",
+          "name": "ownerId",
+          "type": 6
+        },
+        {
+          "id": "3:4501123703473548406",
+          "name": "accessorId",
+          "type": 6
+        },
+        {
+          "id": "4:8101901362771895217",
+          "name": "permittedDataType",
+          "type": 9
+        },
+        {
+          "id": "5:635069182462867156",
+          "name": "isAllowed",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "21:7071515776387906393",
+      "lastPropertyId": "9:6367598056690107712",
+      "name": "ExerciseProgram",
+      "properties": [
+        {
+          "id": "1:628536607648079256",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6942538223076709250",
+          "name": "patientId",
+          "type": 6
+        },
+        {
+          "id": "3:7925828231720852082",
+          "name": "physiotherapistId",
+          "type": 6
+        },
+        {
+          "id": "4:3140866507783402097",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "5:2131424294949985147",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "6:1347697596336688846",
+          "name": "exerciseIdsJson",
+          "type": 9
+        },
+        {
+          "id": "7:7719210585507067901",
+          "name": "frequency",
+          "type": 9
+        },
+        {
+          "id": "8:5560907798519603638",
+          "name": "startDate",
+          "type": 10
+        },
+        {
+          "id": "9:6367598056690107712",
+          "name": "endDate",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "22:8653833642592105056",
+      "lastPropertyId": "6:27523337871775412",
+      "name": "FeedbackNote",
+      "properties": [
+        {
+          "id": "1:8782773731777704165",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2037070892654355035",
+          "name": "patientId",
+          "type": 6
+        },
+        {
+          "id": "3:2514382701429329309",
+          "name": "authorId",
+          "type": 6
+        },
+        {
+          "id": "4:5099080086066500162",
+          "name": "authorRole",
+          "type": 9
+        },
+        {
+          "id": "5:4790034239275419255",
+          "name": "note",
+          "type": 9
+        },
+        {
+          "id": "6:27523337871775412",
+          "name": "createdAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "23:2928166113176026832",
+      "lastPropertyId": "4:8046271825258391135",
+      "name": "PatientAssignment",
+      "properties": [
+        {
+          "id": "1:1670217858454784154",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7958192302183994364",
+          "name": "physiotherapistId",
+          "type": 6
+        },
+        {
+          "id": "3:5684638000301677498",
+          "name": "patientId",
+          "type": 6
+        },
+        {
+          "id": "4:8046271825258391135",
+          "name": "assignedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "24:2763143583301619469",
+      "lastPropertyId": "5:5878934618209958879",
+      "name": "ProgramTemplate",
+      "properties": [
+        {
+          "id": "1:8068234381601696509",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6146781073926009315",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "3:5860669822277233647",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "4:5130087385742345926",
+          "name": "exerciseIdsJson",
+          "type": 9
+        },
+        {
+          "id": "5:5878934618209958879",
+          "name": "category",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "25:8392231438185125594",
+      "lastPropertyId": "3:3981833006615982039",
+      "name": "UserRole",
+      "properties": [
+        {
+          "id": "1:744406753568050206",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1687445193125997907",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:3981833006615982039",
+          "name": "role",
+          "type": 9
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "25:8392231438185125594",
+  "lastIndexId": "1:8294754535911300021",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

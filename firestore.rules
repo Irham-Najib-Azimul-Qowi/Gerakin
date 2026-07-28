@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Keamanan Koleksi /users/{userId}
+    // Hanya pengguna terautentikasi pemilik dokumen yang diizinkan untuk membaca dan menulis data mereka.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Subkoleksi workflows ( workouts / latihan / gerakan )
+      match /workouts/{workoutId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Subkoleksi sessions ( riwayat latihan fisik )
+      match /sessions/{sessionId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Subkoleksi analytics ( ringkasan & tren )
+      match /analytics/{analyticsId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Subkoleksi settings ( preferensi audio, tts, tema )
+      match /settings/{settingId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Subkoleksi assessment ( uji fisik / mobilitas )
+      match /assessment/{assessmentId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}

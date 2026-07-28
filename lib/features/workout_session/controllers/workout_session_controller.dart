@@ -1,0 +1,274 @@
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+
+import '../services/workout_session_engine.dart';
+import '../models/workout_state.dart';
+import '../models/movement_phase.dart';
+import '../models/workout_summary.dart';
+import '../models/workout_session.dart';
+import '../repository/workout_session_repository.dart';
+import '../../exercise_library/models/full_exercise_definition.dart';
+import '../../camera/models/pose_landmark_model.dart';
+import '../../motion/services/joint_angle_calculator.dart';
+import '../../motion/models/joint_angle.dart';
+
+/// State snapshot untuk UI Workout Session.
+class WorkoutSessionUIState {
+  const WorkoutSessionUIState({
+    required this.exercise,
+    this.workoutState = WorkoutState.idle,
+    this.movementPhase = MovementPhase.idle,
+    this.currentAngle = 0.0,
+    this.targetAngle = 180.0,
+    this.poseConfidence = 0.0,
+    this.currentRep = 0,
+    this.targetReps = 10,
+    this.currentSet = 1,
+    this.targetSets = 3,
+    this.elapsedSeconds = 0,
+    this.restSecondsRemaining = 0,
+    this.holdProgress = 0.0,
+    this.isDevModeEnabled = false,
+    this.isMuted = false,
+    this.calibrationInstruction = 'Posisikan tubuh Anda',
+    this.isCalibrationReady = false,
+    this.summary,
+    this.landmarks = const [],
+    this.fps = 0,
+    this.lastProcessingTimeMs = 0.0,
+  });
+
+  final FullExerciseDefinition exercise;
+  final WorkoutState workoutState;
+  final MovementPhase movementPhase;
+  final double currentAngle;
+  final double targetAngle;
+  final double poseConfidence;
+  final int currentRep;
+  final int targetReps;
+  final int currentSet;
+  final int targetSets;
+  final int elapsedSeconds;
+  final int restSecondsRemaining;
+  final double holdProgress;
+  final bool isDevModeEnabled;
+  final bool isMuted;
+  final String calibrationInstruction;
+  final bool isCalibrationReady;
+  final WorkoutSummary? summary;
+  final List<PoseLandmarkModel> landmarks;
+  final int fps;
+  final double lastProcessingTimeMs;
+
+  WorkoutSessionUIState copyWith({
+    FullExerciseDefinition? exercise,
+    WorkoutState? workoutState,
+    MovementPhase? movementPhase,
+    double? currentAngle,
+    double? targetAngle,
+    double? poseConfidence,
+    int? currentRep,
+    int? targetReps,
+    int? currentSet,
+    int? targetSets,
+    int? elapsedSeconds,
+    int? restSecondsRemaining,
+    double? holdProgress,
+    bool? isDevModeEnabled,
+    bool? isMuted,
+    String? calibrationInstruction,
+    bool? isCalibrationReady,
+    WorkoutSummary? summary,
+    List<PoseLandmarkModel>? landmarks,
+    int? fps,
+    double? lastProcessingTimeMs,
+  }) {
+    return WorkoutSessionUIState(
+      exercise: exercise ?? this.exercise,
+      workoutState: workoutState ?? this.workoutState,
+      movementPhase: movementPhase ?? this.movementPhase,
+      currentAngle: currentAngle ?? this.currentAngle,
+      targetAngle: targetAngle ?? this.targetAngle,
+      poseConfidence: poseConfidence ?? this.poseConfidence,
+      currentRep: currentRep ?? this.currentRep,
+      targetReps: targetReps ?? this.targetReps,
+      currentSet: currentSet ?? this.currentSet,
+      targetSets: targetSets ?? this.targetSets,
+      elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
+      restSecondsRemaining: restSecondsRemaining ?? this.restSecondsRemaining,
+      holdProgress: holdProgress ?? this.holdProgress,
+      isDevModeEnabled: isDevModeEnabled ?? this.isDevModeEnabled,
+      isMuted: isMuted ?? this.isMuted,
+      calibrationInstruction: calibrationInstruction ?? this.calibrationInstruction,
+      isCalibrationReady: isCalibrationReady ?? this.isCalibrationReady,
+      summary: summary ?? this.summary,
+      landmarks: landmarks ?? this.landmarks,
+      fps: fps ?? this.fps,
+      lastProcessingTimeMs: lastProcessingTimeMs ?? this.lastProcessingTimeMs,
+    );
+  }
+}
+
+/// StateNotifier Controller Riverpod untuk mengelola Workout Session UI & Engine.
+class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
+  WorkoutSessionController({
+    required FullExerciseDefinition initialExercise,
+    required this.repository,
+  })  : _engine = WorkoutSessionEngine(exercise: initialExercise),
+        super(WorkoutSessionUIState(
+          exercise: initialExercise,
+          targetAngle: initialExercise.targetAngles.targetAngle,
+          targetReps: initialExercise.repetitionTarget,
+          targetSets: initialExercise.setTarget,
+        ));
+
+  final WorkoutSessionEngine _engine;
+  final WorkoutSessionRepository repository;
+
+  WorkoutSessionEngine get engine => _engine;
+
+  void toggleDevMode() {
+    state = state.copyWith(isDevModeEnabled: !state.isDevModeEnabled);
+  }
+
+  void toggleMute() {
+    _engine.voiceCoach.toggleMute();
+    state = state.copyWith(isMuted: _engine.voiceCoach.isMuted);
+  }
+
+  void startCalibration() {
+    _engine.startCalibration();
+    state = state.copyWith(workoutState: _engine.state);
+  }
+
+  void startCountdownComplete() {
+    _engine.startWorkoutAfterCountdown();
+    _updateUI();
+  }
+
+  void processFrame(List<PoseLandmarkModel> landmarks) {
+    if (landmarks.isEmpty) return;
+
+    final jointType = state.exercise.targetAngles.primaryJoint;
+    final calculatedAngle = _calculatePrimaryAngle(landmarks, jointType);
+
+    _engine.processCameraFrame(landmarks, calculatedAngle);
+    _updateUI(landmarks: landmarks);
+  }
+
+  double _calculatePrimaryAngle(List<PoseLandmarkModel> landmarks, JointType jointType) {
+    final lmMap = {for (var l in landmarks) l.type: l};
+    switch (jointType) {
+      case JointType.leftElbow:
+        final angle = JointAngleCalculator.calculateJointAngle(
+          type: JointType.leftElbow,
+          firstLandmark: lmMap[PoseLandmarkType.leftShoulder],
+          vertexLandmark: lmMap[PoseLandmarkType.leftElbow],
+          lastLandmark: lmMap[PoseLandmarkType.leftWrist],
+        );
+        return angle?.angle ?? 90.0;
+      case JointType.rightElbow:
+        final angle = JointAngleCalculator.calculateJointAngle(
+          type: JointType.rightElbow,
+          firstLandmark: lmMap[PoseLandmarkType.rightShoulder],
+          vertexLandmark: lmMap[PoseLandmarkType.rightElbow],
+          lastLandmark: lmMap[PoseLandmarkType.rightWrist],
+        );
+        return angle?.angle ?? 90.0;
+      case JointType.leftKnee:
+        final angle = JointAngleCalculator.calculateJointAngle(
+          type: JointType.leftKnee,
+          firstLandmark: lmMap[PoseLandmarkType.leftHip],
+          vertexLandmark: lmMap[PoseLandmarkType.leftKnee],
+          lastLandmark: lmMap[PoseLandmarkType.leftAnkle],
+        );
+        return angle?.angle ?? 180.0;
+      case JointType.rightKnee:
+        final angle = JointAngleCalculator.calculateJointAngle(
+          type: JointType.rightKnee,
+          firstLandmark: lmMap[PoseLandmarkType.rightHip],
+          vertexLandmark: lmMap[PoseLandmarkType.rightKnee],
+          lastLandmark: lmMap[PoseLandmarkType.rightAnkle],
+        );
+        return angle?.angle ?? 180.0;
+      default:
+        return 90.0;
+    }
+  }
+
+  void skipRest() {
+    _engine.skipRest();
+    _updateUI();
+  }
+
+  void pauseWorkout() {
+    _engine.pauseWorkout();
+    _updateUI();
+  }
+
+  void resumeWorkout() {
+    _engine.resumeWorkout();
+    _updateUI();
+  }
+
+  Future<void> finishWorkout() async {
+    _engine.finishWorkout();
+    _updateUI();
+
+    if (_engine.summaryResult != null) {
+      final sessionData = WorkoutSessionData(
+        id: _engine.summaryResult!.sessionId,
+        exerciseId: state.exercise.id,
+        exerciseName: state.exercise.name,
+        startTime: DateTime.now().subtract(Duration(seconds: _engine.elapsedSeconds)),
+        endTime: DateTime.now(),
+        totalDurationSeconds: _engine.elapsedSeconds,
+        sets: [],
+        summary: _engine.summaryResult!,
+        recordedFrames: _engine.recordedFrames,
+      );
+
+      await repository.saveSession(sessionData);
+    }
+  }
+
+  void cancelWorkout() {
+    _engine.cancelWorkout();
+    _updateUI();
+  }
+
+  void _updateUI({List<PoseLandmarkModel>? landmarks}) {
+    final cal = _engine.calibrationResult;
+    state = state.copyWith(
+      workoutState: _engine.state,
+      movementPhase: _engine.phase,
+      currentAngle: _engine.currentAngle,
+      poseConfidence: _engine.poseConfidence,
+      currentRep: _engine.currentRep,
+      currentSet: _engine.currentSet,
+      elapsedSeconds: _engine.elapsedSeconds,
+      restSecondsRemaining: _engine.restSecondsRemaining,
+      holdProgress: _engine.holdProgress,
+      calibrationInstruction: cal?.instructionMessage ?? 'Posisikan tubuh Anda',
+      isCalibrationReady: cal?.isReady ?? false,
+      summary: _engine.summaryResult,
+      landmarks: landmarks ?? state.landmarks,
+      fps: _engine.fps,
+      lastProcessingTimeMs: _engine.lastFrameProcessingTimeMs,
+    );
+  }
+
+  @override
+  void dispose() {
+    _engine.dispose();
+    super.dispose();
+  }
+}
+
+final workoutSessionControllerProvider =
+    StateNotifierProvider.family<WorkoutSessionController, WorkoutSessionUIState, FullExerciseDefinition>(
+  (ref, exercise) {
+    final repo = ref.watch(workoutSessionRepositoryProvider);
+    return WorkoutSessionController(initialExercise: exercise, repository: repo);
+  },
+);
