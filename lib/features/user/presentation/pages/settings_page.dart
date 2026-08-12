@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../sync/presentation/widgets/sync_status_indicator.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/profile_controller.dart';
 import '../controllers/settings_controller.dart';
 import '../../models/user_preference.dart';
@@ -107,27 +108,46 @@ class SettingsPage extends ConsumerWidget {
           ),
           child: Column(
             children: [
-              if (activeProfile != null) ...[
+              if (activeProfile == null) ...[
+                ListTile(
+                  title: const Text('Belum Ada Sesi Aktif'),
+                  subtitle: const Text('Masuk dengan akun atau gunakan mode tamu'),
+                  leading: const Icon(Icons.account_circle_outlined, color: Colors.grey),
+                  trailing: TextButton.icon(
+                    onPressed: () => context.go(RoutePaths.auth),
+                    icon: const Icon(Icons.login_rounded, size: 16),
+                    label: const Text('Masuk / Daftar'),
+                  ),
+                ),
+              ] else ...[
                 ListTile(
                   title: Text(activeProfile.displayName),
-                  subtitle: Text(activeProfile.isGuest ? 'Sesi Tamu Aktif' : 'Profil Terdaftar'),
+                  subtitle: Text(activeProfile.isGuest
+                      ? 'Sesi Tamu Aktif'
+                      : 'Profil Terdaftar (${activeProfile.email ?? "-"})'),
                   leading: Icon(
                     activeProfile.isGuest ? Icons.person_outline_rounded : Icons.verified_user_outlined,
                     color: activeProfile.isGuest ? Colors.grey : Colors.green,
                   ),
                   trailing: activeProfile.isGuest
                       ? TextButton.icon(
-                          onPressed: () => ref
-                              .read(profileControllerProvider.notifier)
-                              .endGuestSession(activeProfile.id),
+                          onPressed: () async {
+                            await ref
+                                .read(profileControllerProvider.notifier)
+                                .endGuestSession(activeProfile.id);
+                            if (context.mounted) context.go(RoutePaths.auth);
+                          },
                           icon: const Icon(Icons.exit_to_app_rounded, size: 16, color: Colors.red),
                           label: const Text('Akhiri Tamu', style: TextStyle(color: Colors.red)),
                         )
                       : TextButton.icon(
-                          onPressed: () =>
-                              ref.read(profileControllerProvider.notifier).startGuestSession(),
-                          icon: const Icon(Icons.person_add_alt_rounded, size: 16),
-                          label: const Text('Masuk Tamu'),
+                          onPressed: () async {
+                            await ref.read(authControllerProvider.notifier).signOut();
+                            await ref.read(profileControllerProvider.notifier).loadProfiles();
+                            if (context.mounted) context.go(RoutePaths.auth);
+                          },
+                          icon: const Icon(Icons.logout_rounded, size: 16, color: Colors.red),
+                          label: const Text('Keluar (Sign Out)', style: TextStyle(color: Colors.red)),
                         ),
                 ),
               ],

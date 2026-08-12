@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "7019112619",
+    "firebase_url": "https://gerakin-app-default-rtdb.firebaseio.com",
+    "project_id": "gerakin-app",
+    "storage_bucket": "gerakin-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7019112619:android:efcccfdadf01c76ca82fee",
+        "android_client_info": {
+          "package_name": "id.gerakin.gerakin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "7019112619-8tps3v564tvo24mfg4pj499mkdhgeogd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8IwASf3vvUExaTAPozidk2G2MYNpGzB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "7019112619-8tps3v564tvo24mfg4pj499mkdhgeogd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "7019112619-vocaq0l9maft9nigcf068j83bn0i5vcn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "id.gerakin.gerakin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

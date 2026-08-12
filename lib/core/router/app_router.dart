@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/adaptive/presentation/pages/adaptive_debug_dashboard_page.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
+import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/validation/presentation/pages/ai_validation_dashboard_page.dart';
 import '../../features/camera/presentation/pages/camera_page.dart';
 import '../../features/community/presentation/pages/community_page.dart';
@@ -43,7 +46,7 @@ class AppRouter {
   /// Instance GoRouter.
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: RoutePaths.home,
+    initialLocation: RoutePaths.auth,
     debugLogDiagnostics: true,
     routes: [
       // ── Shell Route (Bottom Navigation) ───────────────
@@ -124,11 +127,29 @@ class AppRouter {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ComponentGalleryPage(),
       ),
+      // ── Auth Routes ────────────────────────────────────
       GoRoute(
         path: RoutePaths.auth,
         name: RouteNames.auth,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AuthPage(),
+        routes: [
+          GoRoute(
+            path: 'login',
+            name: RouteNames.login,
+            builder: (context, state) => const LoginPage(),
+          ),
+          GoRoute(
+            path: 'register',
+            name: RouteNames.register,
+            builder: (context, state) => const RegisterPage(),
+          ),
+          GoRoute(
+            path: 'forgot-password',
+            name: RouteNames.forgotPassword,
+            builder: (context, state) => const ForgotPasswordPage(),
+          ),
+        ],
       ),
       GoRoute(
         path: RoutePaths.camera,

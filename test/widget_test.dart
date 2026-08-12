@@ -11,7 +11,7 @@ void main() {
       ),
     );
 
-    // Verifikasi bahwa app berhasil render dengan Home page
-    expect(find.text('Home'), findsWidgets);
+    // Verifikasi bahwa app berhasil render dengan Auth Gateway page (halaman awal aplikasi)
+    expect(find.text('GerakIn'), findsWidgets);
   });
 }
