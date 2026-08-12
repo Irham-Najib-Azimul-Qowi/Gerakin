@@ -14,6 +14,8 @@ class PoseOverlay extends StatefulWidget {
     this.minConfidence = 0.25,
     this.showDebugHUD = false,
     this.fps = 60.0,
+    this.skeletonColor = Colors.white,
+    this.alpha = 0.45,
   });
 
   final DetectedPose? pose;
@@ -21,6 +23,8 @@ class PoseOverlay extends StatefulWidget {
   final double minConfidence;
   final bool showDebugHUD;
   final double fps;
+  final Color skeletonColor;
+  final double alpha;
 
   @override
   State<PoseOverlay> createState() => _PoseOverlayState();
@@ -32,7 +36,7 @@ class _PoseOverlayState extends State<PoseOverlay> {
   @override
   void initState() {
     super.initState();
-    _renderer = PoseRenderer(alpha: 0.25);
+    _renderer = PoseRenderer(alpha: widget.alpha);
   }
 
   @override
@@ -61,6 +65,7 @@ class _PoseOverlayState extends State<PoseOverlay> {
                 metrics: metrics,
                 renderer: _renderer,
                 minConfidence: widget.minConfidence,
+                skeletonColor: widget.skeletonColor,
               ),
               child: const SizedBox.expand(),
             ),

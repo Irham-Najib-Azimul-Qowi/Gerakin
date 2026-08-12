@@ -11,7 +11,7 @@ class BaselinePoseService {
   bool get isBaselineCaptured => _isBaselineCaptured;
   BodyPosture? get capturedBaseline => _capturedBaseline;
 
-  /// Memeriksa dan menangkap baseline posture jika posisi berdiri sudah tegak lurus & simetris.
+  /// Memeriksa dan menangkap baseline posture jika posisi tubuh dari kursi roda sudah tegak lurus & simetris.
   bool verifyAndCaptureBaseline({
     required DetectedPose pose,
     required BodyPosture posture,

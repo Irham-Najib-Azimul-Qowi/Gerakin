@@ -4,27 +4,19 @@ import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 class JointConnection {
   final PoseLandmarkType start;
   final PoseLandmarkType end;
-  final String category; // 'head', 'torso', 'arm', 'leg'
+  final String category; // 'torso', 'arm', 'leg'
 
   const JointConnection(this.start, this.end, {required this.category});
 }
 
-/// Definisi lengkap seluruh koneksi kerangka tubuh (Skeleton Connections) standar MediaPipe / ML Kit.
+/// Definisi koneksi kerangka tubuh utama (Main Body Skeleton Connections).
+///
+/// Difokuskan pada sendi biomekanik utama (Bahu, Torso, Lengan, Kaki)
+/// tanpa garis kebisingan wajah/jari untuk tampilan AR Fitness yang bersih & presisi.
 class PoseConnections {
   PoseConnections._();
 
   static const List<JointConnection> all = [
-    // ── HEAD ──────────────────────────────────────────────
-    JointConnection(PoseLandmarkType.nose, PoseLandmarkType.leftEyeInner, category: 'head'),
-    JointConnection(PoseLandmarkType.leftEyeInner, PoseLandmarkType.leftEye, category: 'head'),
-    JointConnection(PoseLandmarkType.leftEye, PoseLandmarkType.leftEyeOuter, category: 'head'),
-    JointConnection(PoseLandmarkType.leftEyeOuter, PoseLandmarkType.leftEar, category: 'head'),
-    JointConnection(PoseLandmarkType.nose, PoseLandmarkType.rightEyeInner, category: 'head'),
-    JointConnection(PoseLandmarkType.rightEyeInner, PoseLandmarkType.rightEye, category: 'head'),
-    JointConnection(PoseLandmarkType.rightEye, PoseLandmarkType.rightEyeOuter, category: 'head'),
-    JointConnection(PoseLandmarkType.rightEyeOuter, PoseLandmarkType.rightEar, category: 'head'),
-    JointConnection(PoseLandmarkType.leftMouth, PoseLandmarkType.rightMouth, category: 'head'),
-
     // ── SHOULDERS & TORSO ─────────────────────────────────
     JointConnection(PoseLandmarkType.leftShoulder, PoseLandmarkType.rightShoulder, category: 'torso'),
     JointConnection(PoseLandmarkType.leftShoulder, PoseLandmarkType.leftHip, category: 'torso'),

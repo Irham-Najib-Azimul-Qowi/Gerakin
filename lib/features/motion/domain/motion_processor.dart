@@ -4,6 +4,7 @@ import '../../camera/models/detected_pose.dart';
 import '../models/body_posture.dart';
 import '../models/joint_angle.dart';
 import '../models/motion_analysis.dart';
+import '../models/motion_tracking_constants.dart';
 import '../models/motion_validation.dart';
 import '../models/movement_state.dart';
 import '../services/body_analyzer.dart';
@@ -39,9 +40,13 @@ class MotionProcessor {
   final MovementValidator _validator;
 
   /// Memproses [DetectedPose] dan mengembalikan [MotionAnalysis].
+  ///
+  /// Menerima parameter opsional [baseline] (postur awal kalibrasi pengguna)
+  /// untuk memungkinkan analisis postur relatif per individu.
   MotionAnalysis processPose(
     DetectedPose? pose, {
     JointType primaryJoint = JointType.leftElbow,
+    BodyPosture? baseline,
   }) {
     final now = DateTime.now();
 
@@ -71,6 +76,7 @@ class MotionProcessor {
     final posture = _bodyAnalyzer.analyzePosture(
       pose: pose,
       jointAngles: smoothedAngles,
+      baseline: baseline,
     );
 
     // 4. Analisis Arah Gerakan (movingUp, movingDown, static)
@@ -108,9 +114,12 @@ class MotionProcessor {
     ) {
       final angle = JointAngleCalculator.calculateJointAngle(
         type: type,
-        firstLandmark: pose.getLandmark(pA, 0.4),
-        vertexLandmark: pose.getLandmark(pB, 0.4),
-        lastLandmark: pose.getLandmark(pC, 0.4),
+        firstLandmark:
+            pose.getLandmark(pA, MotionTrackingConstants.kMinLandmarkConfidence),
+        vertexLandmark:
+            pose.getLandmark(pB, MotionTrackingConstants.kMinLandmarkConfidence),
+        lastLandmark:
+            pose.getLandmark(pC, MotionTrackingConstants.kMinLandmarkConfidence),
       );
       if (angle != null) {
         angles[type] = angle;
@@ -145,33 +154,10 @@ class MotionProcessor {
       PoseLandmarkType.rightElbow,
     );
 
-    // Left Leg
-    calc(
-      JointType.leftKnee,
-      PoseLandmarkType.leftHip,
-      PoseLandmarkType.leftKnee,
-      PoseLandmarkType.leftAnkle,
-    );
-    calc(
-      JointType.leftHip,
-      PoseLandmarkType.leftShoulder,
-      PoseLandmarkType.leftHip,
-      PoseLandmarkType.leftKnee,
-    );
-
-    // Right Leg
-    calc(
-      JointType.rightKnee,
-      PoseLandmarkType.rightHip,
-      PoseLandmarkType.rightKnee,
-      PoseLandmarkType.rightAnkle,
-    );
-    calc(
-      JointType.rightHip,
-      PoseLandmarkType.rightShoulder,
-      PoseLandmarkType.rightHip,
-      PoseLandmarkType.rightKnee,
-    );
+    // Note: Kalkulasi sendi kaki (leftKnee, rightKnee, leftHip, rightHip) dieliminasi
+    // sesuai TRD #3 karena seluruh 4 program latihan adaptif (Seated Strength,
+    // Wheelchair Aerobics, ROM, Core Stability) berfokus pada tubuh bagian atas.
+    // Hal ini menghemat 12 retrieval landmark dan 4 kalkulasi trigonometri per frame (~33 FPS).
 
     return angles;
   }
