@@ -64,7 +64,8 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<void> savePreferences(UserPreference preference) async {
-    await _localDataSource.savePreference(preference);
+    final savedId = await _localDataSource.savePreference(preference);
+    preference.id = savedId;
   }
 
   @override
@@ -109,7 +110,8 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<void> saveAppSettings(AppSetting setting) async {
-    await _localDataSource.saveAppSetting(setting);
+    final savedId = await _localDataSource.saveAppSetting(setting);
+    setting.id = savedId;
   }
 }
 

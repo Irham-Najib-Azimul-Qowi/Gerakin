@@ -1,4 +1,4 @@
-package com.gerakin.gerakin
+package id.gerakin.gerakin
 
 import io.flutter.embedding.android.FlutterActivity
 

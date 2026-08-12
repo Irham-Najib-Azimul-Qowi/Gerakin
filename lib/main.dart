@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 import 'core/constants/app_constants.dart';
 import 'core/router/router_provider.dart';
 import 'core/theme/app_theme.dart';
@@ -17,6 +19,14 @@ void main() async {
   // ── Penanganan Pengecualian Global ──────────────────────────
   final logger = LoggerService();
   final crashlytics = CrashlyticsService();
+
+  // ── Inisialisasi Firebase ────────────────────────────────────
+  try {
+    await Firebase.initializeApp();
+    logger.info('Firebase Core berhasil diinisialisasi', category: 'MAIN');
+  } catch (e, stack) {
+    logger.error('Firebase.initializeApp gagal: $e', category: 'MAIN', error: e, stackTrace: stack);
+  }
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);

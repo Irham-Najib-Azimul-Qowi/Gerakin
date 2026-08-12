@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/router/route_names.dart';
 import '../controllers/assessment_wizard_controller.dart';
 import '../controllers/profile_controller.dart';
 
@@ -289,9 +290,13 @@ class AssessmentWizardPage extends ConsumerWidget {
             height: 48,
             child: ElevatedButton(
               onPressed: () {
-                context.pop(); // Kembali ke halaman Profile
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go(RoutePaths.home);
+                }
               },
-              child: const Text('Kembali ke Profil'),
+              child: const Text('Selesai & Ke Beranda'),
             ),
           ),
         ],

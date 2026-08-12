@@ -10,6 +10,9 @@ class RouteNames {
   static const String settings = 'settings';
   static const String componentGallery = 'componentGallery';
   static const String auth = 'auth';
+  static const String login = 'login';
+  static const String register = 'register';
+  static const String forgotPassword = 'forgotPassword';
   static const String camera = 'camera';
   static const String adaptiveDebug = 'adaptiveDebug';
   static const String aiValidation = 'aiValidation';
@@ -32,6 +35,9 @@ class RoutePaths {
   static const String settings = '/settings';
   static const String componentGallery = '/component-gallery';
   static const String auth = '/auth';
+  static const String login = '/auth/login';
+  static const String register = '/auth/register';
+  static const String forgotPassword = '/auth/forgot-password';
   static const String camera = '/camera';
   static const String adaptiveDebug = '/adaptive-debug';
   static const String aiValidation = '/ai-validation';

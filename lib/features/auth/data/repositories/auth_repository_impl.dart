@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/repositories/auth_repository.dart';
@@ -61,7 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
 /// Provider untuk instansiasi [FirebaseAuthDataSource].
 final firebaseAuthDataSourceProvider = Provider<FirebaseAuthDataSource>((ref) {
-  return FirebaseAuthDataSourceImpl(fb.FirebaseAuth.instance);
+  return FirebaseAuthDataSourceImpl();
 });
 
 /// Provider untuk instansiasi [AuthRepository].

@@ -47,24 +47,28 @@ class SettingsController extends Notifier<SettingsState> {
 
     // Sinkronkan preferensi jika profil aktif berubah
     ref.listen(profileControllerProvider, (prev, next) {
-      if (next.activeProfile != null) {
-        loadSettings(next.activeProfile!.id);
-      }
+      loadSettings(next.activeProfile?.id);
     });
 
     final activeProfile = ref.read(profileControllerProvider).activeProfile;
-    if (activeProfile != null) {
-      Future.microtask(() => loadSettings(activeProfile.id));
-    }
+    Future.microtask(() => loadSettings(activeProfile?.id));
 
     return SettingsState(isLoading: true);
   }
 
   /// Memuat pengaturan dari database lokal.
-  Future<void> loadSettings(int userId) async {
+  Future<void> loadSettings(int? userId) async {
     try {
       state = state.copyWith(isLoading: true);
-      final pref = await _prefService.getPreferences(userId);
+      final pref = userId != null && userId > 0
+          ? await _prefService.getPreferences(userId)
+          : UserPreference(
+              userId: 0,
+              themeMode: 'system',
+              enableAudioCues: true,
+              enableTts: false,
+              dailyReminderTime: '08:00',
+            );
       final app = await _prefService.getAppSettings();
 
       state = SettingsState(

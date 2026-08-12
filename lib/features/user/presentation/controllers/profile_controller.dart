@@ -63,12 +63,11 @@ class ProfileController extends Notifier<ProfileState> {
       final active = await _repository.getActiveProfile();
       final all = await _repository.getAllProfiles();
 
-      // Jika belum ada profil sama sekali di database lokal, buat profil guest awal sebagai default
+      // Jika belum ada profil di database lokal, biarkan activeProfile null
       if (all.isEmpty) {
-        final guest = await _guestManager.startGuestSession();
         state = state.copyWith(
-          activeProfile: guest,
-          allProfiles: [guest],
+          activeProfile: null,
+          allProfiles: const [],
           isLoading: false,
           errorMessage: null,
         );
