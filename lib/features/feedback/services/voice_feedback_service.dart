@@ -5,11 +5,7 @@ import '../models/feedback_message.dart';
 import '../models/voice_settings.dart';
 
 /// Service pengelola Text-to-Speech (TTS) untuk Voice Feedback real-time.
-///
-/// PERFORMA & USER EXPERIENCE:
-/// - **Cooldown Minimal 3 Detik**: Mencegah pengulangan pesan suara secara berlebihan
-///   yang dapat mengganggu fokus pengguna saat berolahraga.
-/// - Mendukung pengalihan Voice ON/OFF, kontrol volume, dan pengaturan kecepatan bicara.
+@Deprecated('Gunakan VoiceCoach di lib/features/workout_session/services/voice_coach.dart sebagai Single Source of Truth')
 class VoiceFeedbackService {
   VoiceFeedbackService({
     FlutterTts? tts,

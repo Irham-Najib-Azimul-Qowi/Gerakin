@@ -29,6 +29,7 @@ class FullExerciseDefinition {
     required this.tags,
     required this.thumbnailAsset,
     required this.animationAsset,
+    this.illustrationAssets,
   });
 
   final String id;
@@ -56,6 +57,7 @@ class FullExerciseDefinition {
   final List<String> tags;
   final String thumbnailAsset;
   final String animationAsset;
+  final List<String>? illustrationAssets;
 
   /// Mengonversi ke [ExerciseDefinition] milik Workout Engine.
   ExerciseDefinition toWorkoutExerciseDefinition() {
@@ -105,6 +107,7 @@ class FullExerciseDefinition {
       'tags': tags,
       'thumbnailAsset': thumbnailAsset,
       'animationAsset': animationAsset,
+      'illustrationAssets': illustrationAssets,
     };
   }
 
@@ -137,6 +140,9 @@ class FullExerciseDefinition {
       tags: List<String>.from(json['tags'] as List),
       thumbnailAsset: json['thumbnailAsset'] as String,
       animationAsset: json['animationAsset'] as String,
+      illustrationAssets: json['illustrationAssets'] != null
+          ? List<String>.from(json['illustrationAssets'] as List)
+          : null,
     );
   }
 }

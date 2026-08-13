@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import '../models/workout_state.dart';
 import '../models/movement_phase.dart';
 import '../models/workout_rep.dart';
 import '../models/workout_summary.dart';
 import '../models/recorded_frame.dart';
+import '../models/live_alert.dart';
 import 'voice_coach.dart';
 import 'workout_validator.dart';
 import 'movement_state_machine.dart';
@@ -47,6 +49,7 @@ class WorkoutSessionEngine {
   Timer? _sessionDurationTimer;
   DateTime? _sessionStartTime;
   WorkoutSummary? _summaryResult;
+  LiveAlert? _activeAlert;
 
   // Developer & Debug Telemetry
   double _lastFrameProcessingTimeMs = 0.0;
@@ -59,6 +62,7 @@ class WorkoutSessionEngine {
   WorkoutState get state => _state;
   MovementPhase get phase => _repCounter.stateMachine.currentPhase;
   CalibrationResult? get calibrationResult => _lastCalibrationResult;
+  LiveAlert? get activeAlert => _activeAlert;
   double get currentAngle => _currentAngle;
   double get targetAngle => exercise.targetAngles.targetAngle;
   double get startAngle => exercise.targetAngles.startAngle;
@@ -126,6 +130,8 @@ class WorkoutSessionEngine {
     } else {
       _currentConfidence = 0.0;
     }
+
+    _evaluateLiveAlerts(landmarks);
 
     switch (_state) {
       case WorkoutState.calibrating:
@@ -238,7 +244,10 @@ class WorkoutSessionEngine {
     _logger.info('Sesi latihan dimulai pada $_sessionStartTime', category: 'SESSION_ENGINE');
     _recorder.startRecording();
     _startSessionTimer();
-    _voiceCoach.speak('Mulai latihan!', priority: CoachPriority.high, force: true);
+    final initialInstruction = exercise.voiceInstruction.isNotEmpty
+        ? 'Mulai latihan! ${exercise.voiceInstruction}'
+        : 'Mulai latihan!';
+    _voiceCoach.speak(initialInstruction, priority: CoachPriority.high, force: true);
   }
 
   void _startSessionTimer() {
@@ -293,6 +302,40 @@ class WorkoutSessionEngine {
     _restTimer.cancel();
     _recorder.stopRecording();
     _voiceCoach.speak('Latihan dibatalkan', priority: CoachPriority.high);
+  }
+
+  void _evaluateLiveAlerts(List<PoseLandmarkModel> landmarks) {
+    if (_state != WorkoutState.workout && _state != WorkoutState.calibrating) {
+      _activeAlert = null;
+      return;
+    }
+
+    LiveAlert? newAlert;
+
+    if (landmarks.length < 5) {
+      newAlert = LiveAlert(
+        message: 'Tubuh tidak terlihat penuh, mundur sedikit dari kamera',
+        severity: AlertSeverity.critical,
+        icon: Icons.videocam_off_rounded,
+      );
+    } else if (_currentConfidence < 0.5) {
+      newAlert = LiveAlert(
+        message: 'Deteksi kurang jelas, pastikan pencahayaan cukup',
+        severity: AlertSeverity.warning,
+        icon: Icons.light_mode_rounded,
+      );
+    }
+
+    if (newAlert != _activeAlert) {
+      _activeAlert = newAlert;
+      if (newAlert != null) {
+        _voiceCoach.speak(
+          newAlert.message,
+          priority: newAlert.isCritical ? CoachPriority.emergency : CoachPriority.high,
+          force: true,
+        );
+      }
+    }
   }
 
   void dispose() {

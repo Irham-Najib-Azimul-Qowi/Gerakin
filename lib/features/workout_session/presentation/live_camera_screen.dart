@@ -7,6 +7,7 @@ import '../models/workout_state.dart';
 import '../models/movement_phase.dart';
 import '../widgets/exercise_card.dart';
 import '../widgets/realtime_coach_bubble.dart';
+import '../widgets/live_alert_banner.dart';
 import '../widgets/hold_progress_bar.dart';
 import '../widgets/dev_debug_overlay.dart';
 import '../widgets/camera_calibration_overlay.dart';
@@ -115,11 +116,22 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
               left: 0,
               right: 0,
               child: RealtimeCoachBubble(
-                message: _getCoachMessage(uiState),
+                message: uiState.currentCoachMessage,
                 isMuted: uiState.isMuted,
                 onToggleMute: controller.toggleMute,
               ),
             ),
+
+            // 3b. Live Alert Banner (Warning / Critical Visual Alert)
+            if (uiState.activeAlert != null)
+              Positioned(
+                top: 215,
+                left: 0,
+                right: 0,
+                child: LiveAlertBanner(
+                  alert: uiState.activeAlert,
+                ),
+              ),
 
             // 4. Isometric Hold Progress Ring / Bar
             Positioned(
@@ -249,24 +261,6 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
         ),
       ),
     );
-  }
-
-  String _getCoachMessage(WorkoutSessionUIState state) {
-    if (state.workoutState == WorkoutState.calibrating) {
-      return state.calibrationInstruction;
-    }
-    switch (state.movementPhase) {
-      case MovementPhase.movingUp:
-        return 'Bagus! Naikkan lengan perlahan ke arah target.';
-      case MovementPhase.hold:
-        return 'Pertahankan posisi puncak, tahan isometric!';
-      case MovementPhase.movingDown:
-        return 'Turunkan perlahan dengan kontrol otot eksentrik.';
-      case MovementPhase.completed:
-        return 'Sempurna! Repetisi berhasil diselesaikan.';
-      default:
-        return 'Ambil posisi awal dan bersiaplah.';
-    }
   }
 
   Widget _buildRestOverlay(WorkoutSessionUIState state, WorkoutSessionController controller) {

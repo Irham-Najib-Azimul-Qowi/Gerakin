@@ -77,4 +77,46 @@ class JointAngleCalculator {
       confidence: confidence,
     );
   }
+
+  /// Menghitung [JointAngle] khusus leher (fleksi atau rotasi) berdasarkan
+  /// posisi [noseLandmark], [leftShoulder], dan [rightShoulder].
+  ///
+  /// Menghitung kemiringan vektor hidung-ke-tengah-bahu relatif terhadap sumbu vertikal.
+  static JointAngle? calculateNeckAngle({
+    required JointType type,
+    required PoseLandmarkModel? noseLandmark,
+    required PoseLandmarkModel? leftShoulder,
+    required PoseLandmarkModel? rightShoulder,
+    double minConfidence = MotionTrackingConstants.kMinLandmarkConfidence,
+  }) {
+    if (noseLandmark == null || leftShoulder == null || rightShoulder == null) {
+      return null;
+    }
+
+    if (!noseLandmark.isValid(minConfidence) ||
+        !leftShoulder.isValid(minConfidence) ||
+        !rightShoulder.isValid(minConfidence)) {
+      return null;
+    }
+
+    final midShoulderX = (leftShoulder.x + rightShoulder.x) / 2.0;
+    final midShoulderY = (leftShoulder.y + rightShoulder.y) / 2.0;
+
+    final dx = noseLandmark.x - midShoulderX;
+    final dy = noseLandmark.y - midShoulderY;
+
+    // Sudut relatif terhadap garis vertikal (0 derajat = tegak lurus)
+    final radians = math.atan2(dx.abs(), dy.abs());
+    final degrees = radians * (180.0 / math.pi);
+    final confidence = (noseLandmark.likelihood +
+            leftShoulder.likelihood +
+            rightShoulder.likelihood) /
+        3.0;
+
+    return JointAngle(
+      type: type,
+      angle: degrees,
+      confidence: confidence,
+    );
+  }
 }

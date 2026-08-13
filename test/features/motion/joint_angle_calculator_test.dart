@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:gerakin/features/camera/models/pose_landmark_model.dart';
+import 'package:gerakin/features/motion/models/joint_angle.dart';
 import 'package:gerakin/features/motion/services/joint_angle_calculator.dart';
 
 void main() {
@@ -59,6 +62,23 @@ void main() {
       );
 
       expect(angle, closeTo(180.0, 0.001));
+    });
+
+    test('Perhitungan sudut leher (calculateNeckAngle) relatif terhadap garis vertikal', () {
+      final nose = PoseLandmarkModel(type: PoseLandmarkType.nose, x: 0.0, y: -1.0, z: 0.0, likelihood: 0.9);
+      final leftShoulder = PoseLandmarkModel(type: PoseLandmarkType.leftShoulder, x: -1.0, y: 0.0, z: 0.0, likelihood: 0.9);
+      final rightShoulder = PoseLandmarkModel(type: PoseLandmarkType.rightShoulder, x: 1.0, y: 0.0, z: 0.0, likelihood: 0.9);
+
+      final result = JointAngleCalculator.calculateNeckAngle(
+        type: JointType.neckFlexion,
+        noseLandmark: nose,
+        leftShoulder: leftShoulder,
+        rightShoulder: rightShoulder,
+      );
+
+      expect(result, isNotNull);
+      expect(result!.type, equals(JointType.neckFlexion));
+      expect(result.angle, closeTo(0.0, 0.01));
     });
   });
 }
