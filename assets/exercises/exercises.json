@@ -12,7 +12,7 @@
     "startPose": "Seated Arms Extended",
     "endPose": "Full Circle Rotation",
     "targetAngles": {
-      "primaryJoint": "shoulderFlexion",
+      "primaryJoint": "leftShoulder",
       "startAngle": 0.0,
       "targetAngle": 90.0
     },
@@ -28,7 +28,12 @@
     "contraindication": "Dislokasi bahu akut atau pasca operasi rotator cuff < 4 minggu.",
     "tags": ["WarmUp", "Shoulder", "WheelchairSafe", "Mobility"],
     "thumbnailAsset": "assets/exercises/thumbnails/arm_circle.png",
-    "animationAsset": "assets/exercises/animations/arm_circle.json"
+    "animationAsset": "assets/exercises/animations/arm_circle.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/warmup_01_arm_circle/01_start.png",
+      "assets/exercises/illustrations/warmup_01_arm_circle/02_peak.png",
+      "assets/exercises/illustrations/warmup_01_arm_circle/03_end.png"
+    ]
   },
   {
     "id": "warmup_02_shoulder_shrug",
@@ -43,7 +48,7 @@
     "startPose": "Seated Neutral",
     "endPose": "Shrugged Elevation",
     "targetAngles": {
-      "primaryJoint": "shoulderFlexion",
+      "primaryJoint": "leftShoulder",
       "startAngle": 0.0,
       "targetAngle": 35.0
     },
@@ -59,7 +64,12 @@
     "contraindication": "Cedera serviks akut.",
     "tags": ["WarmUp", "Trapezius", "NeckRelief"],
     "thumbnailAsset": "assets/exercises/thumbnails/shoulder_shrug.png",
-    "animationAsset": "assets/exercises/animations/shoulder_shrug.json"
+    "animationAsset": "assets/exercises/animations/shoulder_shrug.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/warmup_02_shoulder_shrug/01_start.png",
+      "assets/exercises/illustrations/warmup_02_shoulder_shrug/02_peak.png",
+      "assets/exercises/illustrations/warmup_02_shoulder_shrug/03_end.png"
+    ]
   },
   {
     "id": "rom_01_shoulder_flexion",
@@ -74,7 +84,7 @@
     "startPose": "Arms Down At Sides",
     "endPose": "Arms Raised Overhead",
     "targetAngles": {
-      "primaryJoint": "shoulderFlexion",
+      "primaryJoint": "leftShoulder",
       "startAngle": 15.0,
       "targetAngle": 120.0
     },
@@ -90,7 +100,12 @@
     "contraindication": "Impingement bahu tahap III.",
     "tags": ["ROM", "ShoulderFlexion", "UpperBody"],
     "thumbnailAsset": "assets/exercises/thumbnails/shoulder_flexion.png",
-    "animationAsset": "assets/exercises/animations/shoulder_flexion.json"
+    "animationAsset": "assets/exercises/animations/shoulder_flexion.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/rom_01_shoulder_flexion/01_start.png",
+      "assets/exercises/illustrations/rom_01_shoulder_flexion/02_peak.png",
+      "assets/exercises/illustrations/rom_01_shoulder_flexion/03_end.png"
+    ]
   },
   {
     "id": "strength_01_wheelchair_arm_press",
@@ -105,7 +120,7 @@
     "startPose": "Hands On Armrests Seated",
     "endPose": "Arms Extended Body Relief",
     "targetAngles": {
-      "primaryJoint": "elbowFlexion",
+      "primaryJoint": "leftElbow",
       "startAngle": 90.0,
       "targetAngle": 160.0
     },
@@ -121,7 +136,12 @@
     "contraindication": "Nyeri pergelangan tangan akut atau fraktur metakarpal.",
     "tags": ["Strength", "Triceps", "FunctionalPush"],
     "thumbnailAsset": "assets/exercises/thumbnails/arm_press.png",
-    "animationAsset": "assets/exercises/animations/arm_press.json"
+    "animationAsset": "assets/exercises/animations/arm_press.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/strength_01_wheelchair_arm_press/01_start.png",
+      "assets/exercises/illustrations/strength_01_wheelchair_arm_press/02_peak.png",
+      "assets/exercises/illustrations/strength_01_wheelchair_arm_press/03_end.png"
+    ]
   },
   {
     "id": "cooldown_01_gentle_arm_stretch",
@@ -136,7 +156,7 @@
     "startPose": "Arm Extended Forward",
     "endPose": "Gentle Wrist Pull Hold",
     "targetAngles": {
-      "primaryJoint": "wristFlexion",
+      "primaryJoint": "leftElbow",
       "startAngle": 20.0,
       "targetAngle": 60.0
     },
@@ -152,6 +172,335 @@
     "contraindication": "Hypermobility syndrome berat.",
     "tags": ["CoolDown", "Stretch", "Recovery"],
     "thumbnailAsset": "assets/exercises/thumbnails/cooldown_stretch.png",
-    "animationAsset": "assets/exercises/animations/cooldown_stretch.json"
+    "animationAsset": "assets/exercises/animations/cooldown_stretch.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/cooldown_01_gentle_arm_stretch/01_start.png",
+      "assets/exercises/illustrations/cooldown_01_gentle_arm_stretch/02_peak.png",
+      "assets/exercises/illustrations/cooldown_01_gentle_arm_stretch/03_end.png"
+    ]
+  },
+  {
+    "id": "neck_01_gentle_rotation",
+    "name": "Rotasi Leher Perlahan (Gentle Neck Rotation)",
+    "category": "Neck & Head Mobility",
+    "difficulty": 1,
+    "description": "Tengokkan kepala perlahan ke kanan dan kiri untuk merelaksasi otot serviks.",
+    "benefit": "Mengurangi ketegangan leher akibat posisi duduk lama di kursi roda.",
+    "targetMuscles": ["Sternocleidomastoid", "Splenius Capitis"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Cervical Rotation",
+    "startPose": "Head Neutral Forward",
+    "endPose": "Head Rotated Lateral",
+    "targetAngles": {
+      "primaryJoint": "neckRotation",
+      "startAngle": 0.0,
+      "targetAngle": 25.0
+    },
+    "tolerance": 8.0,
+    "tempo": "2-2-2-0",
+    "holdDuration": 2,
+    "repetitionTarget": 8,
+    "setTarget": 2,
+    "restDuration": 30,
+    "estimatedCalories": 6.0,
+    "voiceInstruction": "Tengokkan kepala perlahan ke kanan dan kiri secara lembut.",
+    "warning": "Hentikan segera jika merasa pusing, mual, atau timbul rasa sakit menjalar.",
+    "contraindication": "PLACEHOLDER — wajib divalidasi fisioterapis klinis sebelum dipublikasikan.",
+    "tags": ["NeckMobility", "Cervical", "WheelchairSafe"],
+    "thumbnailAsset": "assets/exercises/thumbnails/neck_rotation.png",
+    "animationAsset": "assets/exercises/animations/neck_rotation.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/neck_01_gentle_rotation/01_start.png",
+      "assets/exercises/illustrations/neck_01_gentle_rotation/02_peak.png",
+      "assets/exercises/illustrations/neck_01_gentle_rotation/03_end.png"
+    ]
+  },
+  {
+    "id": "neck_02_forward_flexion",
+    "name": "Fleksi Leher Depan (Gentle Neck Flexion)",
+    "category": "Neck & Head Mobility",
+    "difficulty": 1,
+    "description": "Tundukkan kepala perlahan mendekati dada lalu kembalikan ke posisi netral.",
+    "benefit": "Peregangan lembut otot leher belakang dan tengkuk.",
+    "targetMuscles": ["Trapezius Superior", "Suboccipital"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Cervical Flexion",
+    "startPose": "Head Neutral",
+    "endPose": "Chin Near Chest",
+    "targetAngles": {
+      "primaryJoint": "neckFlexion",
+      "startAngle": 0.0,
+      "targetAngle": 20.0
+    },
+    "tolerance": 6.0,
+    "tempo": "2-2-2-0",
+    "holdDuration": 2,
+    "repetitionTarget": 8,
+    "setTarget": 2,
+    "restDuration": 30,
+    "estimatedCalories": 5.5,
+    "voiceInstruction": "Tundukkan kepala ke depan perlahan hingga otot tengkuk teregang nyaman.",
+    "warning": "Jangan memaksakan dagu menempel dada jika terasa tegang hebat.",
+    "contraindication": "PLACEHOLDER — wajib divalidasi fisioterapis klinis sebelum dipublikasikan.",
+    "tags": ["NeckMobility", "CervicalFlexion", "WheelchairSafe"],
+    "thumbnailAsset": "assets/exercises/thumbnails/neck_flexion.png",
+    "animationAsset": "assets/exercises/animations/neck_flexion.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/neck_02_forward_flexion/01_start.png",
+      "assets/exercises/illustrations/neck_02_forward_flexion/02_peak.png",
+      "assets/exercises/illustrations/neck_02_forward_flexion/03_end.png"
+    ]
+  },
+  {
+    "id": "neck_03_lateral_tilt",
+    "name": "Kemiringan Leher Samping (Lateral Neck Tilt)",
+    "category": "Neck & Head Mobility",
+    "difficulty": 1,
+    "description": "Miringkan telinga kanan mendekati bahu kanan, lalu ulangi untuk sisi kiri.",
+    "benefit": "Meningkatkan kelenturan otot leher bagian samping.",
+    "targetMuscles": ["Scalenes", "Levator Scapulae"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Cervical Lateral Flexion",
+    "startPose": "Head Neutral",
+    "endPose": "Ear To Shoulder Tilt",
+    "targetAngles": {
+      "primaryJoint": "neckRotation",
+      "startAngle": 0.0,
+      "targetAngle": 20.0
+    },
+    "tolerance": 6.0,
+    "tempo": "2-2-2-0",
+    "holdDuration": 2,
+    "repetitionTarget": 8,
+    "setTarget": 2,
+    "restDuration": 30,
+    "estimatedCalories": 6.0,
+    "voiceInstruction": "Miringkan kepala ke samping mendekati bahu secara perlahan.",
+    "warning": "Jaga posisi bahu tetap rileks ke bawah, jangan menaikkan bahu mendekati telinga.",
+    "contraindication": "PLACEHOLDER — wajib divalidasi fisioterapis klinis sebelum dipublikasikan.",
+    "tags": ["NeckMobility", "LateralTilt", "WheelchairSafe"],
+    "thumbnailAsset": "assets/exercises/thumbnails/neck_tilt.png",
+    "animationAsset": "assets/exercises/animations/neck_tilt.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/neck_03_lateral_tilt/01_start.png",
+      "assets/exercises/illustrations/neck_03_lateral_tilt/02_peak.png",
+      "assets/exercises/illustrations/neck_03_lateral_tilt/03_end.png"
+    ]
+  },
+  {
+    "id": "aerobics_01_seated_punches",
+    "name": "Tinju Ritmik Duduk (Seated Rhythmic Punches)",
+    "category": "Wheelchair Aerobics",
+    "difficulty": 2,
+    "description": "Lakukan gerakan meninju lurus ke depan secara bergantian dengan irama ritmik.",
+    "benefit": "Meningkatkan stamina kardiovaskular dan ketahanan otot lengan atas dari kursi roda.",
+    "targetMuscles": ["Anterior Deltoid", "Triceps", "Pectoralis Major"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Alternating Arm Extension",
+    "startPose": "Seated Guard Position",
+    "endPose": "Alternating Arm Straight Punch",
+    "targetAngles": {
+      "primaryJoint": "leftElbow",
+      "startAngle": 60.0,
+      "targetAngle": 150.0
+    },
+    "tolerance": 15.0,
+    "tempo": "1-0-1-0",
+    "holdDuration": 0,
+    "repetitionTarget": 20,
+    "setTarget": 3,
+    "restDuration": 40,
+    "estimatedCalories": 35.0,
+    "voiceInstruction": "Dorong tangan lurus ke depan bergantian dengan ritme stabil.",
+    "warning": "Jaga keseimbangan tubuh di kursi roda dan jangan mengunci sendi siku secara mendadak.",
+    "contraindication": "Instabilitas siku akut.",
+    "tags": ["Aerobics", "Cardio", "WheelchairAerobics", "Stamina"],
+    "thumbnailAsset": "assets/exercises/thumbnails/seated_punches.png",
+    "animationAsset": "assets/exercises/animations/seated_punches.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/aerobics_01_seated_punches/01_start.png",
+      "assets/exercises/illustrations/aerobics_01_seated_punches/02_peak.png",
+      "assets/exercises/illustrations/aerobics_01_seated_punches/03_end.png"
+    ]
+  },
+  {
+    "id": "aerobics_02_speed_bag",
+    "name": "Putaran Speed Bag Lengan (Seated Speed Bag)",
+    "category": "Wheelchair Aerobics",
+    "difficulty": 2,
+    "description": "Angkat kedua tinju di depan dada dan putar melingkar cepat meniru tinju speed bag.",
+    "benefit": "Melatih daya tahan otot bahu dan koordinasi mata-tangan.",
+    "targetMuscles": ["Deltoids", "Biceps", "Forearms"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Continuous Rapid Circle Roll",
+    "startPose": "Fists Raised Chest Level",
+    "endPose": "Rapid Circular Rolling",
+    "targetAngles": {
+      "primaryJoint": "leftElbow",
+      "startAngle": 70.0,
+      "targetAngle": 110.0
+    },
+    "tolerance": 15.0,
+    "tempo": "1-0-1-0",
+    "holdDuration": 0,
+    "repetitionTarget": 30,
+    "setTarget": 3,
+    "restDuration": 30,
+    "estimatedCalories": 40.0,
+    "voiceInstruction": "Putar kedua tangan melingkar cepat di depan dada.",
+    "warning": "Pertahankan tinggi tangan sejajar dada, jangan biarkan tangan turun.",
+    "contraindication": "Bursitis bahu akut.",
+    "tags": ["Aerobics", "SpeedBag", "WheelchairAerobics", "Endurance"],
+    "thumbnailAsset": "assets/exercises/thumbnails/speed_bag.png",
+    "animationAsset": "assets/exercises/animations/speed_bag.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/aerobics_02_speed_bag/01_start.png",
+      "assets/exercises/illustrations/aerobics_02_speed_bag/02_peak.png",
+      "assets/exercises/illustrations/aerobics_02_speed_bag/03_end.png"
+    ]
+  },
+  {
+    "id": "aerobics_03_overhead_clap",
+    "name": "Tepuk Lengan di Atas Kepala (Seated Overhead Clap)",
+    "category": "Wheelchair Aerobics",
+    "difficulty": 2,
+    "description": "Buka kedua tangan lebar ke samping lalu katupkan di atas kepala secara ritmik.",
+    "benefit": "Meningkatkan sirkulasi darah kardio dan rentang gerak atas.",
+    "targetMuscles": ["Deltoids", "Latissimus Dorsi", "Trapezius"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Overhead Arc Abduction",
+    "startPose": "Arms Outstretched Side",
+    "endPose": "Hands Clapped Overhead",
+    "targetAngles": {
+      "primaryJoint": "leftShoulder",
+      "startAngle": 30.0,
+      "targetAngle": 140.0
+    },
+    "tolerance": 15.0,
+    "tempo": "2-0-2-0",
+    "holdDuration": 0,
+    "repetitionTarget": 12,
+    "setTarget": 3,
+    "restDuration": 35,
+    "estimatedCalories": 30.0,
+    "voiceInstruction": "Angkat kedua tangan melengkung ke atas hingga bertemu di atas kepala.",
+    "warning": "Bernapaslah secara teratur, hembuskan napas saat tangan bertemu di atas.",
+    "contraindication": "Impingement rotator cuff akut.",
+    "tags": ["Aerobics", "OverheadClap", "WheelchairAerobics"],
+    "thumbnailAsset": "assets/exercises/thumbnails/overhead_clap.png",
+    "animationAsset": "assets/exercises/animations/overhead_clap.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/aerobics_03_overhead_clap/01_start.png",
+      "assets/exercises/illustrations/aerobics_03_overhead_clap/02_peak.png",
+      "assets/exercises/illustrations/aerobics_03_overhead_clap/03_end.png"
+    ]
+  },
+  {
+    "id": "core_01_seated_torso_twist",
+    "name": "Rotasi Torso Duduk (Seated Torso Twist)",
+    "category": "Core Stability",
+    "difficulty": 2,
+    "description": "Silangkan kedua tangan di depan dada lalu putar torso perlahan ke samping.",
+    "benefit": "Melatih stabilitas otot oblikues dan kontrol keseimbangan batang tubuh.",
+    "targetMuscles": ["Obliques Internus/Externus", "Transverse Abdominis"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Axial Trunk Rotation",
+    "startPose": "Seated Arms Crossed Chest",
+    "endPose": "Torso Rotated Side",
+    "targetAngles": {
+      "primaryJoint": "leftShoulder",
+      "startAngle": 0.0,
+      "targetAngle": 30.0
+    },
+    "tolerance": 10.0,
+    "tempo": "2-1-2-0",
+    "holdDuration": 2,
+    "repetitionTarget": 10,
+    "setTarget": 3,
+    "restDuration": 40,
+    "estimatedCalories": 22.0,
+    "voiceInstruction": "Silangkan tangan di dada, putar dada ke kanan dan kiri secara perlahan.",
+    "warning": "Jaga pinggul tetap stabil menempel pada sandaran kursi roda.",
+    "contraindication": "Skoliosis berat yang tidak stabil atau pasca fusi tulang belakang < 8 minggu.",
+    "tags": ["CoreStability", "TorsoTwist", "Balance"],
+    "thumbnailAsset": "assets/exercises/thumbnails/torso_twist.png",
+    "animationAsset": "assets/exercises/animations/torso_twist.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/core_01_seated_torso_twist/01_start.png",
+      "assets/exercises/illustrations/core_01_seated_torso_twist/02_peak.png",
+      "assets/exercises/illustrations/core_01_seated_torso_twist/03_end.png"
+    ]
+  },
+  {
+    "id": "core_02_seated_forward_lean",
+    "name": "Kemiringan Torso Depan (Seated Forward Lean)",
+    "category": "Core Stability",
+    "difficulty": 2,
+    "description": "Bungkukkan torso ke depan secara terkontrol lalu kembali tegak mengencangkan otot perut.",
+    "benefit": "Menguatkan otot erector spinae dan abdominis untuk penyangga postural.",
+    "targetMuscles": ["Rectus Abdominis", "Erector Spinae"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Sagittal Trunk Flexion",
+    "startPose": "Seated Upright Neutral",
+    "endPose": "Torso Leaning Forward",
+    "targetAngles": {
+      "primaryJoint": "leftShoulder",
+      "startAngle": 0.0,
+      "targetAngle": 25.0
+    },
+    "tolerance": 8.0,
+    "tempo": "2-2-2-0",
+    "holdDuration": 2,
+    "repetitionTarget": 10,
+    "setTarget": 2,
+    "restDuration": 40,
+    "estimatedCalories": 20.0,
+    "voiceInstruction": "Bungkukkan dada perlahan ke depan, kencangkan otot perut saat kembali tegak.",
+    "warning": "Pastikan rem kursi roda terkunci erat sebelum latihan.",
+    "contraindication": "Hernia nukleus pulposus (HNP) lumbal akut.",
+    "tags": ["CoreStability", "ForwardLean", "PosturalControl"],
+    "thumbnailAsset": "assets/exercises/thumbnails/forward_lean.png",
+    "animationAsset": "assets/exercises/animations/forward_lean.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/core_02_seated_forward_lean/01_start.png",
+      "assets/exercises/illustrations/core_02_seated_forward_lean/02_peak.png",
+      "assets/exercises/illustrations/core_02_seated_forward_lean/03_end.png"
+    ]
+  },
+  {
+    "id": "core_03_isometric_core_hold",
+    "name": "Tahan Postur Otot Inti (Isometric Core Hold)",
+    "category": "Core Stability",
+    "difficulty": 3,
+    "description": "Tarik pusar ke dalam, tegakkan dada, dan tahan aktivasi otot perut.",
+    "benefit": "Meningkatkan daya tahan isometrik otot inti tanpa gerakan persendian ekstrim.",
+    "targetMuscles": ["Transverse Abdominis", "Multifidus"],
+    "requiredEquipment": "None (Wheelchair)",
+    "movementPattern": "Isometric Core Contraction",
+    "startPose": "Seated Tall Posture",
+    "endPose": "Engaged Core Hold",
+    "targetAngles": {
+      "primaryJoint": "leftShoulder",
+      "startAngle": 0.0,
+      "targetAngle": 10.0
+    },
+    "tolerance": 5.0,
+    "tempo": "1-5-1-0",
+    "holdDuration": 5,
+    "repetitionTarget": 6,
+    "setTarget": 3,
+    "restDuration": 30,
+    "estimatedCalories": 18.0,
+    "voiceInstruction": "Tarik perut ke dalam, tegakkan postur dada dan tahan tahan tahan.",
+    "warning": "Jangan menahan napas! Tetap bernapas secara teratur selama menahan.",
+    "contraindication": "Hipertensi tidak terkontrol (Valsalva maneuver risk).",
+    "tags": ["CoreStability", "IsometricHold", "PosturalControl"],
+    "thumbnailAsset": "assets/exercises/thumbnails/core_hold.png",
+    "animationAsset": "assets/exercises/animations/core_hold.json",
+    "illustrationAssets": [
+      "assets/exercises/illustrations/core_03_isometric_core_hold/01_start.png",
+      "assets/exercises/illustrations/core_03_isometric_core_hold/02_peak.png",
+      "assets/exercises/illustrations/core_03_isometric_core_hold/03_end.png"
+    ]
   }
 ]

@@ -25,16 +25,11 @@ class ExerciseLibraryPage extends ConsumerWidget {
     final categories = [
       'All',
       'Warm Up',
+      'Neck & Head Mobility',
       'Range Of Motion (ROM)',
       'Strength Training',
-      'Coordination',
-      'Flexibility',
+      'Wheelchair Aerobics',
       'Core Stability',
-      'Balance (Sitting Balance)',
-      'Shoulder Rehabilitation',
-      'Elbow Rehabilitation',
-      'Wrist Rehabilitation',
-      'Daily Functional Movement',
       'Cool Down',
     ];
 

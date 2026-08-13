@@ -12,6 +12,7 @@ import '../../../../shared/widgets/buttons/app_button.dart';
 import '../../../../shared/widgets/cards/section_card.dart';
 import '../../../workout_engine/domain/workout_controller.dart';
 import '../../models/full_exercise_definition.dart';
+import '../widgets/illustration_image_widget.dart';
 
 /// Halaman Preview Detail Latihan ECMS.
 class ExerciseDetailPreviewPage extends ConsumerWidget {
@@ -93,6 +94,102 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.onPrimary.withValues(alpha: 0.9),
                     ),
+                  ),
+                ],
+              ),
+            ),
+
+            Gap(AppSpacing.lg),
+
+            // 0. Ilustrasi Gerakan (3 Tahap Anatomis)
+            SectionCard(
+              color: AppColors.surfaceContainerDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ilustrasi Tahapan Gerakan',
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: AppColors.onSurfaceDark,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Gap(AppSpacing.xs),
+                  Text(
+                    'Urutan visual 3 posisi: Awal, Puncak Tahan, dan Akhir.',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.onSurfaceVariantDark,
+                    ),
+                  ),
+                  Gap(AppSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            IllustrationImageWidget(
+                              assetPath: exercise.illustrationAssets != null && exercise.illustrationAssets!.isNotEmpty
+                                  ? exercise.illustrationAssets![0]
+                                  : exercise.thumbnailAsset,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                            Gap(AppSpacing.xs),
+                            Text(
+                              '1. Awal',
+                              style: AppTextStyles.captionMedium.copyWith(
+                                color: AppColors.onSurfaceDark,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Gap(AppSpacing.xs),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            IllustrationImageWidget(
+                              assetPath: exercise.illustrationAssets != null && exercise.illustrationAssets!.length > 1
+                                  ? exercise.illustrationAssets![1]
+                                  : exercise.thumbnailAsset,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                            Gap(AppSpacing.xs),
+                            Text(
+                              '2. Puncak',
+                              style: AppTextStyles.captionMedium.copyWith(
+                                color: AppColors.primaryLight,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Gap(AppSpacing.xs),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            IllustrationImageWidget(
+                              assetPath: exercise.illustrationAssets != null && exercise.illustrationAssets!.length > 2
+                                  ? exercise.illustrationAssets![2]
+                                  : exercise.thumbnailAsset,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                            Gap(AppSpacing.xs),
+                            Text(
+                              '3. Akhir',
+                              style: AppTextStyles.captionMedium.copyWith(
+                                color: AppColors.onSurfaceDark,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

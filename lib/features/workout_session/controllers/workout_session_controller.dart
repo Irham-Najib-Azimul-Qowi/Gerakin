@@ -6,6 +6,7 @@ import '../models/workout_state.dart';
 import '../models/movement_phase.dart';
 import '../models/workout_summary.dart';
 import '../models/workout_session.dart';
+import '../models/live_alert.dart';
 import '../repository/workout_session_repository.dart';
 import '../../exercise_library/models/full_exercise_definition.dart';
 import '../../camera/models/pose_landmark_model.dart';
@@ -32,6 +33,8 @@ class WorkoutSessionUIState {
     this.isMuted = false,
     this.calibrationInstruction = 'Posisikan tubuh Anda',
     this.isCalibrationReady = false,
+    this.currentCoachMessage = 'Posisikan tubuh Anda di depan kamera untuk kalibrasi.',
+    this.activeAlert,
     this.summary,
     this.landmarks = const [],
     this.fps = 0,
@@ -55,6 +58,8 @@ class WorkoutSessionUIState {
   final bool isMuted;
   final String calibrationInstruction;
   final bool isCalibrationReady;
+  final String currentCoachMessage;
+  final LiveAlert? activeAlert;
   final WorkoutSummary? summary;
   final List<PoseLandmarkModel> landmarks;
   final int fps;
@@ -78,6 +83,9 @@ class WorkoutSessionUIState {
     bool? isMuted,
     String? calibrationInstruction,
     bool? isCalibrationReady,
+    String? currentCoachMessage,
+    LiveAlert? activeAlert,
+    bool clearAlert = false,
     WorkoutSummary? summary,
     List<PoseLandmarkModel>? landmarks,
     int? fps,
@@ -101,6 +109,8 @@ class WorkoutSessionUIState {
       isMuted: isMuted ?? this.isMuted,
       calibrationInstruction: calibrationInstruction ?? this.calibrationInstruction,
       isCalibrationReady: isCalibrationReady ?? this.isCalibrationReady,
+      currentCoachMessage: currentCoachMessage ?? this.currentCoachMessage,
+      activeAlert: clearAlert ? null : (activeAlert ?? this.activeAlert),
       summary: summary ?? this.summary,
       landmarks: landmarks ?? this.landmarks,
       fps: fps ?? this.fps,
@@ -191,6 +201,15 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
           lastLandmark: lmMap[PoseLandmarkType.rightAnkle],
         );
         return angle?.angle ?? 180.0;
+      case JointType.neckRotation:
+      case JointType.neckFlexion:
+        final angle = JointAngleCalculator.calculateNeckAngle(
+          type: jointType,
+          noseLandmark: lmMap[PoseLandmarkType.nose],
+          leftShoulder: lmMap[PoseLandmarkType.leftShoulder],
+          rightShoulder: lmMap[PoseLandmarkType.rightShoulder],
+        );
+        return angle?.angle ?? 0.0;
       default:
         return 90.0;
     }
@@ -251,6 +270,8 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
       holdProgress: _engine.holdProgress,
       calibrationInstruction: cal?.instructionMessage ?? 'Posisikan tubuh Anda',
       isCalibrationReady: cal?.isReady ?? false,
+      currentCoachMessage: _engine.voiceCoach.lastSpokenText,
+      activeAlert: _engine.activeAlert,
       summary: _engine.summaryResult,
       landmarks: landmarks ?? state.landmarks,
       fps: _engine.fps,
