@@ -15,6 +15,8 @@ import '../services/camera_service.dart';
 import '../services/frame_processor.dart';
 import '../services/pose_detector_service.dart';
 import 'camera_preview_widget.dart';
+import '../../motion/domain/motion_processor.dart';
+import '../../motion/models/motion_validation.dart';
 
 /// Halaman utama Kamera Workout & ML Kit Pose Detection.
 ///
@@ -35,6 +37,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
   late final CameraService _cameraService;
   late final PoseDetectorService _poseDetectorService;
   late final FrameProcessor _frameProcessor;
+  late final MotionProcessor _motionProcessor;
 
   DetectedPose? _currentPose;
   bool _isLoading = true;
@@ -42,6 +45,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
   bool _showSkeleton = true;
   bool _showDebugHUD = false;
   int _detectedJointsCount = 0;
+  Color _skeletonColor = Colors.white;
 
   @override
   void initState() {
@@ -50,6 +54,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
     _cameraService = CameraService();
     _poseDetectorService = PoseDetectorService();
     _frameProcessor = FrameProcessor(minIntervalMs: 33); // ~30 FPS throttle
+    _motionProcessor = MotionProcessor();
 
     _initializeCamera();
   }
@@ -101,9 +106,17 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
             .where((lm) => lm.isValid(0.5))
             .length;
 
+        final analysis = _motionProcessor.processPose(detectedPose);
+        final color = analysis.validationStatus == MotionValidationStatus.valid
+            ? AppColors.success
+            : (analysis.validationStatus == MotionValidationStatus.outOfRange
+                ? AppColors.warning
+                : AppColors.primary);
+
         setState(() {
           _currentPose = detectedPose;
           _detectedJointsCount = validJoints;
+          _skeletonColor = color;
         });
       }
     });
@@ -206,6 +219,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
                 pose: _currentPose,
                 showSkeleton: _showSkeleton,
                 showDebugHUD: _showDebugHUD,
+                skeletonColor: _skeletonColor,
               ),
             ),
 

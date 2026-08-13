@@ -61,7 +61,8 @@ class CalibrationService {
       _currentStatus = const CalibrationStatus(
         step: CalibrationStep.checkingBaseline,
         progressPercentage: 75.0,
-        statusMessage: 'Berdirilah tegak lurus menghadap kamera untuk mengambil sampel baseline.',
+        statusMessage:
+            'Posisikan tubuh Anda tegak lurus menghadap kamera dari kursi roda untuk mengambil sampel baseline.',
       );
       return _currentStatus;
     }

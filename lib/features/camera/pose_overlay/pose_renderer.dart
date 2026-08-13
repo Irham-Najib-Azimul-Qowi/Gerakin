@@ -6,9 +6,9 @@ import '../models/pose_landmark_model.dart';
 
 /// Pengelola Bounding Box Tubuh & Landmark Stabilization (EMA Smoother).
 class PoseRenderer {
-  PoseRenderer({this.alpha = 0.25});
+  PoseRenderer({this.alpha = 0.45});
 
-  /// Faktor penghalusan Exponential Moving Average (EMA). Default: 0.25
+  /// Faktor penghalusan Exponential Moving Average (EMA). Default: 0.45 (Responsif)
   final double alpha;
 
   final Map<PoseLandmarkType, Offset> _smoothedLandmarks = {};

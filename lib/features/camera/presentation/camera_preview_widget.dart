@@ -14,12 +14,16 @@ class CameraPreviewWidget extends StatelessWidget {
     required this.pose,
     this.showSkeleton = true,
     this.showDebugHUD = false,
+    this.skeletonColor = Colors.white,
+    this.alpha = 0.45,
   });
 
   final CameraController controller;
   final DetectedPose? pose;
   final bool showSkeleton;
   final bool showDebugHUD;
+  final Color skeletonColor;
+  final double alpha;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +44,8 @@ class CameraPreviewWidget extends StatelessWidget {
               SkeletonOverlay(
                 pose: pose,
                 showDebugHUD: showDebugHUD,
+                skeletonColor: skeletonColor,
+                alpha: alpha,
               ),
           ],
         );

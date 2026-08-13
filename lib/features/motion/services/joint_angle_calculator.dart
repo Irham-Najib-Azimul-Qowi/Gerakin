@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import '../../camera/models/pose_landmark_model.dart';
 import '../models/joint_angle.dart';
+import '../models/motion_tracking_constants.dart';
 
 /// Service perhitungan matematika vektor 2D/3D untuk menghitung sudut sendi.
 ///
@@ -48,7 +49,7 @@ class JointAngleCalculator {
     required PoseLandmarkModel? firstLandmark,
     required PoseLandmarkModel? vertexLandmark,
     required PoseLandmarkModel? lastLandmark,
-    double minConfidence = 0.5,
+    double minConfidence = MotionTrackingConstants.kMinLandmarkConfidence,
   }) {
     if (firstLandmark == null || vertexLandmark == null || lastLandmark == null) {
       return null;

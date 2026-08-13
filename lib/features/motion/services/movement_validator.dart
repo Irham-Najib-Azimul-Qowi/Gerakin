@@ -1,5 +1,6 @@
 import '../../camera/models/detected_pose.dart';
 import '../models/joint_angle.dart';
+import '../models/motion_tracking_constants.dart';
 import '../models/motion_validation.dart';
 import '../models/movement_state.dart';
 
@@ -27,7 +28,7 @@ class MovementValidator {
     required Map<JointType, JointAngle> jointAngles,
     required MovementState movementState,
     double? angularVelocityDegPerSec,
-    double minConfidence = 0.5,
+    double minConfidence = MotionTrackingConstants.kMinLandmarkConfidence,
   }) {
     // 1. Periksa ketersediaan pose & jangkauan sensor
     if (pose == null || pose.landmarks.isEmpty) {
