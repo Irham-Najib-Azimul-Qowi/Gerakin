@@ -9,6 +9,7 @@ import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/validation/presentation/pages/ai_validation_dashboard_page.dart';
 import '../../features/camera/presentation/pages/camera_page.dart';
 import '../../features/community/presentation/pages/community_page.dart';
+import '../../features/community/presentation/pages/create_post_page.dart';
 import '../../features/exercise_library/models/full_exercise_definition.dart';
 import '../../features/exercise_library/presentation/pages/exercise_detail_preview_page.dart';
 import '../../features/exercise_library/presentation/pages/exercise_library_page.dart';
@@ -92,6 +93,13 @@ class AppRouter {
                 path: RoutePaths.community,
                 name: RouteNames.community,
                 builder: (context, state) => const CommunityPage(),
+                routes: [
+                  GoRoute(
+                    path: 'create',
+                    name: RouteNames.communityCreate,
+                    builder: (context, state) => const CreatePostPage(),
+                  ),
+                ],
               ),
             ],
           ),
