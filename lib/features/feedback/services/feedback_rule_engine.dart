@@ -12,8 +12,7 @@ import '../models/feedback_rule.dart';
 import '../models/feedback_type.dart';
 
 /// Engine penguji aturan feedback berbasis data (Rule-Based Approach).
-///
-/// Memungkinkan penambahan aturan baru tanpa mengubah kode inti aplikasi.
+@Deprecated('Gunakan WorkoutSessionEngine di lib/features/workout_session/services/workout_session_engine.dart sebagai Single Source of Truth')
 class FeedbackRuleEngine {
   FeedbackRuleEngine({List<FeedbackRule>? initialRules}) {
     _rules.addAll(initialRules ?? _buildDefaultRules());

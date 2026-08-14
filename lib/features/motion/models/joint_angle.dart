@@ -8,6 +8,8 @@ enum JointType {
   rightHip,
   leftShoulder,
   rightShoulder,
+  neckRotation,
+  neckFlexion,
 }
 
 /// Model data untuk sudut sendi terhitung.

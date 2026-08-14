@@ -24,10 +24,12 @@ class VoiceCoach {
   CoachPriority _lastPriority = CoachPriority.low;
   bool _isMuted = false;
   bool _isInitialized = false;
+  String _lastSpokenText = 'Posisikan tubuh Anda di depan kamera untuk kalibrasi.';
 
   static const Duration _cooldownDuration = Duration(seconds: 3);
 
   bool get isMuted => _isMuted;
+  String get lastSpokenText => _lastSpokenText;
 
   void toggleMute() {
     _isMuted = !_isMuted;
@@ -75,6 +77,7 @@ class VoiceCoach {
 
     _lastSpokenTime = now;
     _lastPriority = priority;
+    _lastSpokenText = text;
 
     try {
       if (!_isInitialized) {

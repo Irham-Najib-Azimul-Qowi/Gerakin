@@ -1,4 +1,5 @@
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import '../../motion/models/motion_tracking_constants.dart';
 
 /// Model data ringan untuk merepresentasikan satu landmark (titik sendi) pose.
 ///
@@ -38,6 +39,7 @@ class PoseLandmarkModel {
   /// Likelihood / confidence score (0.0 s/d 1.0).
   final double likelihood;
 
-  /// Threshold minimum kualifikasi landmark valid (misal 0.5 = 50% confidence).
-  bool isValid([double threshold = 0.5]) => likelihood >= threshold;
+  /// Threshold minimum kualifikasi landmark valid (default merujuk MotionTrackingConstants).
+  bool isValid([double threshold = MotionTrackingConstants.kMinLandmarkConfidence]) =>
+      likelihood >= threshold;
 }

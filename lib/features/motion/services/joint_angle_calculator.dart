@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import '../../camera/models/pose_landmark_model.dart';
 import '../models/joint_angle.dart';
+import '../models/motion_tracking_constants.dart';
 
 /// Service perhitungan matematika vektor 2D/3D untuk menghitung sudut sendi.
 ///
@@ -48,7 +49,7 @@ class JointAngleCalculator {
     required PoseLandmarkModel? firstLandmark,
     required PoseLandmarkModel? vertexLandmark,
     required PoseLandmarkModel? lastLandmark,
-    double minConfidence = 0.5,
+    double minConfidence = MotionTrackingConstants.kMinLandmarkConfidence,
   }) {
     if (firstLandmark == null || vertexLandmark == null || lastLandmark == null) {
       return null;
@@ -73,6 +74,48 @@ class JointAngleCalculator {
     return JointAngle(
       type: type,
       angle: angle,
+      confidence: confidence,
+    );
+  }
+
+  /// Menghitung [JointAngle] khusus leher (fleksi atau rotasi) berdasarkan
+  /// posisi [noseLandmark], [leftShoulder], dan [rightShoulder].
+  ///
+  /// Menghitung kemiringan vektor hidung-ke-tengah-bahu relatif terhadap sumbu vertikal.
+  static JointAngle? calculateNeckAngle({
+    required JointType type,
+    required PoseLandmarkModel? noseLandmark,
+    required PoseLandmarkModel? leftShoulder,
+    required PoseLandmarkModel? rightShoulder,
+    double minConfidence = MotionTrackingConstants.kMinLandmarkConfidence,
+  }) {
+    if (noseLandmark == null || leftShoulder == null || rightShoulder == null) {
+      return null;
+    }
+
+    if (!noseLandmark.isValid(minConfidence) ||
+        !leftShoulder.isValid(minConfidence) ||
+        !rightShoulder.isValid(minConfidence)) {
+      return null;
+    }
+
+    final midShoulderX = (leftShoulder.x + rightShoulder.x) / 2.0;
+    final midShoulderY = (leftShoulder.y + rightShoulder.y) / 2.0;
+
+    final dx = noseLandmark.x - midShoulderX;
+    final dy = noseLandmark.y - midShoulderY;
+
+    // Sudut relatif terhadap garis vertikal (0 derajat = tegak lurus)
+    final radians = math.atan2(dx.abs(), dy.abs());
+    final degrees = radians * (180.0 / math.pi);
+    final confidence = (noseLandmark.likelihood +
+            leftShoulder.likelihood +
+            rightShoulder.likelihood) /
+        3.0;
+
+    return JointAngle(
+      type: type,
+      angle: degrees,
       confidence: confidence,
     );
   }

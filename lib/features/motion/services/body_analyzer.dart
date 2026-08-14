@@ -17,9 +17,14 @@ class BodyAnalyzer {
   const BodyAnalyzer();
 
   /// Menganalisis postur tubuh dari [DetectedPose] dan daftar [jointAngles].
+  ///
+  /// Jika [baseline] diberikan (hasil kalibrasi per pengguna), evaluasi simetri
+  /// dan toleransi postur dihitung secara RELATIF terhadap baseline pengguna tersebut,
+  /// bukan asumsi "tegak sempurna" universal.
   BodyPosture analyzePosture({
     required DetectedPose pose,
     required Map<JointType, JointAngle> jointAngles,
+    BodyPosture? baseline,
   }) {
     final leftShoulder = pose.getLandmark(PoseLandmarkType.leftShoulder);
     final rightShoulder = pose.getLandmark(PoseLandmarkType.rightShoulder);
@@ -39,7 +44,11 @@ class BodyAnalyzer {
         final radians = math.atan2(dy, dx);
         shoulderSymmetryDiff = radians * (180.0 / math.pi);
       }
-      isSymmetric = shoulderSymmetryDiff <= 8.0; // Toleransi maks 8 derajat
+
+      // Jika baseline tersedia, toleransi 8° dihitung relatif terhadap baseline pengguna
+      final baseDiff = baseline?.shoulderSymmetryDiff ?? 0.0;
+      final relativeDiff = (shoulderSymmetryDiff - baseDiff).abs();
+      isSymmetric = relativeDiff <= 8.0;
     }
 
     // 2. Analisis Orientasi Torso & Leaning Direction

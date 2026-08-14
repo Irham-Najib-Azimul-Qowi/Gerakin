@@ -11,12 +11,16 @@ class SkeletonOverlay extends StatelessWidget {
     this.minConfidence = 0.25,
     this.fit = BoxFit.cover,
     this.showDebugHUD = false,
+    this.skeletonColor = Colors.white,
+    this.alpha = 0.45,
   });
 
   final DetectedPose? pose;
   final double minConfidence;
   final BoxFit fit;
   final bool showDebugHUD;
+  final Color skeletonColor;
+  final double alpha;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +29,8 @@ class SkeletonOverlay extends StatelessWidget {
       minConfidence: minConfidence,
       fit: fit,
       showDebugHUD: showDebugHUD,
+      skeletonColor: skeletonColor,
+      alpha: alpha,
     );
   }
 }
