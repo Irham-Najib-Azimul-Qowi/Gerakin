@@ -6,6 +6,7 @@ class RouteNames {
   static const String workout = 'workout';
   static const String progress = 'progress';
   static const String community = 'community';
+  static const String communityCreate = 'communityCreate';
   static const String profile = 'profile';
   static const String settings = 'settings';
   static const String componentGallery = 'componentGallery';
@@ -31,6 +32,7 @@ class RoutePaths {
   static const String workout = '/workout';
   static const String progress = '/progress';
   static const String community = '/community';
+  static const String communityCreate = '/community/create';
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String componentGallery = '/component-gallery';
