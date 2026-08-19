@@ -184,7 +184,8 @@ class WorkoutSessionEngine {
         break;
     }
 
-    _lastFrameProcessingTimeMs = DateTime.now().difference(startTime).inMicroseconds / 1000.0;
+    final endTime = DateTime.now();
+    _lastFrameProcessingTimeMs = endTime.difference(startTime).inMicroseconds / 1000.0;
   }
 
   void _provideRealtimeCoachFeedback(double angle, MovementPhase phase) {

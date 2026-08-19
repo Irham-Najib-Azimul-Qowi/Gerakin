@@ -96,27 +96,23 @@ class AuthPage extends ConsumerWidget {
     return Column(
       children: [
         Container(
-          width: 80,
-          height: 80,
+          width: 96,
+          height: 96,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.secondary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.35),
+                color: AppColors.primary.withValues(alpha: 0.15),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
             ],
           ),
-          child: const Icon(
-            Icons.accessibility_new_rounded,
-            color: Colors.white,
-            size: 44,
+          padding: const EdgeInsets.all(12),
+          child: Image.asset(
+            'assets/images/logo-gerakin.png',
+            fit: BoxFit.contain,
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
