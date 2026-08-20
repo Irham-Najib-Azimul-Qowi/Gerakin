@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../controllers/community_controller.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/router/route_names.dart';
+import '../controllers/community_feed_controller.dart';
 
 class CreatePostPage extends ConsumerStatefulWidget {
   const CreatePostPage({super.key});
@@ -10,31 +12,18 @@ class CreatePostPage extends ConsumerStatefulWidget {
 }
 
 class _CreatePostPageState extends ConsumerState<CreatePostPage> {
-  final TextEditingController _captionController = TextEditingController();
-  final TextEditingController _tagsController = TextEditingController();
-
+  final TextEditingController _contentController = TextEditingController();
   bool _isSubmitting = false;
-  String? _selectedWorkoutTag = 'Stretching Bahu 15 Mnt';
-
-  final List<String> _workoutOptions = [
-    'Stretching Bahu 15 Mnt',
-    'Latihan Keseimbangan Mandiri',
-    'Kardio Ringan Tangan',
-    'Mobilitas Leher & Kepala',
-    'Latihan Beban Ringan Kursi Roda',
-    'Tanpa Tag Latihan',
-  ];
 
   @override
   void dispose() {
-    _captionController.dispose();
-    _tagsController.dispose();
+    _contentController.dispose();
     super.dispose();
   }
 
   Future<void> _submitPost() async {
-    final caption = _captionController.text.trim();
-    if (caption.isEmpty) {
+    final content = _contentController.text.trim();
+    if (content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tuliskan postingan terlebih dahulu!')),
       );
@@ -45,29 +34,35 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
       _isSubmitting = true;
     });
 
-    final tagsText = _tagsController.text.trim();
-    final tags = tagsText.isEmpty
-        ? ['GerakinSehat', 'KomunitasGerakin']
-        : tagsText.split(' ').map((t) => t.replaceAll('#', '')).where((t) => t.isNotEmpty).toList();
-
-    final workoutTag = _selectedWorkoutTag == 'Tanpa Tag Latihan' ? null : _selectedWorkoutTag;
-
-    final success = await ref.read(communityControllerProvider.notifier).createPost(
-          caption: caption,
-          mediaUrls: const [],
-          workoutTag: workoutTag,
-          tags: tags,
-        );
+    final success = await ref
+        .read(communityFeedControllerProvider.notifier)
+        .createPost(content: content);
 
     if (mounted) {
       setState(() {
         _isSubmitting = false;
       });
 
-      if (success) {
+      final feedState = ref.read(communityFeedControllerProvider);
+      if (feedState.errorMessage == 'GUEST_NOT_ALLOWED') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Postingan tulisan berhasil dipublikasikan! 🚀'),
+            content: Text('Anda harus login terlebih dahulu untuk membuat postingan.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        context.push(RoutePaths.login);
+      } else if (feedState.moderationError != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(feedState.moderationError!),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      } else if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Postingan berhasil dibuat! 🚀'),
             backgroundColor: Colors.green,
           ),
         );
@@ -82,7 +77,7 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buat Postingan Tulisan'),
+        title: const Text('Buat Postingan Baru'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12),
@@ -99,23 +94,22 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Caption Input (X / Twitter Style) ──────────────────────────
             const Text(
-              'Apa yang sedang Anda pikirkan / rasakan?',
+              'Apa yang ingin Anda bagikan hari ini?',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             TextField(
-              controller: _captionController,
+              controller: _contentController,
               maxLines: 6,
               style: const TextStyle(fontSize: 15, height: 1.4),
               decoration: InputDecoration(
-                hintText: 'Tuliskan pengalaman latihan, pertanyaan kesehatan, atau progres Anda hari ini...',
+                hintText: 'Tuliskan pengalaman latihan, pertanyaan, atau pencapaian Anda...',
                 hintStyle: TextStyle(fontSize: 14, color: theme.colorScheme.onSurfaceVariant),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -124,59 +118,39 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
               ),
               textCapitalization: TextCapitalization.sentences,
             ),
-
-            const SizedBox(height: 24),
-
-            // ── Tag Workout Exercise ──────────────────────────────────────
+            const SizedBox(height: 16),
             const Text(
-              'Tautkan Sesi Latihan GERAKIN (opsional)',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              'Tambah Hashtags Populer:',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              initialValue: _selectedWorkoutTag,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                prefixIcon: Icon(Icons.fitness_center_rounded, color: theme.colorScheme.primary),
-              ),
-              items: _workoutOptions.map((tag) {
-                return DropdownMenuItem<String>(
-                  value: tag,
-                  child: Text(tag, style: const TextStyle(fontSize: 13)),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                '#SemangatLatihan',
+                '#KursiRoda',
+                '#Fisioterapi',
+                '#Aksesibilitas',
+                '#PencapaianHariIni',
+              ].map((tag) {
+                return ActionChip(
+                  label: Text(tag, style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                  backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                  onPressed: () {
+                    final currentText = _contentController.text;
+                    if (!currentText.contains(tag)) {
+                      _contentController.text = currentText.isEmpty
+                          ? tag
+                          : '$currentText $tag';
+                      _contentController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: _contentController.text.length),
+                      );
+                    }
+                  },
                 );
               }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedWorkoutTag = value;
-                });
-              },
             ),
-
-            const SizedBox(height: 20),
-
-            // ── Hashtags Input ─────────────────────────────────────────────
-            const Text(
-              'Hashtag (opsional)',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _tagsController,
-              decoration: InputDecoration(
-                hintText: 'Contoh: #GerakinSehat #Fisioterapi #Recovery',
-                hintStyle: TextStyle(fontSize: 13, color: theme.colorScheme.onSurfaceVariant),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                prefixIcon: const Icon(Icons.tag_rounded),
-                contentPadding: const EdgeInsets.all(14),
-              ),
-            ),
-
-            const SizedBox(height: 30),
           ],
         ),
       ),

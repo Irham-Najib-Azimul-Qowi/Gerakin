@@ -24,6 +24,9 @@ import 'features/collaboration/models/feedback_note.dart';
 import 'features/collaboration/models/patient_assignment.dart';
 import 'features/collaboration/models/program_template.dart';
 import 'features/collaboration/models/user_role.dart';
+import 'features/community/models/community_comment.dart';
+import 'features/community/models/community_post.dart';
+import 'features/community/models/content_report.dart';
 import 'features/gamification/models/challenge.dart';
 import 'features/gamification/models/goal.dart';
 import 'features/gamification/models/mission.dart';
@@ -1296,6 +1299,174 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(26, 1266596631054013806),
+    name: 'CommunityComment',
+    lastPropertyId: const obx_int.IdUid(7, 3133407701906621015),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 7612018957866914882),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 4339788484158581628),
+        name: 'postId',
+        type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 7740113764683054703),
+        name: 'authorUid',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 1959755737453897036),
+        name: 'authorDisplayName',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 6527390437321803322),
+        name: 'content',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 7885126348795057427),
+        name: 'createdAt',
+        type: 10,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 3133407701906621015),
+        name: 'syncStatus',
+        type: 9,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(27, 8299994802964516435),
+    name: 'CommunityPost',
+    lastPropertyId: const obx_int.IdUid(10, 8101328780255363019),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 7840090183077672551),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 4415589549185106660),
+        name: 'authorUid',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 5259097871819964459),
+        name: 'authorDisplayName',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 2325077231613127062),
+        name: 'content',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 6893367889366917384),
+        name: 'imagePath',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 6737585915517515308),
+        name: 'likeCount',
+        type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 9203705463406904320),
+        name: 'commentCount',
+        type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(8, 1050551954354529168),
+        name: 'isReported',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(9, 5320378851543909950),
+        name: 'createdAt',
+        type: 10,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(10, 8101328780255363019),
+        name: 'syncStatus',
+        type: 9,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(28, 7281501359159911524),
+    name: 'ContentReport',
+    lastPropertyId: const obx_int.IdUid(6, 9077648260504783501),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 76828707622794663),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 4192249421927272848),
+        name: 'targetType',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 198654658368261930),
+        name: 'targetId',
+        type: 6,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 407135037919424676),
+        name: 'reporterUid',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 7585235178647368567),
+        name: 'reason',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 9077648260504783501),
+        name: 'createdAt',
+        type: 10,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -1341,7 +1512,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
     // Typically, this is done with `dart run build_runner build`.
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(25, 8392231438185125594),
+    lastEntityId: const obx_int.IdUid(28, 7281501359159911524),
     lastIndexId: const obx_int.IdUid(1, 8294754535911300021),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
@@ -3098,6 +3269,229 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    CommunityComment: obx_int.EntityDefinition<CommunityComment>(
+      model: _entities[25],
+      toOneRelations: (CommunityComment object) => [],
+      toManyRelations: (CommunityComment object) => {},
+      getId: (CommunityComment object) => object.id,
+      setId: (CommunityComment object, int id) {
+        object.id = id;
+      },
+      objectToFB: (CommunityComment object, fb.Builder fbb) {
+        final authorUidOffset = fbb.writeString(object.authorUid);
+        final authorDisplayNameOffset = fbb.writeString(
+          object.authorDisplayName,
+        );
+        final contentOffset = fbb.writeString(object.content);
+        final syncStatusOffset = fbb.writeString(object.syncStatus);
+        fbb.startTable(8);
+        fbb.addInt64(0, object.id);
+        fbb.addInt64(1, object.postId);
+        fbb.addOffset(2, authorUidOffset);
+        fbb.addOffset(3, authorDisplayNameOffset);
+        fbb.addOffset(4, contentOffset);
+        fbb.addInt64(5, object.createdAt.millisecondsSinceEpoch);
+        fbb.addOffset(6, syncStatusOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final postIdParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          6,
+          0,
+        );
+        final authorUidParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 8, '');
+        final authorDisplayNameParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 10, '');
+        final contentParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 12, '');
+        final createdAtParam = DateTime.fromMillisecondsSinceEpoch(
+          const fb.Int64Reader().vTableGet(buffer, rootOffset, 14, 0),
+        );
+        final syncStatusParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 16, '');
+        final object = CommunityComment(
+          id: idParam,
+          postId: postIdParam,
+          authorUid: authorUidParam,
+          authorDisplayName: authorDisplayNameParam,
+          content: contentParam,
+          createdAt: createdAtParam,
+          syncStatus: syncStatusParam,
+        );
+
+        return object;
+      },
+    ),
+    CommunityPost: obx_int.EntityDefinition<CommunityPost>(
+      model: _entities[26],
+      toOneRelations: (CommunityPost object) => [],
+      toManyRelations: (CommunityPost object) => {},
+      getId: (CommunityPost object) => object.id,
+      setId: (CommunityPost object, int id) {
+        object.id = id;
+      },
+      objectToFB: (CommunityPost object, fb.Builder fbb) {
+        final authorUidOffset = fbb.writeString(object.authorUid);
+        final authorDisplayNameOffset = fbb.writeString(
+          object.authorDisplayName,
+        );
+        final contentOffset = fbb.writeString(object.content);
+        final imagePathOffset = object.imagePath == null
+            ? null
+            : fbb.writeString(object.imagePath!);
+        final syncStatusOffset = fbb.writeString(object.syncStatus);
+        fbb.startTable(11);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, authorUidOffset);
+        fbb.addOffset(2, authorDisplayNameOffset);
+        fbb.addOffset(3, contentOffset);
+        fbb.addOffset(4, imagePathOffset);
+        fbb.addInt64(5, object.likeCount);
+        fbb.addInt64(6, object.commentCount);
+        fbb.addBool(7, object.isReported);
+        fbb.addInt64(8, object.createdAt.millisecondsSinceEpoch);
+        fbb.addOffset(9, syncStatusOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final authorUidParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final authorDisplayNameParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 8, '');
+        final contentParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 10, '');
+        final imagePathParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGetNullable(buffer, rootOffset, 12);
+        final likeCountParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          14,
+          0,
+        );
+        final commentCountParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          16,
+          0,
+        );
+        final isReportedParam = const fb.BoolReader().vTableGet(
+          buffer,
+          rootOffset,
+          18,
+          false,
+        );
+        final createdAtParam = DateTime.fromMillisecondsSinceEpoch(
+          const fb.Int64Reader().vTableGet(buffer, rootOffset, 20, 0),
+        );
+        final syncStatusParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 22, '');
+        final object = CommunityPost(
+          id: idParam,
+          authorUid: authorUidParam,
+          authorDisplayName: authorDisplayNameParam,
+          content: contentParam,
+          imagePath: imagePathParam,
+          likeCount: likeCountParam,
+          commentCount: commentCountParam,
+          isReported: isReportedParam,
+          createdAt: createdAtParam,
+          syncStatus: syncStatusParam,
+        );
+
+        return object;
+      },
+    ),
+    ContentReport: obx_int.EntityDefinition<ContentReport>(
+      model: _entities[27],
+      toOneRelations: (ContentReport object) => [],
+      toManyRelations: (ContentReport object) => {},
+      getId: (ContentReport object) => object.id,
+      setId: (ContentReport object, int id) {
+        object.id = id;
+      },
+      objectToFB: (ContentReport object, fb.Builder fbb) {
+        final targetTypeOffset = fbb.writeString(object.targetType);
+        final reporterUidOffset = fbb.writeString(object.reporterUid);
+        final reasonOffset = fbb.writeString(object.reason);
+        fbb.startTable(7);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, targetTypeOffset);
+        fbb.addInt64(2, object.targetId);
+        fbb.addOffset(3, reporterUidOffset);
+        fbb.addOffset(4, reasonOffset);
+        fbb.addInt64(5, object.createdAt.millisecondsSinceEpoch);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final targetTypeParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final targetIdParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          8,
+          0,
+        );
+        final reporterUidParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 10, '');
+        final reasonParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 12, '');
+        final createdAtParam = DateTime.fromMillisecondsSinceEpoch(
+          const fb.Int64Reader().vTableGet(buffer, rootOffset, 14, 0),
+        );
+        final object = ContentReport(
+          id: idParam,
+          targetType: targetTypeParam,
+          targetId: targetIdParam,
+          reporterUid: reporterUidParam,
+          reason: reasonParam,
+          createdAt: createdAtParam,
+        );
+
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -4007,5 +4401,129 @@ class UserRole_ {
   /// See [UserRole.role].
   static final role = obx.QueryStringProperty<UserRole>(
     _entities[24].properties[2],
+  );
+}
+
+/// [CommunityComment] entity fields to define ObjectBox queries.
+class CommunityComment_ {
+  /// See [CommunityComment.id].
+  static final id = obx.QueryIntegerProperty<CommunityComment>(
+    _entities[25].properties[0],
+  );
+
+  /// See [CommunityComment.postId].
+  static final postId = obx.QueryIntegerProperty<CommunityComment>(
+    _entities[25].properties[1],
+  );
+
+  /// See [CommunityComment.authorUid].
+  static final authorUid = obx.QueryStringProperty<CommunityComment>(
+    _entities[25].properties[2],
+  );
+
+  /// See [CommunityComment.authorDisplayName].
+  static final authorDisplayName = obx.QueryStringProperty<CommunityComment>(
+    _entities[25].properties[3],
+  );
+
+  /// See [CommunityComment.content].
+  static final content = obx.QueryStringProperty<CommunityComment>(
+    _entities[25].properties[4],
+  );
+
+  /// See [CommunityComment.createdAt].
+  static final createdAt = obx.QueryDateProperty<CommunityComment>(
+    _entities[25].properties[5],
+  );
+
+  /// See [CommunityComment.syncStatus].
+  static final syncStatus = obx.QueryStringProperty<CommunityComment>(
+    _entities[25].properties[6],
+  );
+}
+
+/// [CommunityPost] entity fields to define ObjectBox queries.
+class CommunityPost_ {
+  /// See [CommunityPost.id].
+  static final id = obx.QueryIntegerProperty<CommunityPost>(
+    _entities[26].properties[0],
+  );
+
+  /// See [CommunityPost.authorUid].
+  static final authorUid = obx.QueryStringProperty<CommunityPost>(
+    _entities[26].properties[1],
+  );
+
+  /// See [CommunityPost.authorDisplayName].
+  static final authorDisplayName = obx.QueryStringProperty<CommunityPost>(
+    _entities[26].properties[2],
+  );
+
+  /// See [CommunityPost.content].
+  static final content = obx.QueryStringProperty<CommunityPost>(
+    _entities[26].properties[3],
+  );
+
+  /// See [CommunityPost.imagePath].
+  static final imagePath = obx.QueryStringProperty<CommunityPost>(
+    _entities[26].properties[4],
+  );
+
+  /// See [CommunityPost.likeCount].
+  static final likeCount = obx.QueryIntegerProperty<CommunityPost>(
+    _entities[26].properties[5],
+  );
+
+  /// See [CommunityPost.commentCount].
+  static final commentCount = obx.QueryIntegerProperty<CommunityPost>(
+    _entities[26].properties[6],
+  );
+
+  /// See [CommunityPost.isReported].
+  static final isReported = obx.QueryBooleanProperty<CommunityPost>(
+    _entities[26].properties[7],
+  );
+
+  /// See [CommunityPost.createdAt].
+  static final createdAt = obx.QueryDateProperty<CommunityPost>(
+    _entities[26].properties[8],
+  );
+
+  /// See [CommunityPost.syncStatus].
+  static final syncStatus = obx.QueryStringProperty<CommunityPost>(
+    _entities[26].properties[9],
+  );
+}
+
+/// [ContentReport] entity fields to define ObjectBox queries.
+class ContentReport_ {
+  /// See [ContentReport.id].
+  static final id = obx.QueryIntegerProperty<ContentReport>(
+    _entities[27].properties[0],
+  );
+
+  /// See [ContentReport.targetType].
+  static final targetType = obx.QueryStringProperty<ContentReport>(
+    _entities[27].properties[1],
+  );
+
+  /// See [ContentReport.targetId].
+  static final targetId = obx.QueryIntegerProperty<ContentReport>(
+    _entities[27].properties[2],
+  );
+
+  /// See [ContentReport.reporterUid].
+  static final reporterUid = obx.QueryStringProperty<ContentReport>(
+    _entities[27].properties[3],
+  );
+
+  /// See [ContentReport.reason].
+  static final reason = obx.QueryStringProperty<ContentReport>(
+    _entities[27].properties[4],
+  );
+
+  /// See [ContentReport.createdAt].
+  static final createdAt = obx.QueryDateProperty<ContentReport>(
+    _entities[27].properties[5],
   );
 }

@@ -1,232 +1,163 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/models/community_post.dart';
-import '../../domain/models/community_comment.dart';
+import '../../../sync/domain/repositories/sync_repository.dart';
+import '../../data/datasources/local_community_data_source.dart';
 import '../../domain/repositories/community_repository.dart';
-
-final communityRepositoryProvider = Provider<CommunityRepository>((ref) {
-  return CommunityRepositoryImpl(firestore: FirebaseFirestore.instance);
-});
+import '../../models/community_comment.dart';
+import '../../models/community_post.dart';
+import '../../models/content_report.dart';
 
 class CommunityRepositoryImpl implements CommunityRepository {
-  final FirebaseFirestore firestore;
+  final LocalCommunityDataSource localDataSource;
+  final SyncRepository syncRepository;
 
-  // Cache lokal in-memory untuk pengalaman UI yang instan & fallback offline
-  final List<CommunityPost> _localPosts = [];
-  final Map<String, List<CommunityComment>> _localComments = {};
-
-  CommunityRepositoryImpl({required this.firestore});
+  CommunityRepositoryImpl({
+    required this.localDataSource,
+    required this.syncRepository,
+  });
 
   @override
-  Future<List<CommunityPost>> getPosts({String? category, String? searchQuery}) async {
-    try {
-      final snap = await firestore
-          .collection('community_posts')
-          .orderBy('createdAt', descending: true)
-          .limit(50)
-          .get();
-
-      final remotePosts = snap.docs
-          .map((doc) => CommunityPost.fromFirestore(doc.data(), doc.id))
-          .toList();
-
-      _localPosts.clear();
-      _localPosts.addAll(remotePosts);
-      return _applyFilter(remotePosts, category, searchQuery);
-    } catch (_) {
-      // Fallback offline
-    }
-
-    return _applyFilter(_localPosts, category, searchQuery);
-  }
-
-  List<CommunityPost> _applyFilter(List<CommunityPost> posts, String? category, String? searchQuery) {
-    var result = List<CommunityPost>.from(posts);
-
-    if (category != null && category != 'Semua') {
-      if (category == 'Aktivitas') {
-        result = result.where((p) => p.workoutTag != null).toList();
-      } else if (category == 'Pencapaian') {
-        result = result.where((p) => p.tags.contains('PencapaianHariIni') || p.caption.toLowerCase().contains('berhasil')).toList();
-      } else if (category == 'Diskusi') {
-        result = result.where((p) => p.authorBadge == 'Fisioterapis' || p.caption.contains('?')).toList();
-      }
-    }
-
-    if (searchQuery != null && searchQuery.trim().isNotEmpty) {
-      final q = searchQuery.toLowerCase().trim().replaceAll('#', '');
-      result = result.where((p) =>
-        p.caption.toLowerCase().contains(q) ||
-        p.authorName.toLowerCase().contains(q) ||
-        (p.workoutTag != null && p.workoutTag!.toLowerCase().contains(q)) ||
-        p.tags.any((t) => t.toLowerCase().contains(q))
-      ).toList();
-    }
-
-    return result;
+  Future<List<CommunityPost>> getFeed({String? searchQuery, int limit = 20, int offset = 0}) async {
+    return localDataSource.getPosts(searchQuery: searchQuery, limit: limit, offset: offset);
   }
 
   @override
-  Future<CommunityPost> createPost({
-    required String authorId,
-    required String authorName,
-    String? authorAvatarUrl,
-    String? authorBadge,
-    required String caption,
-    required List<String> mediaUrls,
-    CommunityMediaType mediaType = CommunityMediaType.image,
-    String? workoutTag,
-    List<String> tags = const [],
+  Future<int> createPost({
+    required String authorUid,
+    required String authorDisplayName,
+    required String content,
+    String? imagePath,
+    String? hashtags,
   }) async {
-    final newId = 'post_${DateTime.now().millisecondsSinceEpoch}';
+    final now = DateTime.now();
     final newPost = CommunityPost(
-      id: newId,
-      authorId: authorId,
-      authorName: authorName,
-      authorAvatarUrl: authorAvatarUrl,
-      authorBadge: authorBadge ?? 'Member GERAKIN',
-      caption: caption,
-      mediaUrls: const [], // Text-only posts
-      mediaType: CommunityMediaType.image,
-      workoutTag: workoutTag,
-      likesCount: 0,
-      commentsCount: 0,
-      sharesCount: 0,
-      isLikedByMe: false,
-      createdAt: DateTime.now(),
-      tags: tags,
+      id: 0,
+      authorUid: authorUid,
+      authorDisplayName: authorDisplayName,
+      content: content,
+      imagePath: imagePath,
+      hashtags: hashtags,
+      likeCount: 0,
+      commentCount: 0,
+      isReported: false,
+      createdAt: now,
+      syncStatus: 'pending_sync',
     );
 
-    _localPosts.insert(0, newPost);
+    // 1. Simpan ke ObjectBox lokal instan (0ms)
+    final savedId = localDataSource.savePost(newPost);
+    final savedPost = newPost.copyWith(id: savedId);
 
-    try {
-      await firestore.collection('community_posts').doc(newId).set(newPost.toFirestore());
-    } catch (_) {}
+    // 2. Masukkan ke antrean SyncRepository (tanpa import cloud_firestore langsung)
+    await syncRepository.queueChange(
+      collection: 'community_posts',
+      documentId: savedId.toString(),
+      operation: 'create',
+      data: savedPost.toSyncData(),
+    );
 
-    return newPost;
+    return savedId;
   }
 
   @override
-  Future<CommunityPost> toggleLikePost(String postId, String userId) async {
-    final index = _localPosts.indexWhere((p) => p.id == postId);
-    if (index != -1) {
-      final post = _localPosts[index];
-      final newLikedState = !post.isLikedByMe;
-      final newLikesCount = newLikedState ? post.likesCount + 1 : post.likesCount - 1;
+  Future<void> toggleLike(int postId, String userUid) async {
+    final post = localDataSource.getPostById(postId);
+    if (post == null) return;
 
-      final updated = post.copyWith(
-        isLikedByMe: newLikedState,
-        likesCount: newLikesCount < 0 ? 0 : newLikesCount,
-      );
-      _localPosts[index] = updated;
+    // Toggle like count
+    final newLikeCount = post.likeCount + 1;
+    final updatedPost = post.copyWith(
+      likeCount: newLikeCount,
+      syncStatus: 'pending_sync',
+    );
 
-      try {
-        final docRef = firestore.collection('community_posts').doc(postId);
-        if (newLikedState) {
-          await docRef.update({
-            'likesCount': FieldValue.increment(1),
-            'likedBy': FieldValue.arrayUnion([userId]),
-          });
-        } else {
-          await docRef.update({
-            'likesCount': FieldValue.increment(-1),
-            'likedBy': FieldValue.arrayRemove([userId]),
-          });
-        }
-      } catch (_) {}
+    localDataSource.savePost(updatedPost);
 
-      return updated;
-    }
-
-    throw Exception('Post not found');
+    await syncRepository.queueChange(
+      collection: 'community_posts',
+      documentId: postId.toString(),
+      operation: 'update',
+      data: updatedPost.toSyncData(),
+    );
   }
 
   @override
-  Future<List<CommunityComment>> getComments(String postId) async {
-    try {
-      final snap = await firestore
-          .collection('community_posts')
-          .doc(postId)
-          .collection('comments')
-          .orderBy('createdAt', descending: false)
-          .get();
-
-      if (snap.docs.isNotEmpty) {
-        return snap.docs.map((doc) => CommunityComment.fromFirestore(doc.data(), doc.id)).toList();
-      }
-    } catch (_) {}
-
-    return _localComments[postId] ?? [];
+  Future<List<CommunityComment>> getComments(int postId) async {
+    return localDataSource.getComments(postId);
   }
 
   @override
-  Future<CommunityComment> addComment({
-    required String postId,
-    String? parentId,
-    String? replyToAuthorName,
-    required String authorId,
-    required String authorName,
-    String? authorAvatarUrl,
-    required String text,
+  Future<int> addComment({
+    required int postId,
+    required String authorUid,
+    required String authorDisplayName,
+    required String content,
   }) async {
-    final commentId = 'comment_${DateTime.now().millisecondsSinceEpoch}';
-    final comment = CommunityComment(
-      id: commentId,
+    final now = DateTime.now();
+    final newComment = CommunityComment(
+      id: 0,
       postId: postId,
-      parentId: parentId,
-      replyToAuthorName: replyToAuthorName,
-      authorId: authorId,
-      authorName: authorName,
-      authorAvatarUrl: authorAvatarUrl,
-      text: text,
-      createdAt: DateTime.now(),
+      authorUid: authorUid,
+      authorDisplayName: authorDisplayName,
+      content: content,
+      createdAt: now,
+      syncStatus: 'pending_sync',
     );
 
-    if (_localComments[postId] == null) {
-      _localComments[postId] = [];
-    }
-    _localComments[postId]!.add(comment);
+    // 1. Simpan komentar di ObjectBox
+    final commentId = localDataSource.saveComment(newComment);
+    final savedComment = newComment.copyWith(id: commentId);
 
-    // Update komentar count di post
-    final postIndex = _localPosts.indexWhere((p) => p.id == postId);
-    if (postIndex != -1) {
-      _localPosts[postIndex] = _localPosts[postIndex].copyWith(
-        commentsCount: _localPosts[postIndex].commentsCount + 1,
-      );
+    // Update commentCount di post induk
+    final post = localDataSource.getPostById(postId);
+    if (post != null) {
+      final updatedPost = post.copyWith(commentCount: post.commentCount + 1);
+      localDataSource.savePost(updatedPost);
     }
 
-    try {
-      final docRef = firestore.collection('community_posts').doc(postId);
-      await docRef.collection('comments').doc(commentId).set(comment.toFirestore());
-      await docRef.update({'commentsCount': FieldValue.increment(1)});
-    } catch (_) {}
+    // 2. Antrekan sinkronisasi ke cloud
+    await syncRepository.queueChange(
+      collection: 'community_comments',
+      documentId: commentId.toString(),
+      operation: 'create',
+      data: savedComment.toSyncData(),
+    );
 
-    return comment;
+    return commentId;
   }
 
   @override
-  Future<void> incrementShare(String postId) async {
-    final index = _localPosts.indexWhere((p) => p.id == postId);
-    if (index != -1) {
-      _localPosts[index] = _localPosts[index].copyWith(
-        sharesCount: _localPosts[index].sharesCount + 1,
-      );
+  Future<void> reportContent({
+    required String targetType,
+    required int targetId,
+    required String reporterUid,
+    required String reason,
+  }) async {
+    final now = DateTime.now();
+    final report = ContentReport(
+      id: 0,
+      targetType: targetType,
+      targetId: targetId,
+      reporterUid: reporterUid,
+      reason: reason,
+      createdAt: now,
+    );
+
+    // 1. Simpan laporan ke ObjectBox
+    final reportId = localDataSource.saveReport(report);
+
+    // Tandai post sebagai reported di lokal jika target adalah post
+    if (targetType == 'post') {
+      final post = localDataSource.getPostById(targetId);
+      if (post != null) {
+        localDataSource.savePost(post.copyWith(isReported: true));
+      }
     }
 
-    try {
-      await firestore.collection('community_posts').doc(postId).update({
-        'sharesCount': FieldValue.increment(1),
-      });
-    } catch (_) {}
-  }
-
-  @override
-  Future<void> deletePost(String postId) async {
-    _localPosts.removeWhere((p) => p.id == postId);
-    _localComments.remove(postId);
-
-    try {
-      await firestore.collection('community_posts').doc(postId).delete();
-    } catch (_) {}
+    // 2. Antrekan sinkronisasi laporan ke cloud
+    await syncRepository.queueChange(
+      collection: 'content_reports',
+      documentId: reportId.toString(),
+      operation: 'create',
+      data: report.copyWith(id: reportId).toSyncData(),
+    );
   }
 }
