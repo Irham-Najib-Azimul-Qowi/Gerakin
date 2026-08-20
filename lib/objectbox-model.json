@@ -1064,9 +1064,151 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "26:1266596631054013806",
+      "lastPropertyId": "7:3133407701906621015",
+      "name": "CommunityComment",
+      "properties": [
+        {
+          "id": "1:7612018957866914882",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4339788484158581628",
+          "name": "postId",
+          "type": 6
+        },
+        {
+          "id": "3:7740113764683054703",
+          "name": "authorUid",
+          "type": 9
+        },
+        {
+          "id": "4:1959755737453897036",
+          "name": "authorDisplayName",
+          "type": 9
+        },
+        {
+          "id": "5:6527390437321803322",
+          "name": "content",
+          "type": 9
+        },
+        {
+          "id": "6:7885126348795057427",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "7:3133407701906621015",
+          "name": "syncStatus",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "27:8299994802964516435",
+      "lastPropertyId": "10:8101328780255363019",
+      "name": "CommunityPost",
+      "properties": [
+        {
+          "id": "1:7840090183077672551",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4415589549185106660",
+          "name": "authorUid",
+          "type": 9
+        },
+        {
+          "id": "3:5259097871819964459",
+          "name": "authorDisplayName",
+          "type": 9
+        },
+        {
+          "id": "4:2325077231613127062",
+          "name": "content",
+          "type": 9
+        },
+        {
+          "id": "5:6893367889366917384",
+          "name": "imagePath",
+          "type": 9
+        },
+        {
+          "id": "6:6737585915517515308",
+          "name": "likeCount",
+          "type": 6
+        },
+        {
+          "id": "7:9203705463406904320",
+          "name": "commentCount",
+          "type": 6
+        },
+        {
+          "id": "8:1050551954354529168",
+          "name": "isReported",
+          "type": 1
+        },
+        {
+          "id": "9:5320378851543909950",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "10:8101328780255363019",
+          "name": "syncStatus",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "28:7281501359159911524",
+      "lastPropertyId": "6:9077648260504783501",
+      "name": "ContentReport",
+      "properties": [
+        {
+          "id": "1:76828707622794663",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4192249421927272848",
+          "name": "targetType",
+          "type": 9
+        },
+        {
+          "id": "3:198654658368261930",
+          "name": "targetId",
+          "type": 6
+        },
+        {
+          "id": "4:407135037919424676",
+          "name": "reporterUid",
+          "type": 9
+        },
+        {
+          "id": "5:7585235178647368567",
+          "name": "reason",
+          "type": 9
+        },
+        {
+          "id": "6:9077648260504783501",
+          "name": "createdAt",
+          "type": 10
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "25:8392231438185125594",
+  "lastEntityId": "28:7281501359159911524",
   "lastIndexId": "1:8294754535911300021",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",

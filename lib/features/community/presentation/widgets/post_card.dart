@@ -1,32 +1,26 @@
-import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../domain/models/community_post.dart';
+import '../../models/community_post.dart';
 import 'comments_bottom_sheet.dart';
+import 'report_dialog.dart';
 
-class PostCard extends StatefulWidget {
+class PostCard extends StatelessWidget {
   final CommunityPost post;
   final VoidCallback onLikeToggle;
-  final Function(String text, {String? parentId, String? replyToAuthorName}) onAddComment;
+  final Function(String content) onAddComment;
+  final Function(String reason) onReportPost;
   final Function(String hashtag)? onHashtagTap;
-  final bool isMyPost;
-  final VoidCallback? onDeletePost;
 
   const PostCard({
     super.key,
     required this.post,
     required this.onLikeToggle,
     required this.onAddComment,
+    required this.onReportPost,
     this.onHashtagTap,
-    this.isMyPost = false,
-    this.onDeletePost,
   });
 
-  @override
-  State<PostCard> createState() => _PostCardState();
-}
-
-class _PostCardState extends State<PostCard> {
   String _formatTimestamp(DateTime dateTime) {
     final diff = DateTime.now().difference(dateTime);
     if (diff.inMinutes < 60) {
@@ -40,34 +34,9 @@ class _PostCardState extends State<PostCard> {
     }
   }
 
-  void _showDeleteConfirmDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hapus Postingan?'),
-        content: const Text('Apakah Anda yakin ingin menghapus postingan ini? Postingan akan dihapus secara permanen dari Firebase.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () {
-              Navigator.pop(context);
-              widget.onDeletePost?.call();
-            },
-            child: const Text('Hapus'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final post = widget.post;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -82,7 +51,9 @@ class _PostCardState extends State<PostCard> {
           ),
         ],
         border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+          color: post.isReported
+              ? Colors.red.withValues(alpha: 0.5)
+              : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
         ),
       ),
       child: Padding(
@@ -90,168 +61,131 @@ class _PostCardState extends State<PostCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header (Twitter / X Style) ──────────────────────────────────
+            // ── Header Penulis & Menu Laporkan ─────────────────────────────────────
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: theme.colorScheme.primaryContainer,
-                  backgroundImage: post.authorAvatarUrl != null && post.authorAvatarUrl!.startsWith('http')
-                      ? NetworkImage(post.authorAvatarUrl!)
-                      : (post.authorAvatarUrl != null && post.authorAvatarUrl!.startsWith('data:image')
-                          ? MemoryImage(base64Decode(post.authorAvatarUrl!.split(',').last)) as ImageProvider
-                          : null),
-                  child: (post.authorAvatarUrl == null || (!post.authorAvatarUrl!.startsWith('http') && !post.authorAvatarUrl!.startsWith('data:image')))
-                      ? Text(
-                          post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : 'G',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
-                        )
-                      : null,
+                  child: Text(
+                    post.authorDisplayName.isNotEmpty
+                        ? post.authorDisplayName[0].toUpperCase()
+                        : 'G',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Flexible(
-                        child: Text(
-                          post.authorName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (post.authorBadge != null) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: post.authorBadge == 'Fisioterapis'
-                                ? Colors.teal.withValues(alpha: 0.15)
-                                : theme.colorScheme.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            post.authorBadge!,
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: post.authorBadge == 'Fisioterapis'
-                                  ? Colors.teal.shade800
-                                  : theme.colorScheme.primary,
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              post.authorDisplayName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ),
-                      ],
-                      const SizedBox(width: 6),
-                      Text(
-                        '·',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '·',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            _formatTimestamp(post.createdAt),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        _formatTimestamp(post.createdAt),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: theme.colorScheme.onSurfaceVariant,
+                      if (post.isReported)
+                        const Text(
+                          '⚠️ Postingan ini telah dilaporkan',
+                          style: TextStyle(fontSize: 11, color: Colors.red, fontWeight: FontWeight.bold),
                         ),
-                      ),
                     ],
                   ),
                 ),
-                if (widget.isMyPost && widget.onDeletePost != null)
-                  PopupMenuButton<String>(
-                    icon: Icon(Icons.more_horiz, size: 20, color: theme.colorScheme.onSurfaceVariant),
-                    onSelected: (value) {
-                      if (value == 'delete') {
-                        _showDeleteConfirmDialog(context);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete_outline_rounded, color: Colors.red, size: 18),
-                            SizedBox(width: 8),
-                            Text('Hapus Postingan', style: TextStyle(color: Colors.red, fontSize: 13)),
-                          ],
-                        ),
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert, size: 20, color: theme.colorScheme.onSurfaceVariant),
+                  onSelected: (value) {
+                    if (value == 'report') {
+                      ReportDialog.show(
+                        context: context,
+                        targetType: 'post',
+                        targetId: post.id,
+                        onReportSubmitted: onReportPost,
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'report',
+                      child: Row(
+                        children: [
+                          Icon(Icons.flag_outlined, color: Colors.amber, size: 18),
+                          SizedBox(width: 8),
+                          Text('Laporkan Postingan', style: TextStyle(fontSize: 13)),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
               ],
             ),
 
             const SizedBox(height: 10),
 
-            // ── Post Text Content (Twitter/X Style) ──────────────────────────
+            // ── Konten Teks ──────────────────────────────────────────────
             SelectableText(
-              post.caption,
+              post.content,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontSize: 15,
                 height: 1.4,
-                letterSpacing: -0.2,
                 color: theme.colorScheme.onSurface,
               ),
             ),
 
-            // ── Workout Tag Pill ─────────────────────────────────────────
-            if (post.workoutTag != null) ...[
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.fitness_center_rounded,
-                      size: 14,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      post.workoutTag!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-
-            // ── Hashtags (Clickable to Search) ────────────────────────────
-            if (post.tags.isNotEmpty) ...[
+            // ── Hashtags Opsional ─────────────────────────────────────────
+            if (post.hashtags != null && post.hashtags!.trim().isNotEmpty) ...[
               const SizedBox(height: 8),
               Wrap(
-                spacing: 8,
+                spacing: 6,
                 runSpacing: 4,
-                children: post.tags.map((t) {
+                children: post.hashtags!.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).map((tag) {
+                  final formattedTag = tag.startsWith('#') ? tag : '#$tag';
                   return InkWell(
-                    onTap: () => widget.onHashtagTap?.call(t),
-                    borderRadius: BorderRadius.circular(4),
-                    child: Text(
-                      '#$t',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.primary,
+                    onTap: () => onHashtagTap?.call(formattedTag),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        formattedTag,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                     ),
                   );
@@ -259,11 +193,22 @@ class _PostCardState extends State<PostCard> {
               ),
             ],
 
+            // ── Gambar Opsional ─────────────────────────────────────────
+            if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: post.imagePath!.startsWith('http')
+                    ? Image.network(post.imagePath!, fit: BoxFit.cover, width: double.infinity, height: 200)
+                    : Image.file(File(post.imagePath!), fit: BoxFit.cover, width: double.infinity, height: 200),
+              ),
+            ],
+
             const SizedBox(height: 12),
             Divider(height: 1, color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
             const SizedBox(height: 8),
 
-            // ── Action Bar (Comment & Like ONLY) ─────────────────────────
+            // ── Action Bar (Komen & Suka) ──────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -273,7 +218,7 @@ class _PostCardState extends State<PostCard> {
                     CommentsBottomSheet.show(
                       context: context,
                       post: post,
-                      onAddComment: widget.onAddComment,
+                      onAddComment: onAddComment,
                     );
                   },
                   borderRadius: BorderRadius.circular(20),
@@ -288,7 +233,7 @@ class _PostCardState extends State<PostCard> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          post.commentsCount > 0 ? '${post.commentsCount}' : 'Komen',
+                          post.commentCount > 0 ? '${post.commentCount}' : 'Komen',
                           style: TextStyle(
                             fontSize: 13,
                             color: theme.colorScheme.onSurfaceVariant,
@@ -302,24 +247,24 @@ class _PostCardState extends State<PostCard> {
 
                 // Like Action
                 InkWell(
-                  onTap: widget.onLikeToggle,
+                  onTap: onLikeToggle,
                   borderRadius: BorderRadius.circular(20),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Row(
                       children: [
                         Icon(
-                          widget.post.isLikedByMe ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          post.likeCount > 0 ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                           size: 20,
-                          color: widget.post.isLikedByMe ? Colors.pinkAccent : theme.colorScheme.onSurfaceVariant,
+                          color: post.likeCount > 0 ? Colors.pinkAccent : theme.colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          post.likesCount > 0 ? '${post.likesCount}' : 'Suka',
+                          post.likeCount > 0 ? '${post.likeCount}' : 'Suka',
                           style: TextStyle(
                             fontSize: 13,
-                            color: widget.post.isLikedByMe ? Colors.pinkAccent : theme.colorScheme.onSurfaceVariant,
-                            fontWeight: widget.post.isLikedByMe ? FontWeight.bold : FontWeight.w500,
+                            color: post.likeCount > 0 ? Colors.pinkAccent : theme.colorScheme.onSurfaceVariant,
+                            fontWeight: post.likeCount > 0 ? FontWeight.bold : FontWeight.w500,
                           ),
                         ),
                       ],

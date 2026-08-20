@@ -10,6 +10,8 @@ import '../../features/validation/presentation/pages/ai_validation_dashboard_pag
 import '../../features/camera/presentation/pages/camera_page.dart';
 import '../../features/community/presentation/pages/community_page.dart';
 import '../../features/community/presentation/pages/create_post_page.dart';
+import '../../features/community/presentation/pages/post_detail_page.dart';
+import '../../features/community/models/community_post.dart';
 import '../../features/exercise_library/models/full_exercise_definition.dart';
 import '../../features/exercise_library/presentation/pages/exercise_detail_preview_page.dart';
 import '../../features/exercise_library/presentation/pages/exercise_library_page.dart';
@@ -93,13 +95,6 @@ class AppRouter {
                 path: RoutePaths.community,
                 name: RouteNames.community,
                 builder: (context, state) => const CommunityPage(),
-                routes: [
-                  GoRoute(
-                    path: 'create',
-                    name: RouteNames.communityCreate,
-                    builder: (context, state) => const CreatePostPage(),
-                  ),
-                ],
               ),
             ],
           ),
@@ -128,6 +123,21 @@ class AppRouter {
         name: RouteNames.settings,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.communityCreate,
+        name: RouteNames.communityCreate,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CreatePostPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.communityPostDetail,
+        name: RouteNames.communityPostDetail,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final post = state.extra as CommunityPost;
+          return PostDetailPage(post: post);
+        },
       ),
       GoRoute(
         path: RoutePaths.componentGallery,

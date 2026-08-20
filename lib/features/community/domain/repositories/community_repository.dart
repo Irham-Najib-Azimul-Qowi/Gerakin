@@ -1,43 +1,39 @@
-import '../models/community_post.dart';
-import '../models/community_comment.dart';
+import '../../models/community_post.dart';
+import '../../models/community_comment.dart';
 
+/// Kontrak repositori untuk mengelola data komunitas GERAKIN.
 abstract class CommunityRepository {
-  /// Mengambil daftar postingan dari komunitas.
-  Future<List<CommunityPost>> getPosts({String? category, String? searchQuery});
+  /// Mengambil daftar postingan dari feed lokal (ObjectBox).
+  Future<List<CommunityPost>> getFeed({String? searchQuery, int limit = 20, int offset = 0});
 
-  /// Mengirim postingan baru ke komunitas.
-  Future<CommunityPost> createPost({
-    required String authorId,
-    required String authorName,
-    String? authorAvatarUrl,
-    String? authorBadge,
-    required String caption,
-    required List<String> mediaUrls,
-    CommunityMediaType mediaType = CommunityMediaType.image,
-    String? workoutTag,
-    List<String> tags = const [],
+  /// Membuat postingan baru di ObjectBox & memasukkan ke antrean sync.
+  Future<int> createPost({
+    required String authorUid,
+    required String authorDisplayName,
+    required String content,
+    String? imagePath,
+    String? hashtags,
   });
 
   /// Menyukai / batal menyukai postingan.
-  Future<CommunityPost> toggleLikePost(String postId, String userId);
+  Future<void> toggleLike(int postId, String userUid);
 
   /// Mengambil komentar dari sebuah postingan.
-  Future<List<CommunityComment>> getComments(String postId);
+  Future<List<CommunityComment>> getComments(int postId);
 
-  /// Menambahkan komentar atau balasan komentar baru.
-  Future<CommunityComment> addComment({
-    required String postId,
-    String? parentId,
-    String? replyToAuthorName,
-    required String authorId,
-    required String authorName,
-    String? authorAvatarUrl,
-    required String text,
+  /// Menambahkan komentar baru di ObjectBox & memasukkan ke antrean sync.
+  Future<int> addComment({
+    required int postId,
+    required String authorUid,
+    required String authorDisplayName,
+    required String content,
   });
 
-  /// Menambah jumlah share postingan.
-  Future<void> incrementShare(String postId);
-
-  /// Menghapus postingan milik pengguna dari Firebase Firestore.
-  Future<void> deletePost(String postId);
+  /// Laporkan konten (post / komentar) yang melanggar.
+  Future<void> reportContent({
+    required String targetType,
+    required int targetId,
+    required String reporterUid,
+    required String reason,
+  });
 }
