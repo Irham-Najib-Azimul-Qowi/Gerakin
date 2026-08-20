@@ -1,4 +1,3 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -11,9 +10,7 @@ import '../../../shared/widgets/buttons/app_icon_button.dart';
 import '../../../shared/widgets/loading/loading_overlay.dart';
 import '../../../shared/widgets/states/error_state.dart';
 import '../models/detected_pose.dart';
-import '../services/camera_service.dart';
-import '../services/frame_processor.dart';
-import '../services/pose_detector_service.dart';
+import '../services/camera_pose_stream_controller.dart';
 import 'camera_preview_widget.dart';
 import '../../motion/domain/motion_processor.dart';
 import '../../motion/models/motion_validation.dart';
@@ -21,9 +18,7 @@ import '../../motion/models/motion_validation.dart';
 /// Halaman utama Kamera Workout & ML Kit Pose Detection.
 ///
 /// MENGHUBUNGKAN:
-/// - [CameraService] untuk streaming video realtime.
-/// - [PoseDetectorService] untuk deteksi ML Kit Pose.
-/// - [FrameProcessor] untuk throttling frame agar aplikasi tidak lag/panas.
+/// - [CameraPoseStreamController] untuk mengelola streaming video realtime & pose detection.
 /// - [CameraPreviewWidget] & [SkeletonOverlay] untuk visualisasi di layar.
 class WorkoutCameraPage extends StatefulWidget {
   const WorkoutCameraPage({super.key});
@@ -34,9 +29,7 @@ class WorkoutCameraPage extends StatefulWidget {
 
 class _WorkoutCameraPageState extends State<WorkoutCameraPage>
     with WidgetsBindingObserver {
-  late final CameraService _cameraService;
-  late final PoseDetectorService _poseDetectorService;
-  late final FrameProcessor _frameProcessor;
+  late final CameraPoseStreamController _cameraStreamController;
   late final MotionProcessor _motionProcessor;
 
   DetectedPose? _currentPose;
@@ -51,9 +44,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _cameraService = CameraService();
-    _poseDetectorService = PoseDetectorService();
-    _frameProcessor = FrameProcessor(minIntervalMs: 33); // ~30 FPS throttle
+    _cameraStreamController = CameraPoseStreamController(minIntervalMs: 33);
     _motionProcessor = MotionProcessor();
 
     _initializeCamera();
@@ -66,7 +57,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
     });
 
     try {
-      await _cameraService.initialize();
+      await _cameraStreamController.initialize();
       await _startStream();
       if (mounted) {
         setState(() {
@@ -85,23 +76,8 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
   }
 
   Future<void> _startStream() async {
-    await _cameraService.startImageStream((CameraImage image) async {
-      final camera = _cameraService.currentCamera;
-      if (camera == null) return;
-
-      // Jalankan frame processor dengan throttling
-      final detectedPose = await _frameProcessor.processFrame<DetectedPose>(
-        cameraImage: image,
-        cameraDescription: camera,
-        onProcess: (inputImage) async {
-          return await _poseDetectorService.processImage(
-            inputImage: inputImage,
-            isFrontCamera: _cameraService.isFrontCamera,
-          );
-        },
-      );
-
-      if (detectedPose != null && mounted) {
+    await _cameraStreamController.startStream((detectedPose) {
+      if (mounted) {
         final validJoints = detectedPose.landmarks.values
             .where((lm) => lm.isValid(0.5))
             .length;
@@ -127,24 +103,9 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
       _currentPose = null;
       _detectedJointsCount = 0;
     });
-    _frameProcessor.reset();
 
-    await _cameraService.switchCamera((image) async {
-      final camera = _cameraService.currentCamera;
-      if (camera == null) return;
-
-      final detectedPose = await _frameProcessor.processFrame<DetectedPose>(
-        cameraImage: image,
-        cameraDescription: camera,
-        onProcess: (inputImage) async {
-          return await _poseDetectorService.processImage(
-            inputImage: inputImage,
-            isFrontCamera: _cameraService.isFrontCamera,
-          );
-        },
-      );
-
-      if (detectedPose != null && mounted) {
+    await _cameraStreamController.switchCamera((detectedPose) {
+      if (mounted) {
         final validJoints = detectedPose.landmarks.values
             .where((lm) => lm.isValid(0.5))
             .length;
@@ -161,12 +122,12 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final controller = _cameraService.controller;
+    final controller = _cameraStreamController.cameraController;
     if (controller == null || !controller.value.isInitialized) return;
 
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused) {
-      _cameraService.stopImageStream();
+      _cameraStreamController.stopStream();
     } else if (state == AppLifecycleState.resumed) {
       _startStream();
     }
@@ -175,8 +136,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _cameraService.dispose();
-    _poseDetectorService.close();
+    _cameraStreamController.dispose();
     super.dispose();
   }
 
@@ -200,7 +160,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
       );
     }
 
-    final controller = _cameraService.controller;
+    final controller = _cameraStreamController.cameraController;
     if (controller == null || !controller.value.isInitialized) {
       return const Scaffold(
         body: Center(child: Text('Kamera tidak tersedia')),
@@ -327,7 +287,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
                           ),
                           Gap(AppSpacing.xxs),
                           Text(
-                            _cameraService.isFrontCamera
+                            _cameraStreamController.isFrontCamera
                                 ? 'Kamera Depan • ML Kit Pose Stream'
                                 : 'Kamera Belakang • ML Kit Pose Stream',
                             style: AppTextStyles.captionSmall.copyWith(

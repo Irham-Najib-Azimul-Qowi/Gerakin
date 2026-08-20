@@ -1,5 +1,5 @@
 name: gerakin
-description: "GERAKIN - Aplikasi Gerakan dan Aktivitas Kesehatan Indonesia"
+description: "GerakIn - Aplikasi Gerakan dan Aktivitas Kesehatan Indonesia"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -63,6 +63,7 @@ dev_dependencies:
   objectbox_generator: any
   freezed: ^3.0.0
   json_serializable: ^6.9.5
+  flutter_launcher_icons: ^0.14.1
 
 flutter:
   uses-material-design: true
@@ -72,3 +73,9 @@ flutter:
     - assets/images/
     - assets/exercises/
     - assets/exercises/illustrations/
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/logo-gerakin.png"
+  min_sdk_android: 21

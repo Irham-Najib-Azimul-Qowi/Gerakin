@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
             const Icon(Icons.accessible_forward_rounded, color: AppColors.primary),
             Gap(AppSpacing.xs),
             Text(
-              'GERAKIN',
+              'GerakIn',
               style: AppTextStyles.titleLarge.copyWith(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,

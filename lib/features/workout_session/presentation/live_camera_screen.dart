@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/loading/loading_overlay.dart';
+import '../../../shared/widgets/states/error_state.dart';
+import '../../camera/models/detected_pose.dart';
+import '../../camera/presentation/camera_preview_widget.dart';
+import '../../camera/services/camera_pose_stream_controller.dart';
 import '../../exercise_library/models/full_exercise_definition.dart';
 import '../controllers/workout_session_controller.dart';
-import '../models/workout_state.dart';
+import '../models/live_alert.dart';
 import '../models/movement_phase.dart';
-import '../widgets/exercise_card.dart';
-import '../widgets/realtime_coach_bubble.dart';
-import '../widgets/live_alert_banner.dart';
-import '../widgets/hold_progress_bar.dart';
-import '../widgets/dev_debug_overlay.dart';
+import '../models/workout_state.dart';
 import '../widgets/camera_calibration_overlay.dart';
 import '../widgets/countdown_overlay.dart';
+import '../widgets/dev_debug_overlay.dart';
+import '../widgets/exercise_card.dart';
+import '../widgets/hold_progress_bar.dart';
+import '../widgets/live_alert_banner.dart';
+import '../widgets/realtime_coach_bubble.dart';
 
 /// Screen 3: Live Camera Screen (Halaman Terpenting Sesi Latihan Rehabilitasi AI).
+///
+/// MENGHUBUNGKAN:
+/// - [CameraPoseStreamController] untuk image stream kamera & ML Kit Pose Detection real-time.
+/// - [WorkoutSessionController] untuk pemrosesan frame, kalibrasi, rep counting, dan alert.
+/// - [CameraPreviewWidget] & [SkeletonOverlay] untuk visualisasi skeleton di atas kamera fisik.
 class LiveCameraScreen extends ConsumerStatefulWidget {
   const LiveCameraScreen({
     super.key,
@@ -26,17 +39,120 @@ class LiveCameraScreen extends ConsumerStatefulWidget {
   ConsumerState<LiveCameraScreen> createState() => _LiveCameraScreenState();
 }
 
-class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
+class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen>
+    with WidgetsBindingObserver {
+  late final CameraPoseStreamController _cameraStreamController;
+
+  DetectedPose? _currentPose;
+  bool _isLoading = true;
+  String? _errorMessage;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _cameraStreamController = CameraPoseStreamController(minIntervalMs: 33);
+    _initializeCamera();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(workoutSessionControllerProvider(widget.exercise).notifier).startCalibration();
+      ref
+          .read(workoutSessionControllerProvider(widget.exercise).notifier)
+          .startCalibration();
+    });
+  }
+
+  Future<void> _initializeCamera() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await _cameraStreamController.initialize();
+      await _startStream();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage =
+              'Gagal membuka kamera: ${e.toString().replaceAll('Exception: ', '')}';
+        });
+      }
+    }
+  }
+
+  Future<void> _startStream() async {
+    await _cameraStreamController.startStream((detectedPose) {
+      if (mounted) {
+        setState(() {
+          _currentPose = detectedPose;
+        });
+        ref
+            .read(workoutSessionControllerProvider(widget.exercise).notifier)
+            .processFrame(detectedPose.landmarks.values.toList());
+      }
     });
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final controller = _cameraStreamController.cameraController;
+    if (controller == null || !controller.value.isInitialized) return;
+
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      _cameraStreamController.stopStream();
+    } else if (state == AppLifecycleState.resumed) {
+      _startStream();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraStreamController.dispose();
+    super.dispose();
+  }
+
+  Color _alertToSkeletonColor(LiveAlert? alert) {
+    if (alert == null) return AppColors.success;
+    return alert.severity == AlertSeverity.critical
+        ? AppColors.error
+        : AppColors.warning;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const LoadingOverlay(
+        message: 'Menyiapkan kamera & Pose Detector...',
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(widget.exercise.name)),
+        body: ErrorState(
+          title: 'Akses Kamera Gagal',
+          message: _errorMessage,
+          retryLabel: 'Coba Lagi',
+          onRetry: _initializeCamera,
+        ),
+      );
+    }
+
+    final cameraController = _cameraStreamController.cameraController;
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return const Scaffold(
+        body: Center(child: Text('Kamera tidak tersedia')),
+      );
+    }
+
     final uiState = ref.watch(workoutSessionControllerProvider(widget.exercise));
     final controller = ref.read(workoutSessionControllerProvider(widget.exercise).notifier);
 
@@ -56,39 +172,14 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 1. Full Screen Camera / AI Vision Simulation View
-            Container(
-              color: const Color(0xFF020617),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.videocam_rounded,
-                      size: 64,
-                      color: uiState.workoutState == WorkoutState.workout
-                          ? const Color(0xFF00E676)
-                          : Colors.blueAccent,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'AI CAMERA SENSOR FEED ACTIVE',
-                      style: TextStyle(
-                        color: uiState.workoutState == WorkoutState.workout
-                            ? const Color(0xFF00E676)
-                            : Colors.blueAccent,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Fase: ${uiState.movementPhase.displayName}',
-                      style: const TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                  ],
-                ),
+            // 1. Live Camera Preview + Skeleton Overlay
+            Positioned.fill(
+              child: CameraPreviewWidget(
+                controller: cameraController,
+                pose: _currentPose,
+                showSkeleton: true,
+                showDebugHUD: uiState.isDevModeEnabled,
+                skeletonColor: _alertToSkeletonColor(uiState.activeAlert),
               ),
             ),
 
@@ -234,12 +325,7 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
                 uiState.workoutState == WorkoutState.ready)
               CameraCalibrationOverlay(
                 calibrationResult: controller.engine.calibrationResult,
-                onStartWorkout: () {
-                  ref
-                      .read(workoutSessionControllerProvider(widget.exercise).notifier)
-                      .engine
-                      .startWorkoutAfterCountdown();
-                },
+                onStartWorkout: controller.startCountdown,
               ),
 
             // 8. Countdown Overlay (3, 2, 1, Mulai!)

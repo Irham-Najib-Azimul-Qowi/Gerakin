@@ -151,6 +151,10 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
     state = state.copyWith(workoutState: _engine.state);
   }
 
+  void startCountdown() {
+    state = state.copyWith(workoutState: WorkoutState.countdown);
+  }
+
   void startCountdownComplete() {
     _engine.startWorkoutAfterCountdown();
     _updateUI();

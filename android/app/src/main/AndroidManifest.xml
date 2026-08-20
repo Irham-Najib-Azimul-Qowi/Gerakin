@@ -1,6 +1,20 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Kamera untuk ML Kit Pose Detection -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <!-- Mikrofon untuk Flutter TTS (Text-to-Speech) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Storage untuk ekspor CSV/PDF laporan -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" tools:replace="android:maxSdkVersion" />
+
     <application
-        android:label="gerakin"
+        android:label="GerakIn"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

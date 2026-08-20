@@ -1,9 +1,9 @@
-/// Konstanta aplikasi GERAKIN.
+/// Konstanta aplikasi GerakIn.
 class AppConstants {
   AppConstants._();
 
   /// Nama aplikasi.
-  static const String appName = 'GERAKIN';
+  static const String appName = 'GerakIn';
 
   /// Deskripsi singkat aplikasi.
   static const String appDescription =
