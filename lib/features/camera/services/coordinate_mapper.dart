@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
 import '../models/pose_landmark_model.dart';
-import 'rotation_transformer.dart';
+import 'pose_coordinate_transformer.dart';
 
 /// Metrik Transformasi Koordinat 5-Tahap untuk rendering dan inspeksi diagnostik overlay.
 class CoordinateTransformMetrics {
@@ -31,13 +31,7 @@ class CoordinateTransformMetrics {
   });
 }
 
-/// Pipeline Transformasi Koordinat Komputer Visi 5-Tahap:
-///
-/// 1. Raw Image Coordinate (Sensor Space)
-/// 2. Rotated Image Coordinate (Rotation Matrix Transformation)
-/// 3. Normalized Coordinate (0.0 .. 1.0)
-/// 4. Preview Coordinate (Camera Aspect Ratio Space)
-/// 5. Canvas Coordinate (Widget Display Space with BoxFit Cover/Contain)
+/// Pipeline Transformasi Koordinat Komputer Visi 5-Tahap Terpusat.
 class CoordinateMapper {
   CoordinateMapper._();
 
@@ -49,54 +43,24 @@ class CoordinateMapper {
     required bool isFrontCamera,
     BoxFit fit = BoxFit.cover,
   }) {
-    if (rawImageSize.width == 0 || rawImageSize.height == 0 || canvasSize.isEmpty) {
-      return CoordinateTransformMetrics(
-        rawImageSize: rawImageSize,
-        effectivePreviewSize: Size.zero,
-        canvasSize: canvasSize,
-        rotation: rotation,
-        scaleX: 1.0,
-        scaleY: 1.0,
-        scale: 1.0,
-        offsetX: 0.0,
-        offsetY: 0.0,
-        isFrontCamera: isFrontCamera,
-      );
-    }
-
-    // Gunakan RotationTransformer untuk mendapatkan dimensi efektif (portrait vs landscape)
-    final dummyRotated = RotationTransformer.transform(
-      rawX: 0,
-      rawY: 0,
-      imageSize: rawImageSize,
+    final transformer = PoseCoordinateTransformer(
+      rawImageSize: rawImageSize,
+      canvasSize: canvasSize,
       rotation: rotation,
       isFrontCamera: isFrontCamera,
+      fit: fit,
     );
-
-    final double previewWidth = dummyRotated.effectiveWidth;
-    final double previewHeight = dummyRotated.effectiveHeight;
-    final effectivePreviewSize = Size(previewWidth, previewHeight);
-
-    final double scaleX = canvasSize.width / previewWidth;
-    final double scaleY = canvasSize.height / previewHeight;
-
-    final double scale = fit == BoxFit.cover
-        ? (scaleX > scaleY ? scaleX : scaleY)
-        : (scaleX < scaleY ? scaleX : scaleY);
-
-    final double offsetX = (canvasSize.width - (previewWidth * scale)) / 2.0;
-    final double offsetY = (canvasSize.height - (previewHeight * scale)) / 2.0;
 
     return CoordinateTransformMetrics(
       rawImageSize: rawImageSize,
-      effectivePreviewSize: effectivePreviewSize,
+      effectivePreviewSize: transformer.rotatedImageSize,
       canvasSize: canvasSize,
       rotation: rotation,
-      scaleX: scaleX,
-      scaleY: scaleY,
-      scale: scale,
-      offsetX: offsetX,
-      offsetY: offsetY,
+      scaleX: transformer.scale,
+      scaleY: transformer.scale,
+      scale: transformer.scale,
+      offsetX: transformer.dx,
+      offsetY: transformer.dy,
       isFrontCamera: isFrontCamera,
     );
   }
@@ -106,31 +70,14 @@ class CoordinateMapper {
     required PoseLandmarkModel landmark,
     required CoordinateTransformMetrics metrics,
   }) {
-    if (metrics.rawImageSize.width == 0 || metrics.rawImageSize.height == 0) {
-      return Offset.zero;
-    }
-
-    // TAHAP 1 & 2: Transformasi Matriks Rotasi ML Kit & Mirroring Kamera Depan
-    final rotatedPoint = RotationTransformer.transform(
-      rawX: landmark.x,
-      rawY: landmark.y,
-      imageSize: metrics.rawImageSize,
+    final transformer = PoseCoordinateTransformer(
+      rawImageSize: metrics.rawImageSize,
+      canvasSize: metrics.canvasSize,
       rotation: metrics.rotation,
       isFrontCamera: metrics.isFrontCamera,
+      fit: BoxFit.cover,
     );
 
-    // TAHAP 3: Normalisasi Koordinat (0.0 .. 1.0)
-    final double normX = (rotatedPoint.x / rotatedPoint.effectiveWidth).clamp(0.0, 1.0);
-    final double normY = (rotatedPoint.y / rotatedPoint.effectiveHeight).clamp(0.0, 1.0);
-
-    // TAHAP 4: Penskalaan ke Ruang Preview Kamera
-    final double previewX = normX * metrics.effectivePreviewSize.width;
-    final double previewY = normY * metrics.effectivePreviewSize.height;
-
-    // TAHAP 5: Penskalaan & Offset ke Canvas UI Layar (BoxFit Cover/Contain)
-    final double canvasX = (previewX * metrics.scale) + metrics.offsetX;
-    final double canvasY = (previewY * metrics.scale) + metrics.offsetY;
-
-    return Offset(canvasX, canvasY);
+    return transformer.transformLandmark(landmark);
   }
 }

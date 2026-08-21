@@ -28,6 +28,15 @@ class MovementFeedback {
 
   String get ttsMessage => speechText ?? message;
 
+  factory MovementFeedback.correction(String message) {
+    return MovementFeedback(
+      message: message,
+      category: FeedbackCategory.correction,
+      priority: FeedbackPriority.high,
+      visualIcon: '⚠️',
+    );
+  }
+
   // Preset feedback umum
   static const ready = MovementFeedback(
     message: 'Posisi terdeteksi ✓. Bersiap mulai!',

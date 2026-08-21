@@ -16,6 +16,7 @@ import '../exercises/arm_raise_engine.dart';
 import '../exercises/base_exercise_engine.dart';
 import '../exercises/bicep_curl_engine.dart';
 import '../exercises/neck_rotation_engine.dart';
+import '../logic/seated_posture_validator.dart';
 import 'widgets/exercise_guide_overlay.dart';
 import 'widgets/feedback_banner.dart';
 import 'widgets/pose_overlay.dart';
@@ -51,6 +52,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
   DetectedPose? _currentPose;
   bool _isLoading = true;
   bool _showGuide = true;
+  bool _showDebugHUD = false;
   String? _errorMessage;
 
   @override
@@ -229,13 +231,14 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
           // 3. Layer Overlay Skeleton Sendi Tubuh High-Contrast (100% Opacity)
           Positioned.fill(
             child: PoseOverlay(
-              landmarks: _engine.activeLandmarks,
+              pose: _currentPose,
+              postureState: _engine.postureState,
               color: _engine.currentAccuracy > 80
                   ? Colors.white
                   : _engine.currentAccuracy > 60
                       ? Colors.amberAccent
                       : Colors.orangeAccent,
-              showHeadTriangle: widget.exerciseType == ExerciseType.neckRotation,
+              showDebugHUD: _showDebugHUD,
             ),
           ),
 
@@ -281,28 +284,83 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
                             ),
                           ),
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF0F172A).withValues(alpha: 0.70),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white12),
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              _showGuide ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-                              color: _showGuide ? AppColors.primary : Colors.white70,
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white12),
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.bug_report_rounded,
+                                  color: _showDebugHUD ? Colors.yellowAccent : Colors.white70,
+                                  size: 18,
+                                ),
+                                tooltip: 'Toggle Debug HUD',
+                                onPressed: () {
+                                  setState(() {
+                                    _showDebugHUD = !_showDebugHUD;
+                                  });
+                                },
+                              ),
                             ),
-                            tooltip: _showGuide ? 'Sembunyikan Panduan' : 'Tampilkan Panduan',
-                            onPressed: () {
-                              setState(() {
-                                _showGuide = !_showGuide;
-                              });
-                            },
-                          ),
+                            const SizedBox(width: 6),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white12),
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  _showGuide ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                                  color: _showGuide ? AppColors.primary : Colors.white70,
+                                ),
+                                tooltip: _showGuide ? 'Sembunyikan Panduan' : 'Tampilkan Panduan',
+                                onPressed: () {
+                                  setState(() {
+                                    _showGuide = !_showGuide;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
+
+                  // Peringatan Postur Berdiri (Jika User Berdiri)
+                  if (_engine.postureState == UserPostureState.standing)
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade900.withValues(alpha: 0.92),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.orangeAccent),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black38, blurRadius: 8, offset: Offset(0, 3)),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+                          SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'Posisi Tidak Sesuai — Silakan Lakukan Latihan dalam Posisi Duduk',
+                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   RepetitionHud(
                     exerciseType: widget.exerciseType,
                     currentSet: _engine.currentSet,

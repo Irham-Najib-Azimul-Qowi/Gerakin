@@ -10,6 +10,7 @@ import '../logic/angle_calculator.dart';
 import '../logic/exercise_tts_service.dart';
 import '../logic/movement_quality_engine.dart';
 import '../logic/repetition_counter.dart';
+import '../logic/seated_posture_validator.dart';
 import '../../camera/models/pose_landmark_model.dart';
 
 /// Class abstrak Engine dasar pemrosesan pose & analisis sesi latihan.
@@ -30,6 +31,7 @@ abstract class BaseExerciseEngine extends ChangeNotifier {
   final ExerciseTtsService _ttsService;
   final MovementQualityEngine _qualityEngine;
   final RepetitionCounter _repCounter;
+  final SeatedPostureValidator _postureValidator = SeatedPostureValidator();
 
   final EmaSmoother angleSmoother = EmaSmoother(alpha: 0.35);
 
@@ -39,6 +41,7 @@ abstract class BaseExerciseEngine extends ChangeNotifier {
   bool _isResting = false;
   int _currentSet = 1;
   int _restSecondsRemaining = 0;
+  DateTime? _lastStandingAlertTime;
 
   double _currentPrimaryAngle = 0.0;
   double _currentAccuracy = 0.0;
@@ -64,6 +67,7 @@ abstract class BaseExerciseEngine extends ChangeNotifier {
   int get completedReps => _repCounter.completedReps;
   int get targetReps => config.targetRepsPerSet;
   int get restSecondsRemaining => _restSecondsRemaining;
+  UserPostureState get postureState => _postureValidator.currentState;
 
   MovementPhase get currentPhase => _repCounter.currentPhase;
   double get currentPrimaryAngle => _currentPrimaryAngle;
@@ -89,6 +93,22 @@ abstract class BaseExerciseEngine extends ChangeNotifier {
 
     // Map landmark untuk kemudahan pencarian
     _activeLandmarks = {for (final l in landmarks) l.type: l};
+
+    // 0. Evaluasi Postur Duduk vs. Berdiri (SeatedPostureValidator)
+    final postureResult = _postureValidator.evaluate(_activeLandmarks);
+    if (postureResult.state == UserPostureState.standing) {
+      _currentFeedback = MovementFeedback.correction(postureResult.message);
+
+      final now = DateTime.now();
+      if (_lastStandingAlertTime == null ||
+          now.difference(_lastStandingAlertTime!).inSeconds >= 5) {
+        _lastStandingAlertTime = now;
+        _ttsService.speak('Silakan kembali ke posisi duduk untuk melanjutkan latihan.');
+      }
+
+      notifyListeners();
+      return; // Jeda analisis gerakan selama posisi tidak sesuai
+    }
 
     // 1. Cek Reliabilitas Landmark Utama yang Dibutuhkan
     if (!checkRequiredLandmarksReliable()) {
