@@ -8,6 +8,8 @@ abstract class ExerciseTtsService {
   Future<void> speakMilestone(int repNumber);
   Future<void> stop();
   void setMuted(bool isMuted);
+  bool get isMuted;
+  void toggleMute();
 }
 
 /// Service FlutterTTS terintegrasi dengan pengaman anti-spam & cooldown 3 detik per pesan.
@@ -25,6 +27,12 @@ class FlutterExerciseTtsService implements ExerciseTtsService {
 
   static const Duration _cooldownDuration = Duration(seconds: 3);
   static const int _requiredFrameThreshold = 5; // Minimal 5 frame konsisten sebelum mengucap
+
+  @override
+  bool get isMuted => _isMuted;
+
+  @override
+  void toggleMute() => setMuted(!_isMuted);
 
   @override
   void setMuted(bool isMuted) {

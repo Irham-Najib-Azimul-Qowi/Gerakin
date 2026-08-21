@@ -2,27 +2,31 @@ import 'package:flutter/material.dart';
 import '../../domain/exercise_phase.dart';
 import '../../domain/exercise_type.dart';
 
-/// Overlay Gambar Panduan Gerakan Transparan.
+/// Overlay Gambar Panduan Gerakan Transparan (Ghost Guide Reference).
 ///
-/// BERFUNGSI:
-/// - Menampilkan gambar ilustrasi pose 2D semi-transparan (opacity 0.25–0.45).
-/// - Menggunakan [AnimatedSwitcher] untuk transisi halus 200ms antar-frame.
-/// - Berubah secara dinamis mengikuti pergeseran [MovementPhase] pengguna (START → frame 1, MIDDLE → frame 2, TARGET → frame 3).
-/// - Dibungkus [IgnorePointer] agar tidak mengganggu sentuhan UI & gesture kamera.
+/// FITUR & PERILAKU:
+/// - Gambar 9:16 ditampilkan Full Screen (BoxFit.contain).
+/// - Opacity sangat ringan (default 0.22) sebagai bayangan referensi, tanpa menutupi tubuh pengguna.
+/// - Transisi antar-frame per gerakan halus dengan AnimatedSwitcher (180ms).
+/// - Dibungkus [IgnorePointer] agar tidak mengganggu touch event layar.
 class ExerciseGuideOverlay extends StatelessWidget {
   const ExerciseGuideOverlay({
     super.key,
     required this.exerciseType,
     required this.phase,
-    this.opacity = 0.35,
+    this.opacity = 0.22,
+    this.isVisible = true,
   });
 
   final ExerciseType exerciseType;
   final MovementPhase phase;
   final double opacity;
+  final bool isVisible;
 
   @override
   Widget build(BuildContext context) {
+    if (!isVisible) return const SizedBox.shrink();
+
     final guideAssetPath = exerciseType.getGuideAssetForPhase(phase);
 
     int activeIndex = 0;
@@ -34,52 +38,62 @@ class ExerciseGuideOverlay extends StatelessWidget {
 
     return IgnorePointer(
       child: Stack(
+        fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          // 1. Gambar Ilustrasi Transparan dengan AnimatedSwitcher
-          Opacity(
-            opacity: opacity.clamp(0.1, 0.8),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              transitionBuilder: (child, animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
-              child: Image.asset(
-                guideAssetPath,
-                key: ValueKey<String>(guideAssetPath),
-                fit: BoxFit.contain,
-                width: MediaQuery.of(context).size.width * 0.75,
-                height: MediaQuery.of(context).size.height * 0.60,
+          // 1. Full Screen Ghost Guide Frame dengan 9:16 BoxFit.contain
+          Positioned.fill(
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 180),
+              opacity: opacity.clamp(0.12, 0.35),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+                child: Image.asset(
+                  guideAssetPath,
+                  key: ValueKey<String>(guideAssetPath),
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
               ),
             ),
           ),
 
-          // 2. Indikator Frame Aktif Kecil (● ○ ○)
+          // 2. Indikator Frame Aktif Translusen di Bawah (● ○ ○)
           Positioned(
-            bottom: 120,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(3, (index) {
-                  final isActive = index == activeIndex;
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    width: isActive ? 10 : 6,
-                    height: isActive ? 10 : 6,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isActive ? const Color(0xFF00BFA5) : Colors.white54,
-                    ),
-                  );
-                }),
+            bottom: 110,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.40),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(3, (index) {
+                    final isActive = index == activeIndex;
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      width: isActive ? 10 : 6,
+                      height: isActive ? 10 : 6,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isActive ? Colors.white : Colors.white38,
+                      ),
+                    );
+                  }),
+                ),
               ),
             ),
           ),

@@ -84,53 +84,6 @@ class WorkoutPage extends StatelessWidget {
             ),
           ),
 
-          Gap(AppSpacing.xl),
-
-          // 2. Banner AI Camera Pose Detection Realtime
-          Container(
-            padding: AppSpacing.paddingAllLg,
-            decoration: BoxDecoration(
-              color: AppColors.primaryContainer,
-              borderRadius: BorderRadius.circular(AppSpacing.lg),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.camera_front_rounded,
-                      color: AppColors.primaryDark,
-                      size: 28,
-                    ),
-                    Gap(AppSpacing.sm),
-                    Text(
-                      'AI Camera Realtime Tracking',
-                      style: AppTextStyles.titleMedium.copyWith(
-                        color: AppColors.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Gap(AppSpacing.xs),
-                Text(
-                  'Mulai latihan mandiri dengan AI Pose Detection & Sleek White AR Skeleton Overlay',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.onPrimaryContainer.withValues(alpha: 0.8),
-                  ),
-                ),
-                Gap(AppSpacing.lg),
-                AppButton(
-                  label: 'Buka AI Camera Tracker',
-                  icon: Icons.linked_camera_rounded,
-                  isExpanded: true,
-                  onPressed: () => context.pushNamed(RouteNames.camera),
-                ),
-              ],
-            ),
-          ),
-
           Gap(AppSpacing.xxl),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

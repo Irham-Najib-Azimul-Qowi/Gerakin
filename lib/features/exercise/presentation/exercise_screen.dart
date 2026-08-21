@@ -50,6 +50,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
 
   DetectedPose? _currentPose;
   bool _isLoading = true;
+  bool _showGuide = true;
   String? _errorMessage;
 
   @override
@@ -203,134 +204,238 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // 1. Layer Kamera Fisik Real-time
-            Positioned.fill(
-              child: CameraPreviewWidget(
-                controller: cameraController,
-                pose: _currentPose,
-                showSkeleton: false, // Digantikan PoseOverlay kustom di atas guide
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1. Layer Kamera Fisik Full Screen Edge-to-Edge (100% Opacity)
+          Positioned.fill(
+            child: CameraPreviewWidget(
+              controller: cameraController,
+              pose: _currentPose,
+              showSkeleton: false, // Digantikan PoseOverlay kustom di atas guide
+            ),
+          ),
+
+          // 2. Layer Overlay Gambar Panduan 9:16 Transparan (Ghost Guide ~22% Opacity)
+          Positioned.fill(
+            child: ExerciseGuideOverlay(
+              exerciseType: widget.exerciseType,
+              phase: _engine.currentPhase,
+              opacity: 0.22,
+              isVisible: _showGuide,
+            ),
+          ),
+
+          // 3. Layer Overlay Skeleton Sendi Tubuh High-Contrast (100% Opacity)
+          Positioned.fill(
+            child: PoseOverlay(
+              landmarks: _engine.activeLandmarks,
+              color: _engine.currentAccuracy > 80
+                  ? Colors.white
+                  : _engine.currentAccuracy > 60
+                      ? Colors.amberAccent
+                      : Colors.orangeAccent,
+              showHeadTriangle: widget.exerciseType == ExerciseType.neckRotation,
+            ),
+          ),
+
+          // 4. Top HUD Display (Set, Reps, Accuracy %) & Back Navigation Button
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // App Bar Translusen Ringan
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white12),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                            onPressed: () => _showExitDialog(context),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white12),
+                          ),
+                          child: Text(
+                            widget.exerciseType.displayName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white12),
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              _showGuide ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                              color: _showGuide ? AppColors.primary : Colors.white70,
+                            ),
+                            tooltip: _showGuide ? 'Sembunyikan Panduan' : 'Tampilkan Panduan',
+                            onPressed: () {
+                              setState(() {
+                                _showGuide = !_showGuide;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  RepetitionHud(
+                    exerciseType: widget.exerciseType,
+                    currentSet: _engine.currentSet,
+                    totalSets: _engine.totalSets,
+                    completedReps: _engine.completedReps,
+                    targetReps: _engine.targetReps,
+                    accuracyPercentage: _engine.currentAccuracy,
+                  ),
+                ],
               ),
             ),
+          ),
 
-            // 2. Layer Overlay Skeleton Sendi Tubuh
-            Positioned.fill(
-              child: PoseOverlay(
-                landmarks: _engine.activeLandmarks,
-                color: _engine.currentAccuracy > 80
-                    ? AppColors.primary
-                    : _engine.currentAccuracy > 60
-                        ? Colors.amber
-                        : Colors.orange,
-              ),
-            ),
-
-            // 3. Layer Overlay Gambar Panduan Transparan (Transisi animasi per MovementPhase)
-            Positioned.fill(
-              child: ExerciseGuideOverlay(
-                exerciseType: widget.exerciseType,
-                phase: _engine.currentPhase,
-                opacity: 0.35,
-              ),
-            ),
-
-            // 4. Top HUD Display (Set, Reps, Quality Accuracy %)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: RepetitionHud(
-                exerciseType: widget.exerciseType,
-                currentSet: _engine.currentSet,
-                totalSets: _engine.totalSets,
-                completedReps: _engine.completedReps,
-                targetReps: _engine.targetReps,
-                accuracyPercentage: _engine.currentAccuracy,
-              ),
-            ),
-
-            // 5. Banner Umpan Balik Teks & Koreksi Real-time
-            Positioned(
-              bottom: 95,
-              left: 0,
-              right: 0,
+          // 5. Banner Umpan Balik Teks & Koreksi Real-time
+          Positioned(
+            bottom: 95,
+            left: 0,
+            right: 0,
+            child: SafeArea(
               child: Center(
                 child: FeedbackBanner(
                   feedback: _engine.currentFeedback,
                 ),
               ),
             ),
+          ),
 
-            // 6. Bilah Kontrol Bawah (Pause/Resume, Mute TTS, Stop)
-            Positioned(
-              bottom: 20,
-              left: 16,
-              right: 16,
+          // 6. Bilah Kontrol Bawah Translusen Glass (Pause/Resume, Toggle Guide, Stop)
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: SafeArea(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F172A).withValues(alpha: 0.9),
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.75),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white12),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black38,
+                      blurRadius: 12,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Tombol Keluar
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded, color: Colors.white70, size: 28),
-                      onPressed: () => _showExitDialog(context),
-                    ),
-
-                    // Tombol Mute TTS
+                    // Mute/Unmute Suara TTS
                     IconButton(
                       icon: Icon(
-                        Icons.volume_up_rounded,
-                        color: AppColors.primary,
+                        _engine.ttsService.isMuted
+                            ? Icons.volume_off_rounded
+                            : Icons.volume_up_rounded,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _engine.ttsService.toggleMute();
+                        });
+                      },
+                    ),
+
+                    // Toggle Gambar Panduan Transparan
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _showGuide = !_showGuide;
+                        });
+                      },
+                      icon: Icon(
+                        _showGuide ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                        color: _showGuide ? AppColors.primary : Colors.white70,
+                        size: 20,
+                      ),
+                      label: Text(
+                        _showGuide ? 'Panduan ON' : 'Panduan OFF',
+                        style: TextStyle(
+                          color: _showGuide ? AppColors.primary : Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    // Pause / Resume Session
+                    IconButton(
+                      icon: Icon(
+                        _engine.isPaused
+                            ? Icons.play_arrow_rounded
+                            : Icons.pause_rounded,
+                        color: Colors.white,
                         size: 28,
                       ),
                       onPressed: () {
-                        _engine.ttsService.setMuted(true);
+                        setState(() {
+                          if (_engine.isPaused) {
+                            _engine.resume();
+                          } else {
+                            _engine.pause();
+                          }
+                        });
                       },
                     ),
 
-                    // Tombol Pause / Resume
-                    FloatingActionButton(
-                      heroTag: 'exercise_pause_btn',
-                      backgroundColor: const Color(0xFF00E676),
-                      foregroundColor: Colors.black,
-                      onPressed: () {
-                        if (_engine.isPaused) {
-                          _engine.resume();
-                        } else {
-                          _engine.pause();
-                        }
-                      },
-                      child: Icon(
-                        _engine.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
-                        size: 32,
+                    // Selesaikan / Stop Session
+                    IconButton(
+                      icon: const Icon(
+                        Icons.stop_rounded,
+                        color: Colors.redAccent,
+                        size: 28,
                       ),
+                      onPressed: () => _saveAndShowSummary(),
                     ),
                   ],
                 ),
               ),
             ),
+          ),
 
-            // 7. Overlay Istirahat Antar-Set
-            if (_engine.isResting)
-              Positioned.fill(
-                child: RestTimerDialog(
-                  currentSet: _engine.currentSet,
-                  totalSets: _engine.totalSets,
-                  secondsRemaining: _engine.restSecondsRemaining,
-                  onSkip: _engine.skipRest,
-                ),
+          // Rest Timer Dialog (Saat Istirahat Antar-Set)
+          if (_engine.isResting)
+            Positioned.fill(
+              child: RestTimerDialog(
+                currentSet: _engine.currentSet,
+                totalSets: _engine.totalSets,
+                secondsRemaining: _engine.restSecondsRemaining,
+                onSkip: () => _engine.skipRest(),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

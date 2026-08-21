@@ -9,9 +9,9 @@ enum ExerciseType {
     description: 'Angkat kedua lengan dari samping tubuh hingga sejajar dengan bahu, lalu turunkan kembali secara perlahan.',
     targetMuscles: ['Deltoid Anterior', 'Deltoid Lateral', 'Trapezius'],
     guideFrameAssets: [
-      'assets/exercises_processed/arm_raise/arm_raise_1.png',
-      'assets/exercises_processed/arm_raise/arm_raise_2.png',
-      'assets/exercises_processed/arm_raise/arm_raise_3.png',
+      'assets/exercises/arm_raise/arm_raise_1.png',
+      'assets/exercises/arm_raise/arm_raise_2.png',
+      'assets/exercises/arm_raise/arm_raise_3.png',
     ],
   ),
   bicepCurl(
@@ -21,9 +21,9 @@ enum ExerciseType {
     description: 'Tekuk kedua siku dari posisi hampir lurus ke arah bahu, lalu turunkan secara terkontrol.',
     targetMuscles: ['Biceps Brachii', 'Brachialis', 'Forearms'],
     guideFrameAssets: [
-      'assets/exercises_processed/bicep_curl/bicep_curl_1.png',
-      'assets/exercises_processed/bicep_curl/bicep_curl_2.png',
-      'assets/exercises_processed/bicep_curl/bicep_curl_3.png',
+      'assets/exercises/bicep_curl/bicep_curl_1.png',
+      'assets/exercises/bicep_curl/bicep_curl_2.png',
+      'assets/exercises/bicep_curl/bicep_curl_3.png',
     ],
   ),
   neckRotation(
@@ -33,9 +33,9 @@ enum ExerciseType {
     description: 'Putar kepala secara lembut dan konstan: Depan → Kanan → Depan → Kiri → Depan.',
     targetMuscles: ['Sternocleidomastoid', 'Splenius Capitis', 'Trapezius Upper'],
     guideFrameAssets: [
-      'assets/exercises_processed/neck_rotation/neck_rotation_1.png',
-      'assets/exercises_processed/neck_rotation/neck_rotation_2.png',
-      'assets/exercises_processed/neck_rotation/neck_rotation_3.png',
+      'assets/exercises/neck_rotation/neck_rotation_1.png',
+      'assets/exercises/neck_rotation/neck_rotation_2.png',
+      'assets/exercises/neck_rotation/neck_rotation_3.png',
     ],
   );
 

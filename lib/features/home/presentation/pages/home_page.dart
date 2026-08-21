@@ -300,36 +300,6 @@ class HomePage extends ConsumerWidget {
             Text('Akses Cepat Fitur', style: AppTextStyles.titleMedium),
             Gap(AppSpacing.md),
 
-            // 4. Card AI Camera Realtime
-            SectionCard(
-              onTap: () => context.pushNamed(RouteNames.camera),
-              child: Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.camera_front_rounded, color: AppColors.primary, size: 28),
-                  ),
-                  Gap(AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('AI Camera Pose Detection', style: AppTextStyles.titleMedium),
-                        Text('Sleek White AR Overlay Tracking', style: AppTextStyles.bodySmall),
-                      ],
-                    ),
-                  ),
-                  const Icon(Icons.chevron_right_rounded),
-                ],
-              ),
-            ),
-            Gap(AppSpacing.sm),
-
             // 5. Card Dashboard Fisioterapis & Caregiver
             SectionCard(
               onTap: () => context.pushNamed(RouteNames.collaboration),
