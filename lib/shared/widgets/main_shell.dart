@@ -30,27 +30,22 @@ class MainShell extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),
-            label: 'Home',
+            label: 'Beranda',
           ),
           NavigationDestination(
             icon: Icon(Icons.fitness_center_outlined),
             selectedIcon: Icon(Icons.fitness_center_rounded),
-            label: 'Workout',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.trending_up_outlined),
-            selectedIcon: Icon(Icons.trending_up_rounded),
-            label: 'Progress',
+            label: 'Latihan',
           ),
           NavigationDestination(
             icon: Icon(Icons.people_outlined),
             selectedIcon: Icon(Icons.people_rounded),
-            label: 'Community',
+            label: 'Komunitas',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outlined),
             selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            label: 'Profil',
           ),
         ],
       ),

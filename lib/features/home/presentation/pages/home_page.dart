@@ -1,20 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/buttons/app_button.dart';
 import '../../../../shared/widgets/cards/section_card.dart';
+import '../../../analytics/presentation/controller/analytics_dashboard_controller.dart';
+import '../../../analytics/services/analytics_engine.dart';
+import '../../../gamification/presentation/controllers/gamification_controller.dart';
+import '../../../user/presentation/controllers/profile_controller.dart';
 
-/// Halaman Beranda (HomePage) aplikasi GERAKIN dengan Dashboard Rehabilitasi Adaptif.
-class HomePage extends StatelessWidget {
+/// Halaman Beranda (HomePage) aplikasi GERAKIN.
+///
+/// Menyajikan Dashboard Utama, Ringkasan Progres Analitik, & Widget Streak Harian.
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final analyticsState = ref.watch(analyticsDashboardControllerProvider);
+    final gamificationState = ref.watch(gamificationControllerProvider);
+    final profileState = ref.watch(profileControllerProvider);
+
+    final currentStreak = gamificationState.streak?.currentStreak ?? 1;
+    final activeProfile = profileState.activeProfile;
+
+    // Hitung metrik hari ini
+    final now = DateTime.now();
+    final todaySessions = analyticsState.sessions.where((s) =>
+        s.startTime.year == now.year &&
+        s.startTime.month == now.month &&
+        s.startTime.day == now.day).toList();
+
+    final double todayDuration = todaySessions.fold(0.0, (sum, s) => sum + s.durationInSeconds) / 60.0;
+    final double todayCalories = todaySessions.fold(0.0, (sum, s) => sum + s.caloriesBurned);
+    final int todayReps = todaySessions.fold(0, (sum, s) => sum + s.completedReps);
+
+    final analyticsEngine = AnalyticsEngine();
+    final romTrend = analyticsEngine.getRomTrend(analyticsState.sessions);
+    final accuracyTrend = analyticsEngine.getAccuracyTrend(analyticsState.sessions);
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -31,6 +61,30 @@ class HomePage extends StatelessWidget {
           ],
         ),
         actions: [
+          // ── Streak Harian Chip Header ─────────────────────────────
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.orange, width: 1.2),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('🔥', style: TextStyle(fontSize: 14)),
+                const SizedBox(width: 4),
+                Text(
+                  '$currentStreak Hari',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: Colors.deepOrange,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.stars_rounded, color: Colors.amber),
             tooltip: 'Gamifikasi & Achievements',
@@ -43,164 +97,327 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: AppSpacing.paddingPage,
-        children: [
-          // 1. Hero Card - Akses Utama Katalog Latihan Rehabilitasi Kursi Roda
-          Container(
-            padding: AppSpacing.paddingAllLg,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF004D40), Color(0xFF00796B)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(AppSpacing.lg),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.read(analyticsDashboardControllerProvider.notifier).refresh();
+          if (activeProfile != null) {
+            ref.read(gamificationControllerProvider.notifier).loadGamificationData(activeProfile.id);
+          }
+        },
+        child: ListView(
+          padding: AppSpacing.paddingPage,
+          children: [
+            // 1. Hero Card - Poin Utama & Streak Harian
+            Container(
+              padding: AppSpacing.paddingAllLg,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.primary, AppColors.primaryDark],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppSpacing.lg),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
                   ),
-                  child: Text(
-                    'WHEELCHAIR REHABILITATION KNOWLEDGE BASE',
-                    style: AppTextStyles.captionSmall.copyWith(
-                      color: Colors.black,
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.onPrimary.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'DASHBOARD REHABILITASI ADAPTIF',
+                          style: AppTextStyles.captionSmall.copyWith(
+                            color: AppColors.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.amber,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            const Text('🔥', style: TextStyle(fontSize: 12)),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Streak: $currentStreak Hari',
+                              style: AppTextStyles.captionSmall.copyWith(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Gap(AppSpacing.sm),
+                  Text(
+                    'Selamat Datang Kembali! 👋',
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  Gap(AppSpacing.xs),
+                  Text(
+                    'Pertahankan streak harian latihanmu! Lakukan latihan adaptif 10 menit untuk menjaga mobilitas & vitalitas tubuh.',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: Colors.white.withValues(alpha: 0.95),
+                    ),
+                  ),
+                  Gap(AppSpacing.lg),
+                  AppButton(
+                    label: 'Mulai Latihan Sekarang (3 Latihan)',
+                    icon: Icons.play_arrow_rounded,
+                    isExpanded: true,
+                    onPressed: () => context.pushNamed(RouteNames.workout),
+                  ),
+                ],
+              ),
+            ),
+
+            Gap(AppSpacing.xl),
+
+            // 2. DASHBOARD PROGRES ANALITIK HARI INI
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Progres & Aktivitas Hari Ini', style: AppTextStyles.titleMedium),
+                TextButton.icon(
+                  onPressed: () => context.pushNamed(RouteNames.progress),
+                  icon: const Icon(Icons.analytics_rounded, size: 16),
+                  label: const Text('Detail Progres'),
+                ),
+              ],
+            ),
+            Gap(AppSpacing.sm),
+
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMetricCard(
+                    context,
+                    title: 'Menit Aktif',
+                    value: '${todayDuration.toStringAsFixed(1)} m',
+                    icon: Icons.timer_outlined,
+                    color: Colors.blue,
+                  ),
                 ),
                 Gap(AppSpacing.sm),
-                Text(
-                  '50+ Pustaka Latihan Rehabilitasi Kursi Roda',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: _buildMetricCard(
+                    context,
+                    title: 'Kalori',
+                    value: '${todayCalories.toStringAsFixed(0)} kcal',
+                    icon: Icons.local_fire_department_outlined,
+                    color: Colors.orange,
                   ),
                 ),
-                Gap(AppSpacing.xs),
-                Text(
-                  'Latihan adaptif untuk pengguna kursi roda manual & elektrik (Warm Up, ROM, Strengths, Core, Balance & Rehab).',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.white.withValues(alpha: 0.9),
+                Gap(AppSpacing.sm),
+                Expanded(
+                  child: _buildMetricCard(
+                    context,
+                    title: 'Repetisi',
+                    value: '$todayReps kali',
+                    icon: Icons.fitness_center_outlined,
+                    color: AppColors.secondary,
                   ),
-                ),
-                Gap(AppSpacing.lg),
-                AppButton(
-                  label: 'Buka Katalog Latihan (50+ Latihan)',
-                  icon: Icons.grid_view_rounded,
-                  isExpanded: true,
-                  onPressed: () => context.pushNamed(RouteNames.exerciseLibrary),
                 ),
               ],
             ),
-          ),
 
-          Gap(AppSpacing.xl),
-          Text('Akses Cepat Fitur', style: AppTextStyles.titleMedium),
-          Gap(AppSpacing.md),
+            Gap(AppSpacing.lg),
 
-          // 2. Card AI Camera Realtime
-          SectionCard(
-            onTap: () => context.pushNamed(RouteNames.camera),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.camera_front_rounded, color: AppColors.primary, size: 28),
-                ),
-                Gap(AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            // 3. KARTU RINGKASAN REHABILITASI & ROM
+            SectionCard(
+              color: AppColors.surfaceContainerLow,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('AI Camera Pose Detection', style: AppTextStyles.titleMedium),
-                      Text('Sleek White AR Overlay Tracking', style: AppTextStyles.bodySmall),
+                      Text(
+                        'Ringkasan Biomekanik & ROM',
+                        style: AppTextStyles.titleMedium.copyWith(
+                          color: AppColors.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Icon(Icons.show_chart_rounded, color: AppColors.primary),
                     ],
                   ),
-                ),
-                const Icon(Icons.chevron_right_rounded),
-              ],
+                  Gap(AppSpacing.xs),
+                  Text(
+                    'Evaluasi perkembangan rentang gerak sendi & kestabilan pose.',
+                    style: AppTextStyles.captionSmall.copyWith(
+                      color: AppColors.neutral600,
+                    ),
+                  ),
+                  Gap(AppSpacing.md),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStatColumn(
+                        'Rata-rata ROM',
+                        '${romTrend.isEmpty ? 85.0 : romTrend.last.toStringAsFixed(0)}°',
+                        AppColors.primary,
+                      ),
+                      _buildStatColumn(
+                        'Akurasi Pose',
+                        '${accuracyTrend.isEmpty ? 92.0 : accuracyTrend.last.toStringAsFixed(0)}%',
+                        AppColors.secondary,
+                      ),
+                      _buildStatColumn(
+                        'Status Pemulihan',
+                        'Optimal',
+                        AppColors.success,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            Gap(AppSpacing.xl),
+            Text('Akses Cepat Fitur', style: AppTextStyles.titleMedium),
+            Gap(AppSpacing.md),
+
+            // 4. Card AI Camera Realtime
+            SectionCard(
+              onTap: () => context.pushNamed(RouteNames.camera),
+              child: Row(
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.camera_front_rounded, color: AppColors.primary, size: 28),
+                  ),
+                  Gap(AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('AI Camera Pose Detection', style: AppTextStyles.titleMedium),
+                        Text('Sleek White AR Overlay Tracking', style: AppTextStyles.bodySmall),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded),
+                ],
+              ),
+            ),
+            Gap(AppSpacing.sm),
+
+            // 5. Card Dashboard Fisioterapis & Caregiver
+            SectionCard(
+              onTap: () => context.pushNamed(RouteNames.collaboration),
+              child: Row(
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.purple.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.medical_services_rounded, color: Colors.purple, size: 28),
+                  ),
+                  Gap(AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Hub Fisioterapis & Caregiver', style: AppTextStyles.titleMedium),
+                        Text('Preskripsi latihan & rekam medis pasien', style: AppTextStyles.bodySmall),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetricCard(
+    BuildContext context, {
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      padding: AppSpacing.paddingAllMd,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: AppRadius.borderRadiusLg,
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 22),
+          Gap(AppSpacing.xs),
+          Text(
+            value,
+            style: AppTextStyles.titleMedium.copyWith(
+              color: AppColors.onSurface,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          Gap(AppSpacing.sm),
-
-          // 3. Card Dashboard Fisioterapis & Caregiver
-          SectionCard(
-            onTap: () => context.pushNamed(RouteNames.collaboration),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.purple.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.medical_services_rounded, color: Colors.purple, size: 28),
-                ),
-                Gap(AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Hub Fisioterapis & Caregiver', style: AppTextStyles.titleMedium),
-                      Text('Preskripsi latihan & rekam medis pasien', style: AppTextStyles.bodySmall),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right_rounded),
-              ],
-            ),
-          ),
-          Gap(AppSpacing.sm),
-
-          // 4. Card Gamifikasi
-          SectionCard(
-            onTap: () => context.pushNamed(RouteNames.gamification),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.amber.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 28),
-                ),
-                Gap(AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Gamification & XP Streaks', style: AppTextStyles.titleMedium),
-                      Text('Level progression & daily challenges', style: AppTextStyles.bodySmall),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right_rounded),
-              ],
+          Text(
+            title,
+            style: AppTextStyles.captionSmall.copyWith(
+              color: AppColors.neutral600,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatColumn(String label, String value, Color valueColor) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: AppTextStyles.titleLarge.copyWith(
+            color: valueColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: AppTextStyles.captionSmall.copyWith(
+            color: AppColors.neutral600,
+          ),
+        ),
+      ],
     );
   }
 }

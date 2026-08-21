@@ -29,16 +29,16 @@ class AdaptiveDebugDashboardPage extends ConsumerWidget {
     final adaptiveState = ref.watch(adaptiveEngineProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceDark,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(
           'Developer Debug Dashboard',
           style: AppTextStyles.titleLarge.copyWith(
-            color: AppColors.onSurfaceDark,
+            color: AppColors.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: AppColors.surfaceContainerDark,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         centerTitle: true,
       ),
@@ -82,7 +82,7 @@ class AdaptiveDebugDashboardPage extends ConsumerWidget {
                         Text(
                           'Real-time Biomechanics & AI Decision Metrics',
                           style: AppTextStyles.captionMedium.copyWith(
-                            color: AppColors.onPrimary.withValues(alpha: 0.8),
+                            color: AppColors.onPrimary.withValues(alpha: 0.85),
                           ),
                         ),
                       ],
@@ -167,14 +167,14 @@ class _CardHeader extends StatelessWidget {
         Text(
           title,
           style: AppTextStyles.titleMedium.copyWith(
-            color: AppColors.onSurfaceDark,
+            color: AppColors.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           subtitle,
           style: AppTextStyles.captionSmall.copyWith(
-            color: AppColors.onSurfaceVariantDark,
+            color: AppColors.neutral600,
           ),
         ),
         Gap(AppSpacing.sm),
@@ -195,7 +195,7 @@ class _SafetyScoreCard extends StatelessWidget {
         : (safetyScore >= 60.0 ? AppColors.warning : AppColors.error);
 
     return SectionCard(
-      color: AppColors.surfaceContainerDark,
+      color: AppColors.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -214,7 +214,7 @@ class _SafetyScoreCard extends StatelessWidget {
                 ),
               ),
               Chip(
-                backgroundColor: color.withValues(alpha: 0.2),
+                backgroundColor: color.withValues(alpha: 0.15),
                 side: BorderSide(color: color),
                 label: Text(
                   safetyScore >= 60.0 ? 'SAFE' : 'HAZARD',
@@ -232,7 +232,7 @@ class _SafetyScoreCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: safetyScore / 100.0,
               color: color,
-              backgroundColor: AppColors.surfaceVariantDark,
+              backgroundColor: AppColors.surfaceContainer,
               minHeight: 10,
             ),
           ),
@@ -254,7 +254,7 @@ class _DifficultyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
-      color: AppColors.surfaceContainerDark,
+      color: AppColors.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -272,7 +272,7 @@ class _DifficultyCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isFilled
                         ? AppColors.primary
-                        : AppColors.surfaceVariantDark,
+                        : AppColors.surfaceContainer,
                     borderRadius: AppRadius.borderRadiusSm,
                   ),
                 ),
@@ -283,7 +283,7 @@ class _DifficultyCard extends StatelessWidget {
           Text(
             'Level $level — $rating',
             style: AppTextStyles.titleMedium.copyWith(
-              color: AppColors.onSurfaceDark,
+              color: AppColors.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -307,7 +307,7 @@ class _RomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
-      color: AppColors.surfaceContainerDark,
+      color: AppColors.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -358,8 +358,9 @@ class _RomMetricTile extends StatelessWidget {
         padding: AppSpacing.paddingAllSm,
         margin: EdgeInsets.symmetric(horizontal: AppSpacing.xxs),
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariantDark,
+          color: AppColors.surface,
           borderRadius: AppRadius.borderRadiusMd,
+          border: Border.all(color: AppColors.outlineVariant),
         ),
         child: Column(
           children: [
@@ -368,7 +369,7 @@ class _RomMetricTile extends StatelessWidget {
             Text(
               value,
               style: AppTextStyles.titleLarge.copyWith(
-                color: AppColors.onSurfaceDark,
+                color: AppColors.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -376,7 +377,7 @@ class _RomMetricTile extends StatelessWidget {
               label,
               textAlign: TextAlign.center,
               style: AppTextStyles.captionSmall.copyWith(
-                color: AppColors.onSurfaceVariantDark,
+                color: AppColors.neutral600,
                 fontSize: 10,
               ),
             ),
@@ -395,7 +396,7 @@ class _FatigueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
-      color: AppColors.surfaceContainerDark,
+      color: AppColors.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -424,14 +425,14 @@ class _FatigueCard extends StatelessWidget {
                   Text(
                     'Degradasi: ${fatigue.degradationPercentage.toInt()}%',
                     style: AppTextStyles.captionSmall.copyWith(
-                      color: AppColors.onSurfaceVariantDark,
+                      color: AppColors.neutral600,
                     ),
                   ),
                 ],
               ),
               if (fatigue.recommendRest)
                 Chip(
-                  backgroundColor: AppColors.error.withValues(alpha: 0.2),
+                  backgroundColor: AppColors.error.withValues(alpha: 0.15),
                   side: const BorderSide(color: AppColors.error),
                   label: Text(
                     'REST NEEDED',
@@ -457,7 +458,7 @@ class _CoachDecisionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
-      color: AppColors.surfaceContainerDark,
+      color: AppColors.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -477,7 +478,7 @@ class _CoachDecisionCard extends StatelessWidget {
                 child: Text(
                   decision.title,
                   style: AppTextStyles.titleMedium.copyWith(
-                    color: AppColors.onSurfaceDark,
+                    color: AppColors.onSurface,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -488,7 +489,7 @@ class _CoachDecisionCard extends StatelessWidget {
           Text(
             decision.reasoning,
             style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.onSurfaceVariantDark,
+              color: AppColors.neutral600,
             ),
           ),
         ],
@@ -511,7 +512,7 @@ class _RecommendationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
-      color: AppColors.surfaceContainerDark,
+      color: AppColors.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -533,13 +534,13 @@ class _RecommendationCard extends StatelessWidget {
               Text(
                 'Dynamic Angle: ${dynamicAngle.toInt()}°',
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.onSurfaceDark,
+                  color: AppColors.onSurface,
                 ),
               ),
               Text(
                 'Rest: ${adaptiveRest}s',
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.onSurfaceDark,
+                  color: AppColors.onSurface,
                 ),
               ),
             ],

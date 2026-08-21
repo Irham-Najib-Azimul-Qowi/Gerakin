@@ -72,7 +72,12 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/exercises/
-    - assets/exercises/illustrations/
+    - assets/exercises/arm_raise/
+    - assets/exercises/bicep_curl/
+    - assets/exercises/neck_rotation/
+    - assets/exercises_processed/arm_raise/
+    - assets/exercises_processed/bicep_curl/
+    - assets/exercises_processed/neck_rotation/
 
 flutter_launcher_icons:
   android: "ic_launcher"

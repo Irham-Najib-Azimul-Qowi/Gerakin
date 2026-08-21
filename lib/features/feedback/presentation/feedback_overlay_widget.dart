@@ -73,12 +73,12 @@ class _FeedbackBanner extends StatelessWidget {
         vertical: AppSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceDark.withValues(alpha: 0.9),
+        color: AppColors.surface.withValues(alpha: 0.95),
         borderRadius: AppRadius.borderRadiusLg,
         border: Border.all(color: typeColor, width: 2.0),
         boxShadow: [
           BoxShadow(
-            color: typeColor.withValues(alpha: 0.3),
+            color: typeColor.withValues(alpha: 0.25),
             blurRadius: 12,
             spreadRadius: 2,
           ),
@@ -96,7 +96,7 @@ class _FeedbackBanner extends StatelessWidget {
             child: Text(
               message.text,
               style: AppTextStyles.titleMedium.copyWith(
-                color: AppColors.onSurfaceDark,
+                color: AppColors.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -151,7 +151,7 @@ class _RestCountdownOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.surfaceDark.withValues(alpha: 0.85),
+      color: AppColors.surface.withValues(alpha: 0.92),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -23,7 +23,6 @@ import '../../features/user/presentation/pages/assessment_wizard_page.dart';
 import '../../features/gamification/presentation/pages/gamification_dashboard_page.dart';
 import '../../features/collaboration/presentation/pages/collaboration_hub_page.dart';
 import '../../features/presentation/pages/ai_presentation_dashboard_page.dart';
-import '../../features/analytics/presentation/pages/analytics_dashboard_page.dart';
 import '../../features/settings/presentation/pages/component_gallery_page.dart';
 import '../../features/workout/presentation/pages/workout_page.dart';
 import '../../features/workout_session/presentation/exercise_detail_screen.dart';
@@ -32,6 +31,8 @@ import '../../features/workout_session/presentation/live_camera_screen.dart';
 import '../../features/workout_session/presentation/session_summary_screen.dart';
 import '../../features/workout_session/presentation/session_replay_screen.dart';
 import '../../features/workout_session/models/workout_summary.dart';
+import '../../features/exercise/domain/exercise_type.dart';
+import '../../features/exercise/presentation/exercise_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 import 'route_names.dart';
 
@@ -58,7 +59,7 @@ class AppRouter {
           return MainShell(navigationShell: navigationShell);
         },
         branches: [
-          // Tab 0 – Home
+          // Tab 0 – Beranda
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -68,7 +69,7 @@ class AppRouter {
               ),
             ],
           ),
-          // Tab 1 – Workout
+          // Tab 1 – Latihan
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -78,17 +79,7 @@ class AppRouter {
               ),
             ],
           ),
-          // Tab 2 – Progress
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: RoutePaths.progress,
-                name: RouteNames.progress,
-                builder: (context, state) => const AnalyticsDashboardPage(),
-              ),
-            ],
-          ),
-          // Tab 3 – Community
+          // Tab 2 – Komunitas
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -98,7 +89,7 @@ class AppRouter {
               ),
             ],
           ),
-          // Tab 4 – Profile
+          // Tab 3 – Profil
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -224,6 +215,15 @@ class AppRouter {
         name: RouteNames.presentation,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AiPresentationDashboardPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.interactiveExercise,
+        name: RouteNames.interactiveExercise,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final type = state.extra as ExerciseType? ?? ExerciseType.sideArmRaise;
+          return ExerciseScreen(exerciseType: type);
+        },
       ),
 
       // ── Intelligent Rehabilitation Session Engine Routes ──────────

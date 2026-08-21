@@ -168,7 +168,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
     }
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceDark,
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Stack(
           children: [
@@ -252,13 +252,21 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
               child: Container(
                 padding: AppSpacing.paddingAllLg,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceDark.withValues(alpha: 0.8),
+                  color: AppColors.surface.withValues(alpha: 0.92),
                   borderRadius: AppRadius.borderRadiusLg,
                   border: Border.all(
                     color: _detectedJointsCount > 0
                         ? AppColors.primary
-                        : AppColors.outlineDark,
+                        : AppColors.outlineVariant,
+                    width: 1.5,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
@@ -282,7 +290,8 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
                                 ? 'Pose Terdeteksi ($_detectedJointsCount sendi)'
                                 : 'Memindai pose tubuh...',
                             style: AppTextStyles.titleSmall.copyWith(
-                              color: AppColors.onSurfaceDark,
+                              color: AppColors.onSurface,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           Gap(AppSpacing.xxs),
@@ -291,7 +300,7 @@ class _WorkoutCameraPageState extends State<WorkoutCameraPage>
                                 ? 'Kamera Depan • ML Kit Pose Stream'
                                 : 'Kamera Belakang • ML Kit Pose Stream',
                             style: AppTextStyles.captionSmall.copyWith(
-                              color: AppColors.onSurfaceVariantDark,
+                              color: AppColors.neutral600,
                             ),
                           ),
                         ],

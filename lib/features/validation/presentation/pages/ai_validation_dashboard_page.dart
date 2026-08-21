@@ -32,16 +32,16 @@ class AiValidationDashboardPage extends ConsumerWidget {
     final m = validationState.metrics;
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceDark,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(
           'AI Validation Dashboard',
           style: AppTextStyles.titleLarge.copyWith(
-            color: AppColors.onSurfaceDark,
+            color: AppColors.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: AppColors.surfaceContainerDark,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         centerTitle: true,
       ),
@@ -63,8 +63,8 @@ class AiValidationDashboardPage extends ConsumerWidget {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
-                    AppColors.secondaryDark,
                     AppColors.secondary,
+                    AppColors.secondaryDark,
                   ],
                 ),
                 borderRadius: AppRadius.borderRadiusLg,
@@ -92,7 +92,7 @@ class AiValidationDashboardPage extends ConsumerWidget {
                         Text(
                           'Real-time Pose Quality & Camera Performance Metrics',
                           style: AppTextStyles.captionMedium.copyWith(
-                            color: AppColors.onSecondary.withValues(alpha: 0.8),
+                            color: AppColors.onSecondary.withValues(alpha: 0.85),
                           ),
                         ),
                       ],
@@ -106,21 +106,21 @@ class AiValidationDashboardPage extends ConsumerWidget {
 
             // 9 Core Metrics Grid
             SectionCard(
-              color: AppColors.surfaceContainerDark,
+              color: AppColors.surfaceContainerLow,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     '9 Metrik Validasi Vision',
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.onSurfaceDark,
+                      color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     'Parameter performa deteksi pose & lingkungan',
                     style: AppTextStyles.captionSmall.copyWith(
-                      color: AppColors.onSurfaceVariantDark,
+                      color: AppColors.neutral600,
                     ),
                   ),
                   Gap(AppSpacing.md),
@@ -217,21 +217,21 @@ class AiValidationDashboardPage extends ConsumerWidget {
 
             // Recording & Replay Controls Section
             SectionCard(
-              color: AppColors.surfaceContainerDark,
+              color: AppColors.surfaceContainerLow,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Session Recording & Replay Debugging',
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.onSurfaceDark,
+                      color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     'Rekam sesi ke format JSON dan putar kembali tanpa kamera',
                     style: AppTextStyles.captionSmall.copyWith(
-                      color: AppColors.onSurfaceVariantDark,
+                      color: AppColors.neutral600,
                     ),
                   ),
                   Gap(AppSpacing.md),
@@ -305,9 +305,9 @@ class _MetricTile extends StatelessWidget {
         padding: AppSpacing.paddingAllSm,
         margin: EdgeInsets.symmetric(horizontal: AppSpacing.xxs),
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariantDark,
+          color: AppColors.surface,
           borderRadius: AppRadius.borderRadiusMd,
-          border: Border.all(color: color.withValues(alpha: 0.3)),
+          border: Border.all(color: AppColors.outlineVariant),
         ),
         child: Column(
           children: [
@@ -319,14 +319,14 @@ class _MetricTile extends StatelessWidget {
                   TextSpan(
                     text: value,
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.onSurfaceDark,
+                      color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   TextSpan(
                     text: ' $unit',
                     style: AppTextStyles.captionSmall.copyWith(
-                      color: AppColors.onSurfaceVariantDark,
+                      color: AppColors.neutral600,
                       fontSize: 9,
                     ),
                   ),
@@ -339,7 +339,7 @@ class _MetricTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.captionSmall.copyWith(
-                color: AppColors.onSurfaceVariantDark,
+                color: AppColors.neutral600,
                 fontSize: 9,
               ),
             ),

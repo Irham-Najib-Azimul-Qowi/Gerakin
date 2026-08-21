@@ -26,16 +26,16 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: AppColors.surfaceDark,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(
           exercise.name,
           style: AppTextStyles.titleLarge.copyWith(
-            color: AppColors.onSurfaceDark,
+            color: AppColors.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: AppColors.surfaceContainerDark,
+        backgroundColor: AppColors.surface,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -49,8 +49,8 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
-                    AppColors.primaryDark,
                     AppColors.primary,
+                    AppColors.primaryDark,
                   ],
                 ),
                 borderRadius: AppRadius.borderRadiusLg,
@@ -63,6 +63,7 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                     children: [
                       Chip(
                         backgroundColor: AppColors.onPrimary.withValues(alpha: 0.2),
+                        side: BorderSide.none,
                         label: Text(
                           exercise.category,
                           style: AppTextStyles.labelMedium.copyWith(
@@ -103,14 +104,14 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
 
             // 0. Ilustrasi Gerakan (3 Tahap Anatomis)
             SectionCard(
-              color: AppColors.surfaceContainerDark,
+              color: AppColors.surfaceContainerLow,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Ilustrasi Tahapan Gerakan',
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.onSurfaceDark,
+                      color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -118,7 +119,7 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                   Text(
                     'Urutan visual 3 posisi: Awal, Puncak Tahan, dan Akhir.',
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.onSurfaceVariantDark,
+                      color: AppColors.neutral600,
                     ),
                   ),
                   Gap(AppSpacing.md),
@@ -138,7 +139,7 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                             Text(
                               '1. Awal',
                               style: AppTextStyles.captionMedium.copyWith(
-                                color: AppColors.onSurfaceDark,
+                                color: AppColors.onSurface,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -160,7 +161,7 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                             Text(
                               '2. Puncak',
                               style: AppTextStyles.captionMedium.copyWith(
-                                color: AppColors.primaryLight,
+                                color: AppColors.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -182,7 +183,7 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                             Text(
                               '3. Akhir',
                               style: AppTextStyles.captionMedium.copyWith(
-                                color: AppColors.onSurfaceDark,
+                                color: AppColors.onSurface,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -199,14 +200,14 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
 
             // 1. Manfaat & Otot Target Card
             SectionCard(
-              color: AppColors.surfaceContainerDark,
+              color: AppColors.surfaceContainerLow,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Manfaat & Otot Target',
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.onSurfaceDark,
+                      color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -214,7 +215,7 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                   Text(
                     exercise.benefit,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.onSurfaceVariantDark,
+                      color: AppColors.neutral600,
                     ),
                   ),
                   Gap(AppSpacing.md),
@@ -223,12 +224,13 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                     runSpacing: AppSpacing.xs,
                     children: exercise.targetMuscles.map((muscle) {
                       return Chip(
-                        backgroundColor: AppColors.surfaceVariantDark,
+                        backgroundColor: AppColors.primaryContainer,
                         side: const BorderSide(color: AppColors.primary),
                         label: Text(
                           muscle,
                           style: AppTextStyles.captionMedium.copyWith(
-                            color: AppColors.primaryLight,
+                            color: AppColors.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       );
@@ -242,14 +244,14 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
 
             // 2. Pose & Target Angles Card
             SectionCard(
-              color: AppColors.surfaceContainerDark,
+              color: AppColors.surfaceContainerLow,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Panduan Pose & Sudut Target',
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.onSurfaceDark,
+                      color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -279,14 +281,14 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
 
             // 3. Dosis & Dosis Latihan (Reps, Sets, Rest, Calories)
             SectionCard(
-              color: AppColors.surfaceContainerDark,
+              color: AppColors.surfaceContainerLow,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Dosis Latihan',
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.onSurfaceDark,
+                      color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -320,14 +322,14 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
 
             // 4. Petunjuk Suara & Peringatan
             SectionCard(
-              color: AppColors.surfaceContainerDark,
+              color: AppColors.surfaceContainerLow,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Petunjuk Suara & Keselamatan',
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.onSurfaceDark,
+                      color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -341,7 +343,7 @@ class ExerciseDetailPreviewPage extends ConsumerWidget {
                         child: Text(
                           exercise.voiceInstruction,
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.onSurfaceDark,
+                            color: AppColors.onSurface,
                           ),
                         ),
                       ),
@@ -403,13 +405,13 @@ class _DetailRow extends StatelessWidget {
           Text(
             label,
             style: AppTextStyles.captionSmall.copyWith(
-              color: AppColors.onSurfaceVariantDark,
+              color: AppColors.neutral600,
             ),
           ),
           Text(
             value,
             style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.onSurfaceDark,
+              color: AppColors.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -439,7 +441,7 @@ class _StatBadge extends StatelessWidget {
         Text(
           label,
           style: AppTextStyles.captionSmall.copyWith(
-            color: AppColors.onSurfaceVariantDark,
+            color: AppColors.neutral600,
           ),
         ),
       ],

@@ -34,16 +34,16 @@ class ExerciseLibraryPage extends ConsumerWidget {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceDark,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(
           'Katalog Latihan Adaptif',
           style: AppTextStyles.titleLarge.copyWith(
-            color: AppColors.onSurfaceDark,
+            color: AppColors.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: AppColors.surfaceContainerDark,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         centerTitle: true,
       ),
@@ -52,7 +52,7 @@ class ExerciseLibraryPage extends ConsumerWidget {
           // 1. Search Bar & Filter Header
           Container(
             padding: AppSpacing.paddingPage,
-            color: AppColors.surfaceContainerDark,
+            color: AppColors.surface,
             child: Column(
               children: [
                 AppTextField(
@@ -75,13 +75,16 @@ class ExerciseLibraryPage extends ConsumerWidget {
                           labelStyle: AppTextStyles.labelMedium.copyWith(
                             color: isSelected
                                 ? AppColors.onPrimary
-                                : AppColors.onSurfaceVariantDark,
+                                : AppColors.onSurface,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                           selectedColor: AppColors.primary,
-                          backgroundColor: AppColors.surfaceVariantDark,
+                          backgroundColor: AppColors.surfaceContainerLow,
                           shape: RoundedRectangleBorder(
                             borderRadius: AppRadius.borderRadiusFull,
+                          ),
+                          side: BorderSide(
+                            color: isSelected ? AppColors.primary : AppColors.outlineVariant,
                           ),
                           onSelected: (_) => controller.selectCategory(cat),
                         ),
@@ -139,7 +142,7 @@ class _ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
-      color: AppColors.surfaceContainerDark,
+      color: AppColors.surfaceContainerLow,
       onTap: onTap,
       child: Row(
         children: [
@@ -170,13 +173,13 @@ class _ExerciseCard extends StatelessWidget {
                         vertical: AppSpacing.xxs,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.secondary.withValues(alpha: 0.2),
+                        color: AppColors.secondary.withValues(alpha: 0.15),
                         borderRadius: AppRadius.borderRadiusSm,
                       ),
                       child: Text(
                         exercise.category.toUpperCase(),
                         style: AppTextStyles.captionSmall.copyWith(
-                          color: AppColors.secondaryLight,
+                          color: AppColors.secondary,
                           fontWeight: FontWeight.bold,
                           fontSize: 9,
                         ),
@@ -196,7 +199,7 @@ class _ExerciseCard extends StatelessWidget {
                 Text(
                   exercise.name,
                   style: AppTextStyles.titleMedium.copyWith(
-                    color: AppColors.onSurfaceDark,
+                    color: AppColors.onSurface,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -206,7 +209,7 @@ class _ExerciseCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.onSurfaceVariantDark,
+                    color: AppColors.neutral600,
                   ),
                 ),
               ],
@@ -214,7 +217,7 @@ class _ExerciseCard extends StatelessWidget {
           ),
           const Icon(
             Icons.chevron_right_rounded,
-            color: AppColors.onSurfaceVariantDark,
+            color: AppColors.neutral500,
           ),
         ],
       ),
@@ -238,13 +241,13 @@ class _EmptySearchState extends StatelessWidget {
             const Icon(
               Icons.search_off_rounded,
               size: 64,
-              color: AppColors.onSurfaceVariantDark,
+              color: AppColors.neutral400,
             ),
             Gap(AppSpacing.md),
             Text(
               'Tidak ada latihan ditemukan',
               style: AppTextStyles.titleMedium.copyWith(
-                color: AppColors.onSurfaceDark,
+                color: AppColors.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -255,7 +258,7 @@ class _EmptySearchState extends StatelessWidget {
                   : 'Coba ubah filter atau kata kunci pencarian Anda.',
               textAlign: TextAlign.center,
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.onSurfaceVariantDark,
+                color: AppColors.neutral600,
               ),
             ),
           ],

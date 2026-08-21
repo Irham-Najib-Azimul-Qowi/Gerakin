@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/route_names.dart';
 import '../controllers/profile_controller.dart';
 import '../../models/user_profile.dart';
+import '../../../gamification/presentation/controllers/gamification_controller.dart';
 
 /// Halaman Profil Pengguna untuk aplikasi GERAKIN.
 class ProfilePage extends ConsumerWidget {
@@ -49,6 +50,10 @@ class ProfilePage extends ConsumerWidget {
           children: [
             // ── PROFILE HEADER (CARD) ──────────────────────────────
             _buildProfileHeaderCard(context, active),
+            const SizedBox(height: 16),
+
+            // ── DAILY STREAK CARD ─────────────────────────────────
+            _buildStreakCard(context, ref),
             const SizedBox(height: 24),
 
             // ── PROFILE PICKER / SWITCHER ──────────────────────────
@@ -389,6 +394,71 @@ class ProfilePage extends ConsumerWidget {
           },
         );
       },
+    );
+  }
+
+  Widget _buildStreakCard(BuildContext context, WidgetRef ref) {
+    final gamificationState = ref.watch(gamificationControllerProvider);
+    final currentStreak = gamificationState.streak?.currentStreak ?? 1;
+    final longestStreak = gamificationState.streak?.longestStreak ?? 1;
+
+    return Card(
+      elevation: 0,
+      color: Colors.orange.withValues(alpha: 0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Colors.orange, width: 1.2),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Center(
+                child: Text('🔥', style: TextStyle(fontSize: 26)),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Streak Latihan Harian',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange.shade900,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '$currentStreak Hari Berturut-turut',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  Text(
+                    'Rekor Terpanjang: $longestStreak Hari',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

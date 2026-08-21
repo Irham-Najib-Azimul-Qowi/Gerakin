@@ -186,6 +186,30 @@ class AppTheme {
             color: AppColors.onInverseSurface,
           ),
         ),
+        chipTheme: ChipThemeData(
+          backgroundColor: AppColors.surfaceContainerLow,
+          selectedColor: AppColors.primaryContainer,
+          secondarySelectedColor: AppColors.secondaryContainer,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          labelStyle: AppTextStyles.labelMedium.copyWith(color: AppColors.onSurface),
+          secondaryLabelStyle: AppTextStyles.labelMedium.copyWith(color: AppColors.primary),
+          brightness: Brightness.light,
+          shape: RoundedRectangleBorder(
+            borderRadius: AppRadius.borderRadiusFull,
+            side: const BorderSide(color: AppColors.outlineVariant, width: 0.8),
+          ),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          elevation: 3,
+          focusElevation: 4,
+          hoverElevation: 4,
+          highlightElevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
         dividerTheme: const DividerThemeData(
           color: AppColors.outlineVariant,
           thickness: 1,

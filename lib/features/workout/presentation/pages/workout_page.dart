@@ -8,6 +8,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/buttons/app_button.dart';
 import '../../../../shared/widgets/cards/workout_card.dart';
+import '../../../exercise/domain/exercise_type.dart';
 
 /// Halaman Workout dengan Akses Pustaka Latihan Rehabilitasi Kursi Roda & AI Camera.
 class WorkoutPage extends StatelessWidget {
@@ -27,15 +28,15 @@ class WorkoutPage extends StatelessWidget {
             padding: AppSpacing.paddingAllLg,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF00796B), Color(0xFF004D40)],
+                colors: [AppColors.primary, AppColors.primaryDark],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(AppSpacing.lg),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 10,
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                  blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
               ],
@@ -64,17 +65,20 @@ class WorkoutPage extends StatelessWidget {
                 ),
                 Gap(AppSpacing.xs),
                 Text(
-                  'Akses 50+ database latihan rehabilitasi adaptif khusus pengguna kursi roda (Warm Up, ROM, Strengths, Core, & Rehab)',
+                  'Akses 3 latihan rehabilitasi adaptif berbasis AI Pose Detection & Guide Overlay Transparan.',
                   style: AppTextStyles.bodySmall.copyWith(
                     color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 Gap(AppSpacing.lg),
                 AppButton(
-                  label: 'Buka Katalog Latihan (50+ Latihan)',
-                  icon: Icons.grid_view_rounded,
+                  label: 'Buka Seated Side Arm Raise',
+                  icon: Icons.play_circle_fill_rounded,
                   isExpanded: true,
-                  onPressed: () => context.pushNamed(RouteNames.exerciseLibrary),
+                  onPressed: () => context.pushNamed(
+                    RouteNames.interactiveExercise,
+                    extra: ExerciseType.sideArmRaise,
+                  ),
                 ),
               ],
             ),
@@ -128,35 +132,53 @@ class WorkoutPage extends StatelessWidget {
           ),
 
           Gap(AppSpacing.xxl),
-          Text('Program Latihan Rehabilitasi Pilihan', style: AppTextStyles.titleMedium),
-          Gap(AppSpacing.md),
-          WorkoutCard(
-            title: 'Putaran Lengan Duduk (Warm Up)',
-            duration: '5 min',
-            calories: '25 kcal',
-            level: 'Beginner',
-            icon: Icons.accessible_rounded,
-            onTap: () => context.pushNamed(RouteNames.exerciseLibrary),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('3 Latihan Rehabilitasi Utama', style: AppTextStyles.titleMedium),
+              TextButton(
+                onPressed: () => context.pushNamed(RouteNames.exerciseLibrary),
+                child: const Text('Lihat Katalog'),
+              ),
+            ],
           ),
           Gap(AppSpacing.sm),
           WorkoutCard(
-            title: 'Fleksi Bahu Duduk (ROM)',
+            title: '1. Seated Side Arm Raise',
+            duration: '5 min',
+            calories: '12 kcal',
+            level: 'Level 1',
+            icon: Icons.accessible_rounded,
+            onTap: () => context.pushNamed(
+              RouteNames.interactiveExercise,
+              extra: ExerciseType.sideArmRaise,
+            ),
+          ),
+          Gap(AppSpacing.sm),
+          WorkoutCard(
+            title: '2. Seated Bicep Curl',
             duration: '10 min',
-            calories: '45 kcal',
-            level: 'Beginner',
+            calories: '18 kcal',
+            level: 'Level 2',
             icon: Icons.accessibility_new_rounded,
             iconColor: AppColors.secondary,
-            onTap: () => context.pushNamed(RouteNames.exerciseLibrary),
+            onTap: () => context.pushNamed(
+              RouteNames.interactiveExercise,
+              extra: ExerciseType.bicepCurl,
+            ),
           ),
           Gap(AppSpacing.sm),
           WorkoutCard(
-            title: 'Wheelchair Arm Press (Strength)',
-            duration: '15 min',
-            calories: '85 kcal',
-            level: 'Intermediate',
+            title: '3. Seated Neck Rotation',
+            duration: '12 min',
+            calories: '22 kcal',
+            level: 'Level 2',
             icon: Icons.fitness_center_rounded,
             iconColor: AppColors.tertiary,
-            onTap: () => context.pushNamed(RouteNames.exerciseLibrary),
+            onTap: () => context.pushNamed(
+              RouteNames.interactiveExercise,
+              extra: ExerciseType.neckRotation,
+            ),
           ),
         ],
       ),
