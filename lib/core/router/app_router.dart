@@ -32,6 +32,7 @@ import '../../features/workout_session/presentation/session_summary_screen.dart'
 import '../../features/workout_session/presentation/session_replay_screen.dart';
 import '../../features/workout_session/models/workout_summary.dart';
 import '../../features/exercise/domain/exercise_type.dart';
+import '../../features/exercise/presentation/exercise_education_screen.dart';
 import '../../features/exercise/presentation/exercise_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 import 'route_names.dart';
@@ -215,6 +216,15 @@ class AppRouter {
         name: RouteNames.presentation,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AiPresentationDashboardPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.exerciseEducation,
+        name: RouteNames.exerciseEducation,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final type = state.extra as ExerciseType? ?? ExerciseType.sideArmRaise;
+          return ExerciseEducationScreen(exerciseType: type);
+        },
       ),
       GoRoute(
         path: RoutePaths.interactiveExercise,

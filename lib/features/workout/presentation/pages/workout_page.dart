@@ -76,7 +76,7 @@ class WorkoutPage extends StatelessWidget {
                   icon: Icons.play_circle_fill_rounded,
                   isExpanded: true,
                   onPressed: () => context.pushNamed(
-                    RouteNames.interactiveExercise,
+                    RouteNames.exerciseEducation,
                     extra: ExerciseType.sideArmRaise,
                   ),
                 ),
@@ -103,7 +103,7 @@ class WorkoutPage extends StatelessWidget {
             level: 'Level 1',
             icon: Icons.accessible_rounded,
             onTap: () => context.pushNamed(
-              RouteNames.interactiveExercise,
+              RouteNames.exerciseEducation,
               extra: ExerciseType.sideArmRaise,
             ),
           ),
@@ -116,7 +116,7 @@ class WorkoutPage extends StatelessWidget {
             icon: Icons.accessibility_new_rounded,
             iconColor: AppColors.secondary,
             onTap: () => context.pushNamed(
-              RouteNames.interactiveExercise,
+              RouteNames.exerciseEducation,
               extra: ExerciseType.bicepCurl,
             ),
           ),
@@ -129,7 +129,7 @@ class WorkoutPage extends StatelessWidget {
             icon: Icons.fitness_center_rounded,
             iconColor: AppColors.tertiary,
             onTap: () => context.pushNamed(
-              RouteNames.interactiveExercise,
+              RouteNames.exerciseEducation,
               extra: ExerciseType.neckRotation,
             ),
           ),

@@ -23,6 +23,7 @@ class RouteNames {
   static const String gamification = 'gamification';
   static const String collaboration = 'collaboration';
   static const String presentation = 'presentation';
+  static const String exerciseEducation = 'exerciseEducation';
   static const String interactiveExercise = 'interactiveExercise';
 }
 
@@ -39,6 +40,7 @@ class RoutePaths {
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String componentGallery = '/component-gallery';
+  static const String exerciseEducation = '/exercise-education';
   static const String interactiveExercise = '/interactive-exercise';
   static const String auth = '/auth';
   static const String login = '/auth/login';
