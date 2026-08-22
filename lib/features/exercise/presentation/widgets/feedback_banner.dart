@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gerakin/core/theme/app_colors.dart';
 import '../../domain/movement_feedback.dart';
 
-/// Banner Overlay Umpan Balik Teks & Koreksi Gerakan Real-time.
+/// Banner Overlay Umpan Balik Teks & Koreksi Gerakan Light Translucent.
 class FeedbackBanner extends StatelessWidget {
   const FeedbackBanner({
     super.key,
@@ -14,24 +15,20 @@ class FeedbackBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     if (feedback == null) return const SizedBox.shrink();
 
-    Color bgColor;
-    Color textColor;
+    Color accentColor;
     IconData iconData;
 
     switch (feedback!.category) {
       case FeedbackCategory.positive:
-        bgColor = const Color(0xFF00E676).withValues(alpha: 0.9);
-        textColor = Colors.black;
+        accentColor = const Color(0xFF008E76);
         iconData = Icons.check_circle_rounded;
         break;
       case FeedbackCategory.instruction:
-        bgColor = const Color(0xFF0F172A).withValues(alpha: 0.85);
-        textColor = Colors.white;
+        accentColor = AppColors.primaryDark;
         iconData = Icons.info_rounded;
         break;
       case FeedbackCategory.correction:
-        bgColor = Colors.orange.shade800.withValues(alpha: 0.92);
-        textColor = Colors.white;
+        accentColor = const Color(0xFFD97706);
         iconData = Icons.warning_rounded;
         break;
     }
@@ -41,26 +38,27 @@ class FeedbackBanner extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: Colors.white.withValues(alpha: 0.90),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        border: Border.all(color: accentColor.withValues(alpha: 0.35), width: 1.2),
+        boxShadow: [
           BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8,
-            offset: Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(iconData, color: textColor, size: 20),
+          Icon(iconData, color: accentColor, size: 20),
           const SizedBox(width: 10),
           Flexible(
             child: Text(
               feedback!.message,
-              style: TextStyle(
-                color: textColor,
+              style: const TextStyle(
+                color: AppColors.onSurface,
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
               ),

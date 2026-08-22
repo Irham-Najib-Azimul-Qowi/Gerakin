@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gerakin/core/theme/app_colors.dart';
 import '../../domain/exercise_type.dart';
 
-/// Top HUD Display Sesi Latihan (Set, Reps, Accuracy Quality, & Status).
+/// Top HUD Display Sesi Latihan Light Translucent (Set, Reps, Accuracy Quality, & Status).
 class RepetitionHud extends StatelessWidget {
   const RepetitionHud({
     super.key,
@@ -23,46 +24,46 @@ class RepetitionHud extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white12),
-        boxShadow: const [
+        color: Colors.white.withValues(alpha: 0.88),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+        boxShadow: [
           BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Nama Latihan
+          // Nama Latihan & Kategori Badge
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 exerciseType.displayName,
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
+                  color: AppColors.onSurface,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00BFA5).withValues(alpha: 0.2),
+                  color: AppColors.primaryContainer.withValues(alpha: 0.80),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFF00BFA5), width: 0.8),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.30), width: 0.8),
                 ),
                 child: Text(
                   exerciseType.category,
                   style: const TextStyle(
-                    color: Color(0xFF00BFA5),
+                    color: AppColors.primaryDark,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -70,35 +71,39 @@ class RepetitionHud extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
 
-          // Display Counter SET & REPS
+          // Display Counter SET, REPETISI & AKURASI
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildCounterItem('SET', '$currentSet / $totalSets', Colors.cyanAccent),
-              Container(width: 1, height: 28, color: Colors.white12),
-              _buildCounterItem('REPETISI', '$completedReps / $targetReps', const Color(0xFF00E676)),
-              Container(width: 1, height: 28, color: Colors.white12),
+              _buildCounterItem('SET', '$currentSet / $totalSets', AppColors.secondaryDark),
+              Container(width: 1, height: 26, color: Colors.black.withValues(alpha: 0.08)),
+              _buildCounterItem('REPETISI', '$completedReps / $targetReps', AppColors.primaryDark),
+              Container(width: 1, height: 26, color: Colors.black.withValues(alpha: 0.08)),
               _buildCounterItem(
                 'AKURASI',
                 '${accuracyPercentage.toStringAsFixed(0)}%',
-                accuracyPercentage > 80 ? Colors.greenAccent : Colors.orangeAccent,
+                accuracyPercentage > 80
+                    ? const Color(0xFF008E76)
+                    : accuracyPercentage > 60
+                        ? const Color(0xFFD97706)
+                        : const Color(0xFFDC2626),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
           // Progress Bar Akurasi / Movement Quality
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
               value: (accuracyPercentage / 100.0).clamp(0.0, 1.0),
-              minHeight: 6,
-              backgroundColor: Colors.white10,
+              minHeight: 5,
+              backgroundColor: Colors.black.withValues(alpha: 0.08),
               valueColor: AlwaysStoppedAnimation<Color>(
                 accuracyPercentage > 80
-                    ? const Color(0xFF00E676)
+                    ? AppColors.primary
                     : accuracyPercentage > 60
                         ? Colors.amber
                         : Colors.orange,
@@ -112,22 +117,24 @@ class RepetitionHud extends StatelessWidget {
 
   Widget _buildCounterItem(String label, String value, Color valueColor) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.onSurfaceVariant,
+            fontSize: 9,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 2),
         Text(
           value,
           style: TextStyle(
             color: valueColor,
-            fontSize: 20,
+            fontSize: 15,
             fontWeight: FontWeight.w800,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white60,
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.8,
           ),
         ),
       ],

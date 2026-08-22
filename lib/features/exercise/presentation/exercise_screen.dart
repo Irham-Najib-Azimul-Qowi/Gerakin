@@ -251,7 +251,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // App Bar Translusen Ringan
+                  // App Bar Translusen Ringan (Light Translucent)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     child: Row(
@@ -259,26 +259,40 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                            color: Colors.white.withValues(alpha: 0.88),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white12),
+                            border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.onSurface),
                             onPressed: () => _showExitDialog(context),
                           ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                            color: Colors.white.withValues(alpha: 0.88),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white12),
+                            border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: Text(
                             widget.exerciseType.displayName,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.onSurface,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
@@ -288,14 +302,21 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                                color: Colors.white.withValues(alpha: 0.88),
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white12),
+                                border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.06),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: IconButton(
                                 icon: Icon(
                                   Icons.bug_report_rounded,
-                                  color: _showDebugHUD ? Colors.yellowAccent : Colors.white70,
+                                  color: _showDebugHUD ? AppColors.secondaryDark : AppColors.onSurfaceVariant,
                                   size: 18,
                                 ),
                                 tooltip: 'Toggle Debug HUD',
@@ -309,14 +330,21 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
                             const SizedBox(width: 6),
                             Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFF0F172A).withValues(alpha: 0.70),
+                                color: Colors.white.withValues(alpha: 0.88),
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white12),
+                                border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.06),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: IconButton(
                                 icon: Icon(
                                   _showGuide ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-                                  color: _showGuide ? AppColors.primary : Colors.white70,
+                                  color: _showGuide ? AppColors.primaryDark : AppColors.onSurfaceVariant,
                                 ),
                                 tooltip: _showGuide ? 'Sembunyikan Panduan' : 'Tampilkan Panduan',
                                 onPressed: () {
@@ -332,28 +360,32 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
                     ),
                   ),
 
-                  // Peringatan Postur Berdiri (Jika User Berdiri)
+                  // Peringatan Postur Berdiri Light Theme (Jika User Berdiri)
                   if (_engine.postureState == UserPostureState.standing)
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.orange.shade900.withValues(alpha: 0.92),
+                        color: Colors.amber.shade50.withValues(alpha: 0.94),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.orangeAccent),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black38, blurRadius: 8, offset: Offset(0, 3)),
+                        border: Border.all(color: Colors.amber.shade700, width: 1.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
                         ],
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
-                          SizedBox(width: 8),
+                          Icon(Icons.warning_amber_rounded, color: Colors.amber.shade900, size: 20),
+                          const SizedBox(width: 8),
                           Flexible(
                             child: Text(
                               'Posisi Tidak Sesuai — Silakan Lakukan Latihan dalam Posisi Duduk',
-                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: Colors.amber.shade900, fontSize: 12, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -388,23 +420,23 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
             ),
           ),
 
-          // 6. Bilah Kontrol Bawah Translusen Glass (Pause/Resume, Toggle Guide, Stop)
+          // 6. Bilah Kontrol Bawah Light Translucent (Pause/Resume, Toggle Guide, Stop)
           Positioned(
             bottom: 16,
             left: 16,
             right: 16,
             child: SafeArea(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F172A).withValues(alpha: 0.75),
+                  color: Colors.white.withValues(alpha: 0.88),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-                  boxShadow: const [
+                  border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+                  boxShadow: [
                     BoxShadow(
-                      color: Colors.black38,
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 12,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -417,7 +449,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
                         _engine.ttsService.isMuted
                             ? Icons.volume_off_rounded
                             : Icons.volume_up_rounded,
-                        color: Colors.white,
+                        color: AppColors.onSurface,
                       ),
                       onPressed: () {
                         setState(() {
@@ -435,45 +467,51 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
                       },
                       icon: Icon(
                         _showGuide ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-                        color: _showGuide ? AppColors.primary : Colors.white70,
+                        color: _showGuide ? AppColors.primaryDark : AppColors.onSurfaceVariant,
                         size: 20,
                       ),
                       label: Text(
                         _showGuide ? 'Panduan ON' : 'Panduan OFF',
                         style: TextStyle(
-                          color: _showGuide ? AppColors.primary : Colors.white70,
+                          color: _showGuide ? AppColors.primaryDark : AppColors.onSurfaceVariant,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
 
-                    // Pause / Resume Session
-                    IconButton(
-                      icon: Icon(
-                        _engine.isPaused
-                            ? Icons.play_arrow_rounded
-                            : Icons.pause_rounded,
-                        color: Colors.white,
-                        size: 28,
+                    // Pause / Resume Session (Tombol Akselerasi Primary)
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          if (_engine.isPaused) {
-                            _engine.resume();
-                          } else {
-                            _engine.pause();
-                          }
-                        });
-                      },
+                      child: IconButton(
+                        icon: Icon(
+                          _engine.isPaused
+                              ? Icons.play_arrow_rounded
+                              : Icons.pause_rounded,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (_engine.isPaused) {
+                              _engine.resume();
+                            } else {
+                              _engine.pause();
+                            }
+                          });
+                        },
+                      ),
                     ),
 
                     // Selesaikan / Stop Session
                     IconButton(
                       icon: const Icon(
                         Icons.stop_rounded,
-                        color: Colors.redAccent,
-                        size: 28,
+                        color: AppColors.error,
+                        size: 26,
                       ),
                       onPressed: () => _saveAndShowSummary(),
                     ),
@@ -503,11 +541,12 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Hentikan Sesi Latihan?', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Hentikan Sesi Latihan?', style: TextStyle(color: AppColors.onSurface, fontWeight: FontWeight.bold)),
         content: const Text(
           'Progres sesi ini akan disimpan sebagian. Yakin ingin keluar?',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: AppColors.onSurfaceVariant),
         ),
         actions: [
           TextButton(
@@ -515,15 +554,19 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
               Navigator.pop(context);
               _engine.resume();
             },
-            child: const Text('Lanjutkan'),
+            child: const Text('Lanjutkan', style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
             onPressed: () {
               Navigator.pop(context);
               context.pop();
             },
-            child: const Text('Keluar'),
+            child: const Text('Keluar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -535,16 +578,16 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('🎉 LATIHAN SELESAI 🎉', style: TextStyle(color: Colors.amber, fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text('🎉 LATIHAN SELESAI 🎉', style: TextStyle(color: AppColors.primaryDark, fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text(summary.exerciseType.displayName, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(summary.exerciseType.displayName, style: const TextStyle(color: AppColors.onSurface, fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
 
               _buildSummaryRow('Total Set', '${summary.completedSets} / ${summary.totalSets}'),
@@ -556,7 +599,8 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00E676),
+                  backgroundColor: AppColors.primary,
+                  elevation: 0,
                   minimumSize: const Size(double.infinity, 44),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
@@ -564,7 +608,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
                   Navigator.pop(context);
                   context.pop();
                 },
-                child: const Text('Selesai & Simpan', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                child: const Text('Selesai & Simpan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -579,8 +623,8 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
-          Text(value, style: const TextStyle(color: Color(0xFF00BFA5), fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(label, style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13)),
+          Text(value, style: const TextStyle(color: AppColors.primaryDark, fontSize: 14, fontWeight: FontWeight.bold)),
         ],
       ),
     );

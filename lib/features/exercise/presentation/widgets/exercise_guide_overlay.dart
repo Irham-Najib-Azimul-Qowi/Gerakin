@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerakin/core/theme/app_colors.dart';
 import '../../domain/exercise_phase.dart';
 import '../../domain/exercise_type.dart';
 
@@ -14,7 +15,7 @@ class ExerciseGuideOverlay extends StatelessWidget {
     super.key,
     required this.exerciseType,
     required this.phase,
-    this.opacity = 0.22,
+    this.opacity = 0.33,
     this.isVisible = true,
   });
 
@@ -41,11 +42,11 @@ class ExerciseGuideOverlay extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          // 1. Full Screen Ghost Guide Frame dengan 9:16 BoxFit.contain
+          // 1. Full Screen Ghost Guide Frame dengan alignment offset (0.0, 0.16) agar kepala ilustrasi tidak tertutup Top HUD
           Positioned.fill(
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 180),
-              opacity: opacity.clamp(0.12, 0.35),
+              opacity: opacity.clamp(0.20, 0.42),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 180),
                 transitionBuilder: (child, animation) {
@@ -54,13 +55,15 @@ class ExerciseGuideOverlay extends StatelessWidget {
                     child: child,
                   );
                 },
-                child: Image.asset(
-                  guideAssetPath,
+                child: Align(
                   key: ValueKey<String>(guideAssetPath),
-                  fit: BoxFit.contain,
-                  alignment: Alignment.center,
-                  width: double.infinity,
-                  height: double.infinity,
+                  alignment: const Alignment(0.0, 0.16),
+                  child: Image.asset(
+                    guideAssetPath,
+                    fit: BoxFit.contain,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
                 ),
               ),
             ),
@@ -68,16 +71,23 @@ class ExerciseGuideOverlay extends StatelessWidget {
 
           // 2. Indikator Frame Aktif Translusen di Bawah (● ○ ○)
           Positioned(
-            bottom: 110,
+            bottom: 125,
             left: 0,
             right: 0,
             child: Center(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.40),
+                  color: Colors.white.withValues(alpha: 0.82),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+                  border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -89,7 +99,7 @@ class ExerciseGuideOverlay extends StatelessWidget {
                       height: isActive ? 10 : 6,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isActive ? Colors.white : Colors.white38,
+                        color: isActive ? AppColors.primary : AppColors.outlineVariant,
                       ),
                     );
                   }),
