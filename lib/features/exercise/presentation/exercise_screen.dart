@@ -218,12 +218,11 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen>
             ),
           ),
 
-          // 2. Layer Overlay Gambar Panduan 9:16 Transparan (Ghost Guide ~22% Opacity)
+          // 2. Layer Overlay Gambar Panduan 9:16 Transparan (Ghost Guide ~43-45% Opacity)
           Positioned.fill(
             child: ExerciseGuideOverlay(
               exerciseType: widget.exerciseType,
               phase: _engine.currentPhase,
-              opacity: 0.22,
               isVisible: _showGuide,
             ),
           ),

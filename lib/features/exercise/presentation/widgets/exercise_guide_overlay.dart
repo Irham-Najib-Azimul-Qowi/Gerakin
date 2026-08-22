@@ -15,18 +15,19 @@ class ExerciseGuideOverlay extends StatelessWidget {
     super.key,
     required this.exerciseType,
     required this.phase,
-    this.opacity = 0.33,
+    this.opacity,
     this.isVisible = true,
   });
 
   final ExerciseType exerciseType;
   final MovementPhase phase;
-  final double opacity;
+  final double? opacity;
   final bool isVisible;
 
   @override
   Widget build(BuildContext context) {
-    if (!isVisible) return const SizedBox.shrink();
+    final double targetOpacity = (opacity ?? exerciseType.defaultGuideOpacity).clamp(0.35, 0.50);
+    final double activeOpacity = isVisible ? targetOpacity : 0.0;
 
     final guideAssetPath = exerciseType.getGuideAssetForPhase(phase);
 
@@ -42,13 +43,16 @@ class ExerciseGuideOverlay extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          // 1. Full Screen Ghost Guide Frame dengan alignment offset (0.0, 0.16) agar kepala ilustrasi tidak tertutup Top HUD
+          // 1. Full Screen Ghost Guide Frame dengan alignment offset (0.0, 0.16) & opacity 0.43 - 0.45
           Positioned.fill(
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 180),
-              opacity: opacity.clamp(0.20, 0.42),
+              curve: Curves.easeOut,
+              opacity: activeOpacity,
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 180),
+                duration: const Duration(milliseconds: 200),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
                 transitionBuilder: (child, animation) {
                   return FadeTransition(
                     opacity: animation,

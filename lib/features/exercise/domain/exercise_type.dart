@@ -68,6 +68,17 @@ enum ExerciseType {
     }
   }
 
+  /// Opacity default gambar panduan visual (Ghost Guide Reference)
+  double get defaultGuideOpacity {
+    switch (this) {
+      case ExerciseType.neckRotation:
+        return 0.45; // Neck rotation butuh kejelasan ekstra pada rotasi kepala
+      case ExerciseType.sideArmRaise:
+      case ExerciseType.bicepCurl:
+        return 0.43;
+    }
+  }
+
   static ExerciseType fromId(String id) {
     return ExerciseType.values.firstWhere(
       (e) => e.id == id || e.name == id,
