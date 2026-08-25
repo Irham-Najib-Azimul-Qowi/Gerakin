@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../models/workout_summary.dart';
 import '../services/workout_replay.dart';
 
@@ -24,7 +26,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
   @override
   void initState() {
     super.initState();
-    _replayEngine = WorkoutReplayEngine(frames: []);
+    _replayEngine = WorkoutReplayEngine(frames: const []);
   }
 
   void _togglePlayPause() {
@@ -42,11 +44,14 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.workoutSurfaceDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Visualisasi Replay Fisioterapis', style: TextStyle(color: Colors.white, fontSize: 16)),
+        title: Text(
+          'Visualisasi Replay Fisioterapis',
+          style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => context.pop(),
@@ -61,7 +66,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: AppColors.workoutCardDark,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.cyanAccent, width: 1.5),
                 ),
@@ -75,12 +80,12 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
                         const SizedBox(height: 16),
                         Text(
                           widget.summary.exerciseName,
-                          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          style: AppTextStyles.titleLarge.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Sesi Replay: ${widget.summary.sessionId}',
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                          style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
                         ),
                       ],
                     ),
@@ -93,11 +98,14 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
                           color: Colors.black54,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.videocam_rounded, color: Colors.cyanAccent, size: 14),
-                            SizedBox(width: 4),
-                            Text('SKELETON PLAYBACK MODE', style: TextStyle(color: Colors.cyanAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                            const Icon(Icons.videocam_rounded, color: Colors.cyanAccent, size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              'SKELETON PLAYBACK MODE',
+                              style: AppTextStyles.labelSmall.copyWith(color: Colors.cyanAccent, fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
                       ),
@@ -113,7 +121,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 children: [
-                  const Text('00:00', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  Text('00:00', style: AppTextStyles.labelSmall.copyWith(color: Colors.grey)),
                   Expanded(
                     child: Slider(
                       value: _currentSliderVal,
@@ -127,7 +135,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
                   ),
                   Text(
                     '${(widget.summary.totalDurationSeconds ~/ 60).toString().padLeft(2, '0')}:${(widget.summary.totalDurationSeconds % 60).toString().padLeft(2, '0')}',
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    style: AppTextStyles.labelSmall.copyWith(color: Colors.grey),
                   ),
                 ],
               ),
@@ -138,7 +146,7 @@ class _SessionReplayScreenState extends State<SessionReplayScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: AppColors.workoutCardDark,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(

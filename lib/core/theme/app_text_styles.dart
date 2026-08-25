@@ -1,164 +1,187 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_colors.dart';
 
-/// Sistem tipografi GERAKIN menggunakan Plus Jakarta Sans.
+/// Sistem tipografi GERAKIN Inclusive Motion Design System (Plus Jakarta Sans).
 ///
-/// Mengikuti skala tipografi Material 3 dengan tambahan Caption.
-/// Semua komponen wajib menggunakan token ini, bukan hardcoded TextStyle.
+/// Mengikuti skala tipografi DESIGN.md:
+/// - Display: Bold (32px+)
+/// - Heading: SemiBold (20px - 24px)
+/// - Body Large: Medium (18px)
+/// - Body Medium: Regular (16px)
+/// - Caption: Regular (12px - 14px)
 class AppTextStyles {
   AppTextStyles._();
 
   static String? get _fontFamily =>
       GoogleFonts.plusJakartaSans().fontFamily;
 
-  // ── Display ──────────────────────────────────────────────
+  // ── Display (Bold, 32px+) ────────────────────────────────
   static TextStyle get displayLarge => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 57,
-        fontWeight: FontWeight.w400,
-        letterSpacing: -0.25,
-        height: 1.12,
+        fontSize: 40,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.5,
+        color: AppColors.textPrimary,
+        height: 1.15,
       );
 
   static TextStyle get displayMedium => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 45,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0,
-        height: 1.16,
+        fontSize: 34,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.25,
+        color: AppColors.textPrimary,
+        height: 1.2,
       );
 
   static TextStyle get displaySmall => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 36,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0,
-        height: 1.22,
-      );
-
-  // ── Headline ─────────────────────────────────────────────
-  static TextStyle get headlineLarge => TextStyle(
-        fontFamily: _fontFamily,
-        fontSize: 32,
+        fontSize: 30,
         fontWeight: FontWeight.w700,
         letterSpacing: 0,
+        color: AppColors.textPrimary,
         height: 1.25,
+      );
+
+  // ── Heading / Headline (SemiBold, 20px - 24px) ───────────
+  static TextStyle get headlineLarge => TextStyle(
+        fontFamily: _fontFamily,
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.2,
+        color: AppColors.textPrimary,
+        height: 1.3,
       );
 
   static TextStyle get headlineMedium => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 28,
-        fontWeight: FontWeight.w700,
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
         letterSpacing: 0,
-        height: 1.29,
+        color: AppColors.textPrimary,
+        height: 1.35,
       );
 
   static TextStyle get headlineSmall => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
-        height: 1.33,
+        color: AppColors.textPrimary,
+        height: 1.35,
       );
 
-  // ── Title ────────────────────────────────────────────────
+  // ── Title (SemiBold, 16px - 22px) ────────────────────────
   static TextStyle get titleLarge => TextStyle(
         fontFamily: _fontFamily,
         fontSize: 22,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
-        height: 1.27,
+        color: AppColors.textPrimary,
+        height: 1.3,
       );
 
   static TextStyle get titleMedium => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
-        height: 1.5,
+        color: AppColors.textPrimary,
+        height: 1.4,
       );
 
   static TextStyle get titleSmall => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
-        height: 1.43,
+        color: AppColors.textPrimary,
+        height: 1.4,
       );
 
-  // ── Body ─────────────────────────────────────────────────
+  // ── Body Large (Medium, 18px) & Medium (Regular, 16px) ───
   static TextStyle get bodyLarge => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0.5,
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.2,
+        color: AppColors.textPrimary,
         height: 1.5,
       );
 
   static TextStyle get bodyMedium => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: FontWeight.w400,
-        letterSpacing: 0.25,
-        height: 1.43,
+        letterSpacing: 0.2,
+        color: AppColors.textPrimary,
+        height: 1.5,
       );
 
   static TextStyle get bodySmall => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: FontWeight.w400,
-        letterSpacing: 0.4,
-        height: 1.33,
+        letterSpacing: 0.25,
+        color: AppColors.textSecondary,
+        height: 1.45,
       );
 
-  // ── Caption ──────────────────────────────────────────────
+  // ── Caption (Regular, 12px - 14px) ───────────────────────
   static TextStyle get captionLarge => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.4,
-        height: 1.33,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0.3,
+        color: AppColors.textSecondary,
+        height: 1.4,
       );
 
   static TextStyle get captionMedium => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 11,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.5,
-        height: 1.45,
+        fontSize: 13,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0.3,
+        color: AppColors.textSecondary,
+        height: 1.4,
       );
 
   static TextStyle get captionSmall => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.4,
-        height: 1.4,
+        color: AppColors.textSecondary,
+        height: 1.35,
       );
 
-  // ── Label ────────────────────────────────────────────────
+  // ── Label (Medium / SemiBold) ────────────────────────────
   static TextStyle get labelLarge => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
-        height: 1.43,
+        color: AppColors.textPrimary,
+        height: 1.4,
       );
 
   static TextStyle get labelMedium => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: FontWeight.w500,
-        letterSpacing: 0.5,
-        height: 1.33,
+        letterSpacing: 0.2,
+        color: AppColors.textPrimary,
+        height: 1.35,
       );
 
   static TextStyle get labelSmall => TextStyle(
         fontFamily: _fontFamily,
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: FontWeight.w500,
-        letterSpacing: 0.5,
-        height: 1.45,
+        letterSpacing: 0.3,
+        color: AppColors.textSecondary,
+        height: 1.35,
       );
 
   /// Membuat [TextTheme] Material 3 dari style di atas.

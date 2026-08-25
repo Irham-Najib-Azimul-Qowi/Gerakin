@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../exercise_library/models/full_exercise_definition.dart';
 
 /// Screen 2: Movement Preview Screen (Pratinjau Animasi Gerakan & Kontrol Play/Pause/Replay).
@@ -7,9 +9,11 @@ class MovementPreviewScreen extends StatefulWidget {
   const MovementPreviewScreen({
     super.key,
     required this.exercise,
+    this.isChecklistComplete = false,
   });
 
   final FullExerciseDefinition exercise;
+  final bool isChecklistComplete;
 
   @override
   State<MovementPreviewScreen> createState() => _MovementPreviewScreenState();
@@ -56,11 +60,14 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.workoutSurfaceDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Pratinjau Gerakan AI', style: TextStyle(color: Colors.white, fontSize: 16)),
+        title: Text(
+          'Pratinjau Gerakan AI',
+          style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => context.pop(),
@@ -75,9 +82,9 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: AppColors.workoutCardDark,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFF00E676), width: 1.5),
+                  border: Border.all(color: AppColors.workoutAccentGreen, width: 1.5),
                 ),
                 child: AnimatedBuilder(
                   animation: _animationController,
@@ -99,15 +106,14 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
                               child: const Icon(
                                 Icons.accessibility_new_rounded,
                                 size: 140,
-                                color: Color(0xFF00E676),
+                                color: AppColors.workoutAccentGreen,
                               ),
                             ),
                             const SizedBox(height: 24),
                             Text(
                               'Sudut Simulasi: ${angleDegrees.round()}°',
-                              style: const TextStyle(
-                                color: Colors.amberAccent,
-                                fontSize: 18,
+                              style: AppTextStyles.titleMedium.copyWith(
+                                color: AppColors.warning,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -126,15 +132,14 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
                               children: [
                                 Icon(
                                   _isPlaying ? Icons.sync : Icons.pause,
-                                  color: const Color(0xFF00E676),
+                                  color: AppColors.workoutAccentGreen,
                                   size: 14,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   _isPlaying ? 'LOOPING PREVIEW' : 'PAUSED',
-                                  style: const TextStyle(
+                                  style: AppTextStyles.labelSmall.copyWith(
                                     color: Colors.white,
-                                    fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -155,7 +160,7 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: AppColors.workoutCardDark,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -168,7 +173,7 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
                   IconButton(
                     icon: Icon(
                       _isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
-                      color: const Color(0xFF00E676),
+                      color: AppColors.workoutAccentGreen,
                       size: 54,
                     ),
                     onPressed: _togglePlayPause,
@@ -205,16 +210,20 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.push('/workout-session/live', extra: widget.exercise);
+                    if (widget.isChecklistComplete) {
+                      context.push('/workout-session/live', extra: widget.exercise);
+                    } else {
+                      _showChecklistRequiredDialog(context);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00E676),
+                    backgroundColor: AppColors.workoutAccentGreen,
                     foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text(
+                  child: Text(
                     'LANJUT KE KALIBRASI KAMERA',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.labelLarge.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -226,23 +235,56 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
     );
   }
 
+  void _showChecklistRequiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.workoutCardDark,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.shield_outlined, color: AppColors.warning, size: 26),
+            const SizedBox(width: 10),
+            Text('Checklist Wajib Diisi', style: AppTextStyles.titleMedium.copyWith(color: Colors.white)),
+          ],
+        ),
+        content: Text(
+          'Demi keselamatan latihan mandiri, mohon lengkapi Safety Checklist pada halaman Detail Latihan sebelum melanjutkan ke kalibrasi kamera.',
+          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.pop(); // Kembali ke halaman Detail Latihan
+            },
+            child: Text(
+              'LENGKAPI CHECKLIST',
+              style: AppTextStyles.labelLarge.copyWith(color: AppColors.workoutAccentGreen, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _stepTile(String title, String desc) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: AppColors.workoutCardDark,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: [
-          const Icon(Icons.check_circle_outline_rounded, color: Color(0xFF00E676), size: 20),
+          const Icon(Icons.check_circle_outline_rounded, color: AppColors.workoutAccentGreen, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.bold)),
-                Text(desc, style: const TextStyle(color: Colors.white, fontSize: 13)),
+                Text(title, style: AppTextStyles.labelSmall.copyWith(color: Colors.grey, fontWeight: FontWeight.bold)),
+                Text(desc, style: AppTextStyles.bodyMedium.copyWith(color: Colors.white)),
               ],
             ),
           ),
@@ -255,16 +297,16 @@ class _MovementPreviewScreenState extends State<MovementPreviewScreen> with Sing
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Petunjuk Latihan Medis', style: TextStyle(color: Colors.white)),
+        backgroundColor: AppColors.workoutCardDark,
+        title: Text('Petunjuk Latihan Medis', style: AppTextStyles.titleMedium.copyWith(color: Colors.white)),
         content: Text(
           widget.exercise.voiceInstruction,
-          style: const TextStyle(color: Colors.white70),
+          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('MENGERTI', style: TextStyle(color: Color(0xFF00E676))),
+            child: Text('MENGERTI', style: AppTextStyles.labelLarge.copyWith(color: AppColors.workoutAccentGreen)),
           ),
         ],
       ),

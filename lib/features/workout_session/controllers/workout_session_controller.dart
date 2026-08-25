@@ -12,6 +12,12 @@ import '../../exercise_library/models/full_exercise_definition.dart';
 import '../../camera/models/pose_landmark_model.dart';
 import '../../motion/services/joint_angle_calculator.dart';
 import '../../motion/models/joint_angle.dart';
+import '../../gamification/services/streak_engine.dart';
+import '../../gamification/services/xp_engine.dart';
+import '../../gamification/services/level_engine.dart';
+import '../../gamification/services/gamification_providers.dart';
+import '../../user/domain/repositories/user_repository.dart';
+import '../../user/data/repositories/user_repository_impl.dart';
 
 /// State snapshot untuk UI Workout Session.
 class WorkoutSessionUIState {
@@ -124,6 +130,10 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
   WorkoutSessionController({
     required FullExerciseDefinition initialExercise,
     required this.repository,
+    this.streakEngine,
+    this.xpEngine,
+    this.levelEngine,
+    this.userRepository,
   })  : _engine = WorkoutSessionEngine(exercise: initialExercise),
         super(WorkoutSessionUIState(
           exercise: initialExercise,
@@ -134,6 +144,10 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
 
   final WorkoutSessionEngine _engine;
   final WorkoutSessionRepository repository;
+  final StreakEngine? streakEngine;
+  final XPEngine? xpEngine;
+  final LevelEngine? levelEngine;
+  final UserRepository? userRepository;
 
   WorkoutSessionEngine get engine => _engine;
 
@@ -181,6 +195,7 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
           lastLandmark: lmMap[PoseLandmarkType.leftWrist],
         );
         return angle?.angle ?? 90.0;
+
       case JointType.rightElbow:
         final angle = JointAngleCalculator.calculateJointAngle(
           type: JointType.rightElbow,
@@ -189,6 +204,25 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
           lastLandmark: lmMap[PoseLandmarkType.rightWrist],
         );
         return angle?.angle ?? 90.0;
+
+      case JointType.leftShoulder:
+        final angle = JointAngleCalculator.calculateJointAngle(
+          type: JointType.leftShoulder,
+          firstLandmark: lmMap[PoseLandmarkType.leftHip],
+          vertexLandmark: lmMap[PoseLandmarkType.leftShoulder],
+          lastLandmark: lmMap[PoseLandmarkType.leftElbow],
+        );
+        return angle?.angle ?? 0.0;
+
+      case JointType.rightShoulder:
+        final angle = JointAngleCalculator.calculateJointAngle(
+          type: JointType.rightShoulder,
+          firstLandmark: lmMap[PoseLandmarkType.rightHip],
+          vertexLandmark: lmMap[PoseLandmarkType.rightShoulder],
+          lastLandmark: lmMap[PoseLandmarkType.rightElbow],
+        );
+        return angle?.angle ?? 0.0;
+
       case JointType.leftKnee:
         final angle = JointAngleCalculator.calculateJointAngle(
           type: JointType.leftKnee,
@@ -197,6 +231,7 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
           lastLandmark: lmMap[PoseLandmarkType.leftAnkle],
         );
         return angle?.angle ?? 180.0;
+
       case JointType.rightKnee:
         final angle = JointAngleCalculator.calculateJointAngle(
           type: JointType.rightKnee,
@@ -205,6 +240,7 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
           lastLandmark: lmMap[PoseLandmarkType.rightAnkle],
         );
         return angle?.angle ?? 180.0;
+
       case JointType.neckRotation:
       case JointType.neckFlexion:
         final angle = JointAngleCalculator.calculateNeckAngle(
@@ -214,14 +250,10 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
           rightShoulder: lmMap[PoseLandmarkType.rightShoulder],
         );
         return angle?.angle ?? 0.0;
+
       default:
         return 90.0;
     }
-  }
-
-  void skipRest() {
-    _engine.skipRest();
-    _updateUI();
   }
 
   void pauseWorkout() {
@@ -234,24 +266,58 @@ class WorkoutSessionController extends StateNotifier<WorkoutSessionUIState> {
     _updateUI();
   }
 
+  void skipRest() {
+    _engine.skipRest();
+    _updateUI();
+  }
+
   Future<void> finishWorkout() async {
     _engine.finishWorkout();
     _updateUI();
 
     if (_engine.summaryResult != null) {
+      final summary = _engine.summaryResult!;
       final sessionData = WorkoutSessionData(
-        id: _engine.summaryResult!.sessionId,
+        id: summary.sessionId,
         exerciseId: state.exercise.id,
         exerciseName: state.exercise.name,
         startTime: DateTime.now().subtract(Duration(seconds: _engine.elapsedSeconds)),
         endTime: DateTime.now(),
         totalDurationSeconds: _engine.elapsedSeconds,
-        sets: [],
-        summary: _engine.summaryResult!,
+        sets: const [],
+        summary: summary,
         recordedFrames: _engine.recordedFrames,
       );
 
       await repository.saveSession(sessionData);
+
+      // Panggil gamification engine setelah sesi berhasil disimpan
+      try {
+        int userId = 1;
+        if (userRepository != null) {
+          final activeProfile = await userRepository!.getActiveProfile();
+          if (activeProfile != null) {
+            userId = activeProfile.id;
+          }
+        }
+
+        if (streakEngine != null) {
+          await streakEngine!.recordActivity(userId);
+        }
+
+        if (xpEngine != null) {
+          final earnedXp = await xpEngine!.awardXPForWorkout(
+            userId: userId,
+            accuracy: summary.averageAccuracy,
+            consistency: summary.score.consistencyScore,
+            completion: 100.0,
+          );
+
+          if (levelEngine != null && earnedXp > 0) {
+            await levelEngine!.addXP(userId, earnedXp);
+          }
+        }
+      } catch (_) {}
     }
   }
 
@@ -294,6 +360,17 @@ final workoutSessionControllerProvider =
     StateNotifierProvider.family<WorkoutSessionController, WorkoutSessionUIState, FullExerciseDefinition>(
   (ref, exercise) {
     final repo = ref.watch(workoutSessionRepositoryProvider);
-    return WorkoutSessionController(initialExercise: exercise, repository: repo);
+    final streak = ref.watch(streakEngineProvider);
+    final xp = ref.watch(xpEngineProvider);
+    final lvl = ref.watch(levelEngineProvider);
+    final userRepo = ref.watch(userRepositoryProvider);
+    return WorkoutSessionController(
+      initialExercise: exercise,
+      repository: repo,
+      streakEngine: streak,
+      xpEngine: xp,
+      levelEngine: lvl,
+      userRepository: userRepo,
+    );
   },
 );

@@ -12,9 +12,11 @@ enum AppButtonVariant { primary, secondary, outlined, text }
 /// Ukuran untuk [AppButton].
 enum AppButtonSize { small, medium, large }
 
-/// Tombol reusable GERAKIN.
+/// Tombol reusable GERAKIN (Sesuai DESIGN.md).
 ///
-/// Mendukung variant, ukuran, loading state, dan icon.
+/// - Primary: Full-width / Custom, Purple (#7C5CFC), White text, 24px border radius.
+/// - Secondary: Sky Blue tint (#5EC8FF / #E0F2FE), 24px border radius.
+/// - Touch target minimum 48px untuk aksesibilitas pengguna kursi roda / disabilitas.
 class AppButton extends StatelessWidget {
   const AppButton({
     super.key,
@@ -59,12 +61,22 @@ class AppButton extends StatelessWidget {
     }
   }
 
+  double get _minHeight {
+    switch (size) {
+      case AppButtonSize.small:
+        return 40;
+      case AppButtonSize.medium:
+      case AppButtonSize.large:
+        return 48; // Minimum 48px touch target
+    }
+  }
+
   double get _fontSize {
     switch (size) {
       case AppButtonSize.small:
-        return 12;
+        return 13;
       case AppButtonSize.medium:
-        return 14;
+        return 15;
       case AppButtonSize.large:
         return 16;
     }
@@ -73,11 +85,11 @@ class AppButton extends StatelessWidget {
   double get _iconSize {
     switch (size) {
       case AppButtonSize.small:
-        return 16;
-      case AppButtonSize.medium:
         return 18;
-      case AppButtonSize.large:
+      case AppButtonSize.medium:
         return 20;
+      case AppButtonSize.large:
+        return 22;
     }
   }
 
@@ -119,14 +131,31 @@ class AppButton extends StatelessWidget {
 
     final textWidget = Text(
       label,
-      style: AppTextStyles.labelLarge.copyWith(fontSize: _fontSize),
+      style: AppTextStyles.labelLarge.copyWith(
+        fontSize: _fontSize,
+        fontWeight: FontWeight.bold,
+        color: variant == AppButtonVariant.primary
+            ? AppColors.onPrimary
+            : (variant == AppButtonVariant.secondary
+                ? AppColors.onSecondaryContainer
+                : AppColors.primary),
+      ),
     );
 
     if (icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: _iconSize),
+          Icon(
+            icon,
+            size: _iconSize,
+            color: variant == AppButtonVariant.primary
+                ? AppColors.onPrimary
+                : (variant == AppButtonVariant.secondary
+                    ? AppColors.onSecondaryContainer
+                    : AppColors.primary),
+          ),
           SizedBox(width: AppSpacing.sm),
           textWidget,
         ],
@@ -140,7 +169,7 @@ class AppButton extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         boxShadow: _isEnabled ? AppShadows.primaryGlow : AppShadows.none,
-        borderRadius: AppRadius.borderRadiusMd,
+        borderRadius: AppRadius.borderRadiusXxl,
       ),
       child: ElevatedButton(
         onPressed: _isEnabled ? onPressed : null,
@@ -149,9 +178,10 @@ class AppButton extends StatelessWidget {
           foregroundColor: AppColors.onPrimary,
           disabledBackgroundColor: AppColors.disabledBackground,
           disabledForegroundColor: AppColors.onDisabled,
+          minimumSize: Size(48, _minHeight),
           padding: _padding,
           shape: RoundedRectangleBorder(
-            borderRadius: AppRadius.borderRadiusMd,
+            borderRadius: AppRadius.borderRadiusXxl,
           ),
           elevation: 0,
         ),
@@ -168,9 +198,10 @@ class AppButton extends StatelessWidget {
         foregroundColor: AppColors.onSecondaryContainer,
         disabledBackgroundColor: AppColors.disabledBackground,
         disabledForegroundColor: AppColors.onDisabled,
+        minimumSize: Size(48, _minHeight),
         padding: _padding,
         shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.borderRadiusMd,
+          borderRadius: AppRadius.borderRadiusXxl,
         ),
         elevation: 0,
       ),
@@ -184,12 +215,14 @@ class AppButton extends StatelessWidget {
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
         disabledForegroundColor: AppColors.onDisabled,
+        minimumSize: Size(48, _minHeight),
         padding: _padding,
         shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.borderRadiusMd,
+          borderRadius: AppRadius.borderRadiusXxl,
         ),
         side: BorderSide(
           color: _isEnabled ? AppColors.primary : AppColors.disabled,
+          width: 1.5,
         ),
       ),
       child: child,
@@ -202,7 +235,11 @@ class AppButton extends StatelessWidget {
       style: TextButton.styleFrom(
         foregroundColor: AppColors.primary,
         disabledForegroundColor: AppColors.onDisabled,
+        minimumSize: Size(48, _minHeight),
         padding: _padding,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.borderRadiusXxl,
+        ),
       ),
       child: child,
     );

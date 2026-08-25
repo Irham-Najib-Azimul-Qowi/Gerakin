@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/adaptive/presentation/pages/adaptive_debug_dashboard_page.dart';
+import '../../features/analytics/presentation/pages/analytics_dashboard_page.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
@@ -70,7 +71,7 @@ class AppRouter {
               ),
             ],
           ),
-          // Tab 1 – Latihan
+          // Tab 1 – Program (Latihan)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -80,7 +81,17 @@ class AppRouter {
               ),
             ],
           ),
-          // Tab 2 – Komunitas
+          // Tab 2 – Progres (Analitik)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.progress,
+                name: RouteNames.progress,
+                builder: (context, state) => const AnalyticsDashboardPage(),
+              ),
+            ],
+          ),
+          // Tab 3 – Komunitas
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -90,7 +101,7 @@ class AppRouter {
               ),
             ],
           ),
-          // Tab 3 – Profil
+          // Tab 4 – Profil
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -249,6 +260,15 @@ class AppRouter {
         path: '/workout-session/preview',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
+          if (state.extra is Map<String, dynamic>) {
+            final map = state.extra as Map<String, dynamic>;
+            final exercise = map['exercise'] as FullExerciseDefinition;
+            final isChecklistComplete = map['isChecklistComplete'] as bool? ?? false;
+            return MovementPreviewScreen(
+              exercise: exercise,
+              isChecklistComplete: isChecklistComplete,
+            );
+          }
           final exercise = state.extra as FullExerciseDefinition;
           return MovementPreviewScreen(exercise: exercise);
         },

@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_error_banner.dart';
 
-/// Halaman lupa password — mengirimkan email tautan reset ke alamat email pengguna.
+/// Halaman lupa password (Sesuai DESIGN.md).
 class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key});
 
@@ -40,13 +41,13 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     final isSuccess = authState.isSuccess && !authState.isLoading;
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          color: AppColors.onSurface,
+          color: AppColors.textPrimary,
           onPressed: () => context.pop(),
         ),
       ),
@@ -75,11 +76,11 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         Container(
           width: 96,
           height: 96,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.successContainer,
             shape: BoxShape.circle,
           ),
-          child: Icon(
+          child: const Icon(
             Icons.mark_email_read_rounded,
             size: 48,
             color: AppColors.success,
@@ -91,7 +92,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         Text(
           'Email Terkirim! 📬',
           style: AppTextStyles.headlineSmall.copyWith(
-            color: AppColors.onSurface,
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
         ),
@@ -100,7 +102,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
         Text(
           'Link untuk mereset password telah dikirim ke:\n${_emailCtrl.text}',
-          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.neutral600),
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
           textAlign: TextAlign.center,
         ),
 
@@ -108,7 +110,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
         Text(
           'Periksa folder Spam atau Promosi jika tidak menemukan emailnya.',
-          style: AppTextStyles.bodySmall.copyWith(color: AppColors.neutral500),
+          style: AppTextStyles.captionSmall.copyWith(color: AppColors.textSecondary),
           textAlign: TextAlign.center,
         ),
 
@@ -124,6 +126,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
               'Kembali ke Halaman Masuk',
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.onPrimary,
+                fontWeight: FontWeight.bold,
               ),
             ),
             style: ElevatedButton.styleFrom(
@@ -131,7 +134,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
               foregroundColor: AppColors.onPrimary,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.borderRadiusXxl,
               ),
             ),
           ),
@@ -151,16 +154,17 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           // ── Header ──────────────────────────────────────────────
           Text(
             'Lupa Password? 🔑',
-            style: AppTextStyles.headlineMedium.copyWith(
-              color: AppColors.onSurface,
-              height: 1.3,
+            style: AppTextStyles.displaySmall.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+              height: 1.25,
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             'Masukkan email yang terdaftar dan kami akan mengirimkan link untuk mereset passwordmu.',
             style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.neutral600,
+              color: AppColors.textSecondary,
             ),
           ),
 
@@ -174,7 +178,10 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           // ── Email Field ──────────────────────────────────────────
           Text(
             'Email',
-            style: AppTextStyles.labelLarge.copyWith(color: AppColors.onSurface),
+            style: AppTextStyles.labelMedium.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: AppSpacing.xs),
           TextFormField(
@@ -182,6 +189,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             autocorrect: false,
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
             onFieldSubmitted: (_) => _submit(),
             onChanged: (_) {
               if (ref.read(authControllerProvider).errorMessage != null) {
@@ -193,32 +201,32 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
               hintStyle: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.neutral400,
               ),
-              prefixIcon: Icon(
+              prefixIcon: const Icon(
                 Icons.email_outlined,
-                color: AppColors.neutral500,
+                color: AppColors.textSecondary,
                 size: 20,
               ),
               filled: true,
-              fillColor: AppColors.surfaceContainerLow,
+              fillColor: AppColors.surface,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: AppColors.outlineVariant),
+                borderRadius: AppRadius.borderRadiusXxl,
+                borderSide: const BorderSide(color: AppColors.border),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: AppColors.outlineVariant),
+                borderRadius: AppRadius.borderRadiusXxl,
+                borderSide: const BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: AppColors.primary, width: 2),
+                borderRadius: AppRadius.borderRadiusXxl,
+                borderSide: const BorderSide(color: AppColors.primary, width: 2),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: AppColors.error, width: 1.5),
+                borderRadius: AppRadius.borderRadiusXxl,
+                borderSide: const BorderSide(color: AppColors.error, width: 1.5),
               ),
               focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: AppColors.error, width: 2),
+                borderRadius: AppRadius.borderRadiusXxl,
+                borderSide: const BorderSide(color: AppColors.error, width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.lg,
@@ -240,7 +248,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
           // ── Tombol Kirim ─────────────────────────────────────────
           SizedBox(
-            height: 56,
+            height: 52,
             child: ElevatedButton(
               onPressed: authState.isLoading ? null : _submit,
               style: ElevatedButton.styleFrom(
@@ -250,7 +258,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                     AppColors.primary.withValues(alpha: 0.5),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.borderRadiusXxl,
                 ),
               ),
               child: authState.isLoading
@@ -266,6 +274,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                       'Kirim Link Reset',
                       style: AppTextStyles.labelLarge.copyWith(
                         color: AppColors.onPrimary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
             ),

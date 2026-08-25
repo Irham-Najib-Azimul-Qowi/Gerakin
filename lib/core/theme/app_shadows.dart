@@ -11,6 +11,15 @@ class AppShadows {
   /// Tanpa shadow.
   static const List<BoxShadow> none = [];
 
+  /// Shadow sangat lembut untuk Kartu Design System (0 4px 20px rgba(0,0,0,0.05)).
+  static const List<BoxShadow> softCard = [
+    BoxShadow(
+      color: Color(0x0D000000),
+      blurRadius: 20,
+      offset: Offset(0, 4),
+    ),
+  ];
+
   /// Shadow sangat tipis – untuk card flat.
   static const List<BoxShadow> xs = [
     BoxShadow(

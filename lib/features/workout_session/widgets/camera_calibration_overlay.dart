@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../services/workout_validator.dart';
 
 /// Overlay UI Kalibrasi Kamera dengan checklist visual interaktif.
@@ -24,10 +26,10 @@ class CameraCalibrationOverlay extends StatelessWidget {
           margin: const EdgeInsets.all(24),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
+            color: AppColors.workoutCardDark,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: isReady ? const Color(0xFF00E676) : Colors.amber,
+              color: isReady ? AppColors.workoutAccentGreen : AppColors.warning,
               width: 2,
             ),
           ),
@@ -36,15 +38,14 @@ class CameraCalibrationOverlay extends StatelessWidget {
             children: [
               Icon(
                 isReady ? Icons.check_circle_rounded : Icons.center_focus_strong_rounded,
-                color: isReady ? const Color(0xFF00E676) : Colors.amber,
+                color: isReady ? AppColors.workoutAccentGreen : AppColors.warning,
                 size: 56,
               ),
               const SizedBox(height: 12),
               Text(
                 isReady ? 'KALIBRASI BERHASIL!' : 'KALIBRASI POSISI KAMERA',
-                style: TextStyle(
-                  color: isReady ? const Color(0xFF00E676) : Colors.white,
-                  fontSize: 18,
+                style: AppTextStyles.titleMedium.copyWith(
+                  color: isReady ? AppColors.workoutAccentGreen : Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -52,7 +53,7 @@ class CameraCalibrationOverlay extends StatelessWidget {
               Text(
                 cal?.instructionMessage ?? 'Posisikan tubuh Anda di depan kamera',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
+                style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
               ),
               const SizedBox(height: 20),
               Wrap(
@@ -72,14 +73,14 @@ class CameraCalibrationOverlay extends StatelessWidget {
               ElevatedButton(
                 onPressed: isReady ? onStartWorkout : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isReady ? const Color(0xFF00E676) : Colors.grey,
+                  backgroundColor: isReady ? AppColors.workoutAccentGreen : Colors.grey,
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
-                child: const Text(
+                child: Text(
                   'MULAI HITUNG MUNDUR',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  style: AppTextStyles.labelLarge.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -93,10 +94,10 @@ class CameraCalibrationOverlay extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isValid ? const Color(0xFF00E676).withValues(alpha: 0.15) : Colors.red.withValues(alpha: 0.15),
+        color: isValid ? AppColors.workoutAccentGreen.withValues(alpha: 0.15) : AppColors.error.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isValid ? const Color(0xFF00E676) : Colors.redAccent,
+          color: isValid ? AppColors.workoutAccentGreen : AppColors.error,
         ),
       ),
       child: Row(
@@ -104,15 +105,14 @@ class CameraCalibrationOverlay extends StatelessWidget {
         children: [
           Icon(
             isValid ? Icons.check_rounded : Icons.close_rounded,
-            color: isValid ? const Color(0xFF00E676) : Colors.redAccent,
+            color: isValid ? AppColors.workoutAccentGreen : AppColors.error,
             size: 16,
           ),
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyle(
-              color: isValid ? const Color(0xFF00E676) : Colors.redAccent,
-              fontSize: 12,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: isValid ? AppColors.workoutAccentGreen : AppColors.error,
               fontWeight: FontWeight.w600,
             ),
           ),

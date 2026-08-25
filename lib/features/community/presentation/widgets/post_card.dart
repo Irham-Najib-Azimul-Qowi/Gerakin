@@ -1,10 +1,18 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_shadows.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../models/community_post.dart';
 import 'comments_bottom_sheet.dart';
 import 'report_dialog.dart';
 
+/// Card Postingan Komunitas GERAKIN (Sesuai DESIGN.md).
+///
+/// 24px border radius, white surface, softCard shadow, subtle border #E2E8F0.
 class PostCard extends StatelessWidget {
   final CommunityPost post;
   final VoidCallback onLikeToggle;
@@ -36,45 +44,38 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppColors.surface,
+        borderRadius: AppRadius.borderRadiusXxl,
+        boxShadow: AppShadows.softCard,
         border: Border.all(
           color: post.isReported
-              ? Colors.red.withValues(alpha: 0.5)
-              : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+              ? AppColors.error.withValues(alpha: 0.6)
+              : AppColors.border,
+          width: 1,
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header Penulis & Menu Laporkan ─────────────────────────────────────
+            // ── Header Penulis & Menu Laporkan ─────────────────────────
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: theme.colorScheme.primaryContainer,
+                  backgroundColor: AppColors.primaryContainer,
                   child: Text(
                     post.authorDisplayName.isNotEmpty
                         ? post.authorDisplayName[0].toUpperCase()
                         : 'G',
-                    style: TextStyle(
+                    style: AppTextStyles.labelLarge.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onPrimaryContainer,
+                      color: AppColors.primary,
                     ),
                   ),
                 ),
@@ -88,9 +89,9 @@ class PostCard extends StatelessWidget {
                           Flexible(
                             child: Text(
                               post.authorDisplayName,
-                              style: const TextStyle(
+                              style: AppTextStyles.labelLarge.copyWith(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                                color: AppColors.textPrimary,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -98,32 +99,34 @@ class PostCard extends StatelessWidget {
                           const SizedBox(width: 6),
                           Text(
                             '·',
-                            style: TextStyle(
-                              fontSize: 14,
+                            style: AppTextStyles.captionMedium.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onSurfaceVariant,
+                              color: AppColors.textSecondary,
                             ),
                           ),
                           const SizedBox(width: 6),
                           Text(
                             _formatTimestamp(post.createdAt),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: theme.colorScheme.onSurfaceVariant,
+                            style: AppTextStyles.captionSmall.copyWith(
+                              color: AppColors.textSecondary,
                             ),
                           ),
                         ],
                       ),
                       if (post.isReported)
-                        const Text(
+                        Text(
                           '⚠️ Postingan ini telah dilaporkan',
-                          style: TextStyle(fontSize: 11, color: Colors.red, fontWeight: FontWeight.bold),
+                          style: AppTextStyles.captionSmall.copyWith(
+                            color: AppColors.error,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                     ],
                   ),
                 ),
                 PopupMenuButton<String>(
-                  icon: Icon(Icons.more_vert, size: 20, color: theme.colorScheme.onSurfaceVariant),
+                  icon: const Icon(Icons.more_vert, size: 20, color: AppColors.textSecondary),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   onSelected: (value) {
                     if (value == 'report') {
                       ReportDialog.show(
@@ -139,7 +142,7 @@ class PostCard extends StatelessWidget {
                       value: 'report',
                       child: Row(
                         children: [
-                          Icon(Icons.flag_outlined, color: Colors.amber, size: 18),
+                          Icon(Icons.flag_outlined, color: AppColors.warning, size: 18),
                           SizedBox(width: 8),
                           Text('Laporkan Postingan', style: TextStyle(fontSize: 13)),
                         ],
@@ -150,21 +153,20 @@ class PostCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
-            // ── Konten Teks ──────────────────────────────────────────────
+            // ── Konten Teks ──────────────────────────────────────────
             SelectableText(
               post.content,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontSize: 15,
-                height: 1.4,
-                color: theme.colorScheme.onSurface,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+                height: 1.45,
               ),
             ),
 
-            // ── Hashtags Opsional ─────────────────────────────────────────
+            // ── Hashtags Opsional ─────────────────────────────────────
             if (post.hashtags != null && post.hashtags!.trim().isNotEmpty) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Wrap(
                 spacing: 6,
                 runSpacing: 4,
@@ -172,19 +174,18 @@ class PostCard extends StatelessWidget {
                   final formattedTag = tag.startsWith('#') ? tag : '#$tag';
                   return InkWell(
                     onTap: () => onHashtagTap?.call(formattedTag),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.borderRadiusSm,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
-                        borderRadius: BorderRadius.circular(12),
+                        color: AppColors.primaryContainer.withValues(alpha: 0.6),
+                        borderRadius: AppRadius.borderRadiusSm, // 8px chip
                       ),
                       child: Text(
                         formattedTag,
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: AppTextStyles.captionSmall.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
@@ -193,11 +194,11 @@ class PostCard extends StatelessWidget {
               ),
             ],
 
-            // ── Gambar Opsional ─────────────────────────────────────────
+            // ── Gambar Opsional ──────────────────────────────────────
             if (post.imagePath != null && post.imagePath!.isNotEmpty) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 child: post.imagePath!.startsWith('http')
                     ? Image.network(post.imagePath!, fit: BoxFit.cover, width: double.infinity, height: 200)
                     : Image.file(File(post.imagePath!), fit: BoxFit.cover, width: double.infinity, height: 200),
@@ -205,10 +206,10 @@ class PostCard extends StatelessWidget {
             ],
 
             const SizedBox(height: 12),
-            Divider(height: 1, color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
+            const Divider(height: 1, color: AppColors.border),
             const SizedBox(height: 8),
 
-            // ── Action Bar (Komen & Suka) ──────────────────────────────────
+            // ── Action Bar (Komen & Suka) ──────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -226,18 +227,17 @@ class PostCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.chat_bubble_outline_rounded,
-                          size: 19,
-                          color: theme.colorScheme.onSurfaceVariant,
+                          size: 18,
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           post.commentCount > 0 ? '${post.commentCount}' : 'Komen',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
+                          style: AppTextStyles.captionMedium.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
@@ -255,16 +255,15 @@ class PostCard extends StatelessWidget {
                       children: [
                         Icon(
                           post.likeCount > 0 ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                          size: 20,
-                          color: post.likeCount > 0 ? Colors.pinkAccent : theme.colorScheme.onSurfaceVariant,
+                          size: 19,
+                          color: post.likeCount > 0 ? AppColors.error : AppColors.textSecondary,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           post.likeCount > 0 ? '${post.likeCount}' : 'Suka',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: post.likeCount > 0 ? Colors.pinkAccent : theme.colorScheme.onSurfaceVariant,
-                            fontWeight: post.likeCount > 0 ? FontWeight.bold : FontWeight.w500,
+                          style: AppTextStyles.captionMedium.copyWith(
+                            color: post.likeCount > 0 ? AppColors.error : AppColors.textSecondary,
+                            fontWeight: post.likeCount > 0 ? FontWeight.bold : FontWeight.w600,
                           ),
                         ),
                       ],

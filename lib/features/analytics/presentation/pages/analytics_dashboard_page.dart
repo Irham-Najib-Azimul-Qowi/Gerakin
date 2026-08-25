@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_shadows.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../models/workout_session.dart';
 import '../../models/recovery_progress.dart';
 import '../../services/analytics_engine.dart';
@@ -11,7 +17,9 @@ import '../controller/analytics_dashboard_controller.dart';
 import '../controller/analytics_dashboard_state.dart';
 import '../widgets/custom_sparkline_chart.dart';
 
-/// Halaman Dashboard Analitik & Perkembangan Pengguna GERAKIN.
+/// Halaman Dashboard Analitik & Perkembangan Pengguna GERAKIN (Sesuai DESIGN.md).
+///
+/// Personality: Bright, Friendly, Inclusive, Cheerful, Modern, Premium.
 class AnalyticsDashboardPage extends ConsumerStatefulWidget {
   const AnalyticsDashboardPage({super.key});
 
@@ -29,36 +37,50 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
     final state = ref.watch(analyticsDashboardControllerProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'Analitik & Perkembangan',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        title: Text(
+          'Progres & Analitik',
+          style: AppTextStyles.titleLarge.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded),
+            icon: const Icon(Icons.refresh_rounded, color: AppColors.textPrimary),
             onPressed: () => ref.read(analyticsDashboardControllerProvider.notifier).refresh(),
           ),
           _buildExportMenu(state.sessions),
         ],
       ),
       body: state.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
           : state.errorMessage != null
-              ? Center(child: Text(state.errorMessage!))
+              ? Center(child: Text(state.errorMessage!, style: AppTextStyles.bodyMedium))
               : _buildDashboardContent(context, state),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showLogRecoveryDialog(context),
-        icon: const Icon(Icons.healing_rounded),
-        label: const Text('Catat Pemulihan'),
-        backgroundColor: Colors.teal,
-        foregroundColor: Colors.white,
+        icon: const Icon(Icons.healing_rounded, color: Colors.white),
+        label: Text(
+          'Catat Pemulihan',
+          style: AppTextStyles.labelMedium.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: AppColors.primary,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.borderRadiusXxl,
+        ),
       ),
     );
   }
 
   Widget _buildDashboardContent(BuildContext context, AnalyticsDashboardState state) {
-    // Hitung metrik hari ini
     final now = DateTime.now();
     final todaySessions = state.sessions.where((s) =>
         s.startTime.year == now.year &&
@@ -69,16 +91,15 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
     double todayCalories = todaySessions.fold(0.0, (sum, s) => sum + s.caloriesBurned);
     int todayReps = todaySessions.fold(0, (sum, s) => sum + s.completedReps);
 
-    // Hitung ringkasan mingguan/bulanan
     final weeklySummary = _analyticsEngine.generateWeeklySummary(state.sessions, now);
     final monthlySummary = _analyticsEngine.generateMonthlySummary(state.sessions, now.year, now.month);
 
-    // Hitung tren
     final romTrend = _analyticsEngine.getRomTrend(state.sessions);
     final accuracyTrend = _analyticsEngine.getAccuracyTrend(state.sessions);
     final recoveryTrend = _analyticsEngine.getRecoveryScoreTrend(state.recoveryRecords);
 
     return RefreshIndicator(
+      color: AppColors.primary,
       onRefresh: () => ref.read(analyticsDashboardControllerProvider.notifier).refresh(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -97,7 +118,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                     'Menit Aktif',
                     '${todayDuration.toStringAsFixed(1)} m',
                     Icons.timer_outlined,
-                    Colors.blue,
+                    AppColors.skyBlue,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -107,7 +128,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                     'Kalori',
                     '${todayCalories.toStringAsFixed(0)} kkal',
                     Icons.local_fire_department_outlined,
-                    Colors.orange,
+                    const Color(0xFFF97316),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -117,7 +138,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                     'Repetisi',
                     '$todayReps kali',
                     Icons.fitness_center_outlined,
-                    Colors.purple,
+                    AppColors.primary,
                   ),
                 ),
               ],
@@ -134,7 +155,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                     context,
                     'Mingguan (Sen-Min)',
                     'Sesi: ${weeklySummary.totalSessions}\nKalori: ${weeklySummary.totalCalories.toStringAsFixed(0)} kkal\nRerata ROM: ${weeklySummary.averageRom.toStringAsFixed(0)}°',
-                    Colors.teal,
+                    AppColors.primary,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -143,7 +164,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                     context,
                     'Bulanan (Jan-Des)',
                     'Sesi: ${monthlySummary.totalSessions}\nKalori: ${monthlySummary.totalCalories.toStringAsFixed(0)} kkal\nRerata ROM: ${monthlySummary.averageRom.toStringAsFixed(0)}°',
-                    Colors.indigo,
+                    AppColors.skyBlue,
                   ),
                 ),
               ],
@@ -151,30 +172,30 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
             const SizedBox(height: 24),
 
             // ── VISUAL TRENDS (ROM & ACCURACY) ───────────────────────
-            _buildSectionHeader('Tren Latihan'),
+            _buildSectionHeader('Tren Akurasi & Fleksibilitas'),
             const SizedBox(height: 12),
             CustomSparklineChart(
               data: accuracyTrend,
               title: 'Tren Akurasi Latihan (%)',
-              lineColor: Colors.teal,
+              lineColor: AppColors.primary,
               unit: '%',
             ),
             const SizedBox(height: 12),
             CustomSparklineChart(
               data: romTrend,
               title: 'Tren Rentang Gerak / ROM (Derajat)',
-              lineColor: Colors.indigo,
+              lineColor: AppColors.skyBlue,
               unit: '°',
             ),
             const SizedBox(height: 24),
 
             // ── RECOVERY TREND ─────────────────────────────────────
-            _buildSectionHeader('Tren Pemulihan'),
+            _buildSectionHeader('Tren Pemulihan Fisik'),
             const SizedBox(height: 12),
             CustomSparklineChart(
               data: recoveryTrend,
-              title: 'Skor Pemulihan Fisik (1-100)',
-              lineColor: Colors.pink,
+              title: 'Skor Kesiapan & Pemulihan (1-100)',
+              lineColor: AppColors.mint,
               unit: '',
             ),
             const SizedBox(height: 24),
@@ -198,9 +219,9 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 16,
+      style: AppTextStyles.titleMedium.copyWith(
         fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -212,79 +233,84 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
     IconData icon,
     Color color,
   ) {
-    return Card(
-      elevation: 0,
-      color: color.withValues(alpha: 0.08),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: color.withValues(alpha: 0.2), width: 1),
+    return Container(
+      padding: AppSpacing.paddingAllMd,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.borderRadiusXxl,
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: AppShadows.softCard,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
             ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-              ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: AppTextStyles.titleMedium.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+          Text(
+            label,
+            style: AppTextStyles.captionSmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildPeriodCard(BuildContext context, String title, String details, Color accentColor) {
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainerLowest,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.8),
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.borderRadiusXxl,
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: AppShadows.softCard,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(14.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(color: accentColor, shape: BoxShape.circle),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              details,
-              style: TextStyle(
-                fontSize: 11,
-                height: 1.6,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(color: accentColor, shape: BoxShape.circle),
               ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTextStyles.labelMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            details,
+            style: AppTextStyles.captionMedium.copyWith(
+              height: 1.5,
+              color: AppColors.textSecondary,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -295,70 +321,68 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1.4,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.35,
       ),
       itemCount: achievements.length,
       itemBuilder: (context, index) {
         final a = achievements[index];
-        return Card(
-          elevation: 0,
-          color: a.isUnlocked
-              ? Colors.amber.withValues(alpha: 0.06)
-              : Theme.of(context).colorScheme.surfaceContainerLowest,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(
-              color: a.isUnlocked ? Colors.amber.withValues(alpha: 0.4) : Theme.of(context).colorScheme.outlineVariant,
-              width: 0.8,
+        return Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: AppRadius.borderRadiusXxl,
+            border: Border.all(
+              color: a.isUnlocked ? const Color(0xFFFACC15) : AppColors.border,
+              width: a.isUnlocked ? 1.5 : 1,
             ),
+            boxShadow: AppShadows.softCard,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        a.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      a.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.labelMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    Icon(
-                      a.isUnlocked ? Icons.workspace_premium_rounded : Icons.lock_outline_rounded,
-                      color: a.isUnlocked ? Colors.amber : Colors.grey,
-                      size: 20,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  a.description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                   ),
-                ),
-                const Spacer(),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: a.progress,
-                    backgroundColor: Colors.grey.withValues(alpha: 0.2),
-                    color: a.isUnlocked ? Colors.amber : Colors.teal,
-                    minHeight: 6,
+                  Icon(
+                    a.isUnlocked ? Icons.workspace_premium_rounded : Icons.lock_outline_rounded,
+                    color: a.isUnlocked ? const Color(0xFFF59E0B) : AppColors.neutral400,
+                    size: 20,
                   ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                a.description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.captionSmall.copyWith(
+                  color: AppColors.textSecondary,
                 ),
-              ],
-            ),
+              ),
+              const Spacer(),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: a.progress,
+                  backgroundColor: AppColors.neutral200,
+                  color: a.isUnlocked ? const Color(0xFFF59E0B) : AppColors.primary,
+                  minHeight: 6,
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -367,19 +391,18 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
 
   Widget _buildWorkoutHistoryList(List<WorkoutSession> sessions) {
     if (sessions.isEmpty) {
-      return Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.8),
+      return Container(
+        padding: const EdgeInsets.all(24.0),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: AppRadius.borderRadiusXxl,
+          border: Border.all(color: AppColors.border, width: 1),
+          boxShadow: AppShadows.softCard,
         ),
-        child: const Padding(
-          padding: EdgeInsets.all(24.0),
-          child: Center(
-            child: Text(
-              'Belum ada riwayat latihan fisik.',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
-            ),
+        child: Center(
+          child: Text(
+            'Belum ada riwayat sesi latihan.',
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
           ),
         ),
       );
@@ -393,44 +416,61 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
         final s = sessions[index];
         final formattedDate = DateFormat('dd MMM yyyy, HH:mm').format(s.startTime);
 
-        return Card(
-          elevation: 0,
-          margin: const EdgeInsets.only(bottom: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.8),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: AppRadius.borderRadiusXxl,
+            border: Border.all(color: AppColors.border, width: 1),
+            boxShadow: AppShadows.softCard,
           ),
-          child: ExpansionTile(
-            title: Text(
-              s.workoutName,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              formattedDate,
-              style: const TextStyle(fontSize: 11, color: Colors.grey),
-            ),
-            leading: Icon(
-              s.isCompleted ? Icons.check_circle_outline_rounded : Icons.radio_button_unchecked_rounded,
-              color: s.isCompleted ? Colors.green : Colors.grey,
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Divider(),
-                    const SizedBox(height: 8),
-                    _buildHistoryDetailRow('Akurasi Rerata', '${s.accuracy.toStringAsFixed(1)}%'),
-                    _buildHistoryDetailRow('Rata-rata ROM', '${s.averageRom.toStringAsFixed(0)}°'),
-                    _buildHistoryDetailRow('Durasi Latihan', '${(s.durationInSeconds / 60).toStringAsFixed(1)} menit'),
-                    _buildHistoryDetailRow('Kalori Terbakar', '${s.caloriesBurned.toStringAsFixed(1)} kkal'),
-                    _buildHistoryDetailRow('Repetisi', '${s.completedReps} / ${s.targetReps}'),
-                    _buildHistoryDetailRow('Skor Pemulihan', '${s.recoveryScore} / 100'),
-                  ],
+          child: ClipRRect(
+            borderRadius: AppRadius.borderRadiusXxl,
+            child: ExpansionTile(
+              shape: const Border(),
+              collapsedShape: const Border(),
+              title: Text(
+                s.workoutName,
+                style: AppTextStyles.labelLarge.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
               ),
-            ],
+              subtitle: Text(
+                formattedDate,
+                style: AppTextStyles.captionSmall.copyWith(color: AppColors.textSecondary),
+              ),
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: (s.isCompleted ? AppColors.success : AppColors.neutral400).withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  s.isCompleted ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                  color: s.isCompleted ? AppColors.success : AppColors.neutral400,
+                  size: 20,
+                ),
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Divider(color: AppColors.border),
+                      const SizedBox(height: 8),
+                      _buildHistoryDetailRow('Akurasi Rerata', '${s.accuracy.toStringAsFixed(1)}%'),
+                      _buildHistoryDetailRow('Rata-rata ROM', '${s.averageRom.toStringAsFixed(0)}°'),
+                      _buildHistoryDetailRow('Durasi Latihan', '${(s.durationInSeconds / 60).toStringAsFixed(1)} menit'),
+                      _buildHistoryDetailRow('Kalori Terbakar', '${s.caloriesBurned.toStringAsFixed(1)} kkal'),
+                      _buildHistoryDetailRow('Repetisi', '${s.completedReps} / ${s.targetReps}'),
+                      _buildHistoryDetailRow('Skor Pemulihan', '${s.recoveryScore} / 100'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -443,8 +483,8 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text(label, style: AppTextStyles.captionMedium.copyWith(color: AppColors.textSecondary)),
+          Text(value, style: AppTextStyles.captionMedium.copyWith(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
         ],
       ),
     );
@@ -453,12 +493,13 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
   Widget _buildExportMenu(List<WorkoutSession> sessions) {
     return PopupMenuButton<String>(
       onSelected: (val) => _handleExport(val, sessions),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       itemBuilder: (context) => [
         const PopupMenuItem(
           value: 'csv',
           child: Row(
             children: [
-              Icon(Icons.description_outlined, color: Colors.green),
+              Icon(Icons.description_outlined, color: AppColors.success, size: 20),
               SizedBox(width: 8),
               Text('Ekspor ke CSV'),
             ],
@@ -468,7 +509,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
           value: 'pdf',
           child: Row(
             children: [
-              Icon(Icons.picture_as_pdf_outlined, color: Colors.red),
+              Icon(Icons.picture_as_pdf_outlined, color: AppColors.error, size: 20),
               SizedBox(width: 8),
               Text('Ekspor ke PDF'),
             ],
@@ -479,9 +520,9 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
           ? const SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
             )
-          : const Icon(Icons.download_rounded),
+          : const Icon(Icons.download_rounded, color: AppColors.textPrimary),
     );
   }
 
@@ -528,7 +569,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
         duration: const Duration(seconds: 5),
         action: SnackBarAction(
           label: 'OK',
-          textColor: Colors.tealAccent,
+          textColor: AppColors.secondary,
           onPressed: () {},
         ),
       ),
@@ -549,7 +590,9 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Catat Pemulihan Hari Ini'),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+              backgroundColor: AppColors.surface,
+              title: Text('Catat Pemulihan Hari Ini', style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.bold)),
               content: Form(
                 key: formKey,
                 child: SingleChildScrollView(
@@ -587,9 +630,9 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                       const SizedBox(height: 8),
                       TextFormField(
                         initialValue: hrv.toString(),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Heart Rate Variability (HRV ms)',
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(borderRadius: AppRadius.borderRadiusXxl),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (val) {
@@ -609,13 +652,11 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Batal'),
                 ),
-                TextButton(
+                ElevatedButton(
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
                       formKey.currentState!.save();
                       
-                      // Hitung skor pemulihan agregat sederhana
-                      // 100 - (pain*4) - (fatigue*3) - (soreness*3) + (sleep * 0.2)
                       final overall = (100 - (pain * 4) - (fatigue * 3) - (soreness * 3) + (sleep * 0.2)).clamp(1.0, 100.0).round();
 
                       final record = RecoveryProgress(
@@ -632,6 +673,11 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                       if (context.mounted) Navigator.pop(context);
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+                  ),
                   child: const Text('Simpan'),
                 ),
               ],
@@ -649,8 +695,8 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 12)),
-            Text(value.toStringAsFixed(0), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            Text(label, style: AppTextStyles.captionMedium),
+            Text(value.toStringAsFixed(0), style: AppTextStyles.captionMedium.copyWith(fontWeight: FontWeight.bold)),
           ],
         ),
         Slider(
@@ -658,7 +704,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
           min: min,
           max: max,
           onChanged: onChanged,
-          activeColor: Colors.teal,
+          activeColor: AppColors.primary,
         ),
       ],
     );
