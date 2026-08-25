@@ -5,9 +5,9 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 
-/// Card container dasar yang digunakan sebagai section wrapper.
+/// Card container dasar yang digunakan sebagai section wrapper (Sesuai DESIGN.md).
 ///
-/// Semua card spesifik (WorkoutCard, dll.) bisa menggunakan ini sebagai base.
+/// - Style: White background (#FFFFFF), 24px border radius, very soft shadow (0 4px 20px rgba(0,0,0,0.05)), border #E2E8F0.
 class SectionCard extends StatelessWidget {
   const SectionCard({
     super.key,
@@ -27,7 +27,7 @@ class SectionCard extends StatelessWidget {
   final Color? color;
   final BorderRadius? borderRadius;
   final List<BoxShadow>? shadow;
-  final Border? border;
+  final BoxBorder? border;
   final VoidCallback? onTap;
 
   @override
@@ -36,10 +36,10 @@ class SectionCard extends StatelessWidget {
       padding: padding ?? AppSpacing.paddingAllLg,
       margin: margin,
       decoration: BoxDecoration(
-        color: color ?? AppColors.surfaceContainerLow,
-        borderRadius: borderRadius ?? AppRadius.borderRadiusLg,
-        boxShadow: shadow ?? AppShadows.sm,
-        border: border,
+        color: color ?? AppColors.surface,
+        borderRadius: borderRadius ?? AppRadius.borderRadiusXxl,
+        boxShadow: shadow ?? AppShadows.softCard,
+        border: border ?? Border.all(color: AppColors.border, width: 1),
       ),
       child: child,
     );

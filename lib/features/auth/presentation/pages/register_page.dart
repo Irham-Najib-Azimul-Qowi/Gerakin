@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/router/route_names.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_error_banner.dart';
 
-/// Halaman pendaftaran akun baru dengan nama, email, dan password.
+/// Halaman pendaftaran akun baru (Sesuai DESIGN.md).
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
@@ -49,7 +50,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     if (!mounted) return;
 
     if (authState.isSuccess) {
-      // Jika profil baru dibuat → arahkan ke Assessment Wizard untuk isi data fisik
       if (authState.requiresAssessment) {
         context.go('/assessment-wizard');
       } else {
@@ -63,13 +63,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final authState = ref.watch(authControllerProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          color: AppColors.onSurface,
+          color: AppColors.textPrimary,
           onPressed: () => context.pop(),
         ),
       ),
@@ -87,16 +87,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 // ── Header ────────────────────────────────────────────
                 Text(
                   'Buat Akun\nGerakIn ✨',
-                  style: AppTextStyles.headlineMedium.copyWith(
-                    color: AppColors.onSurface,
-                    height: 1.3,
+                  style: AppTextStyles.displaySmall.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                    height: 1.25,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'Daftar gratis dan mulai latihan adaptifmu hari ini.',
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.neutral600,
+                    color: AppColors.textSecondary,
                   ),
                 ),
 
@@ -112,18 +113,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: AppSpacing.xs),
                 TextFormField(
                   controller: _nameCtrl,
-                  textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
+                  textCapitalization: TextCapitalization.words,
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
                   decoration: _inputDecoration(
                     hint: 'Nama kamu',
-                    prefixIcon: Icons.badge_outlined,
+                    prefixIcon: Icons.person_outline_rounded,
                   ),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Nama tidak boleh kosong';
-                    }
-                    if (val.trim().length < 2) {
-                      return 'Nama minimal 2 karakter';
                     }
                     return null;
                   },
@@ -139,11 +138,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   autocorrect: false,
-                  onChanged: (_) {
-                    if (ref.read(authControllerProvider).errorMessage != null) {
-                      ref.read(authControllerProvider.notifier).clearError();
-                    }
-                  },
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
                   decoration: _inputDecoration(
                     hint: 'nama@email.com',
                     prefixIcon: Icons.email_outlined,
@@ -168,15 +163,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   controller: _passwordCtrl,
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.next,
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
                   decoration: _inputDecoration(
-                    hint: 'Minimal 6 karakter',
+                    hint: 'Minimal 8 karakter',
                     prefixIcon: Icons.lock_outline_rounded,
                     suffix: IconButton(
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
-                        color: AppColors.neutral500,
+                        color: AppColors.textSecondary,
                         size: 20,
                       ),
                       onPressed: () =>
@@ -187,8 +183,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     if (val == null || val.isEmpty) {
                       return 'Password tidak boleh kosong';
                     }
-                    if (val.length < 6) {
-                      return 'Password minimal 6 karakter';
+                    if (val.length < 8) {
+                      return 'Password minimal 8 karakter';
                     }
                     return null;
                   },
@@ -204,6 +200,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   obscureText: _obscureConfirm,
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) => _submit(),
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
                   decoration: _inputDecoration(
                     hint: 'Ulangi password',
                     prefixIcon: Icons.lock_outline_rounded,
@@ -212,7 +209,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         _obscureConfirm
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
-                        color: AppColors.neutral500,
+                        color: AppColors.textSecondary,
                         size: 20,
                       ),
                       onPressed: () =>
@@ -234,17 +231,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
                 // ── Tombol Daftar ─────────────────────────────────────
                 SizedBox(
-                  height: 56,
+                  height: 52,
                   child: ElevatedButton(
                     onPressed: authState.isLoading ? null : _submit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondary,
-                      foregroundColor: AppColors.onSecondary,
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.onPrimary,
                       disabledBackgroundColor:
-                          AppColors.secondary.withValues(alpha: 0.5),
+                          AppColors.primary.withValues(alpha: 0.5),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: AppRadius.borderRadiusXxl,
                       ),
                     ),
                     child: authState.isLoading
@@ -259,7 +256,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         : Text(
                             'Daftar Sekarang',
                             style: AppTextStyles.labelLarge.copyWith(
-                              color: AppColors.onSecondary,
+                              color: AppColors.onPrimary,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                   ),
@@ -274,7 +272,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     Text(
                       'Sudah punya akun? ',
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.neutral600,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     GestureDetector(
@@ -283,9 +281,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       child: Text(
                         'Masuk',
                         style: AppTextStyles.labelLarge.copyWith(
-                          color: AppColors.secondary,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
-                          decorationColor: AppColors.secondary,
+                          decorationColor: AppColors.primary,
                         ),
                       ),
                     ),
@@ -306,7 +305,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: AppTextStyles.labelLarge.copyWith(color: AppColors.onSurface),
+      style: AppTextStyles.labelMedium.copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
@@ -318,29 +320,29 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.neutral400),
-      prefixIcon: Icon(prefixIcon, color: AppColors.neutral500, size: 20),
+      prefixIcon: Icon(prefixIcon, color: AppColors.textSecondary, size: 20),
       suffixIcon: suffix,
       filled: true,
-      fillColor: AppColors.surfaceContainerLow,
+      fillColor: AppColors.surface,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.outlineVariant),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.border),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.outlineVariant),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.border),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.secondary, width: 2),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.error, width: 1.5),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.error, width: 2),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.error, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,

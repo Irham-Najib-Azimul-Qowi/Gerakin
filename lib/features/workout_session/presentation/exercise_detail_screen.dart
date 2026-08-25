@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../motion/models/joint_angle.dart';
 import '../../exercise_library/models/full_exercise_definition.dart';
 import '../../exercise_library/models/exercise_target_angles.dart';
@@ -37,13 +39,13 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       category: 'Rehabilitasi Bahu & Ekstremitas Atas',
       difficulty: 2,
       description:
-          'Latihan rehabilitasi pemulihan Range of Motion (ROM) sendi bahu pasca cedera rotaror cuff atau stroke.',
+          'Latihan rehabilitasi pemulihan Range of Motion (ROM) sendi bahu pasca cedera rotator cuff atau stroke.',
       benefit: 'Meningkatkan fleksibilitas kapsul sendi bahu, memperkuat otot deltoid & supraspinatus.',
       targetMuscles: ['Deltoid Anterior', 'Supraspinatus', 'Trapezius Upper'],
       requiredEquipment: 'Tanpa Alat (Bodyweight)',
       movementPattern: 'Abduksi Bahu 0 - 180 Derajat',
-      startPose: 'Berdiri tegak, tangan rileks di samping panggul',
-      endPose: 'Mengangkat lengan ke atas sejajar telinga',
+      startPose: 'Duduk tegak di kursi roda, kedua tangan rileks di samping panggul',
+      endPose: 'Mengangkat lengan ke samping/atas hingga sejajar bahu atau telinga',
       targetAngles: ExerciseTargetAngles(
         primaryJoint: JointType.leftElbow,
         startAngle: 15.0,
@@ -56,10 +58,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       setTarget: 3,
       restDuration: 30,
       estimatedCalories: 15.0,
-      voiceInstruction: 'Angkat lengan perlahan ke atas hingga lurus sejajar telinga',
-      warning: 'Jangan memaksakan mengangkat jika merasakan nyeri tajam',
+      voiceInstruction: 'Duduk tegak di kursi roda, angkat lengan perlahan ke atas hingga lurus sejajar telinga',
+      warning: 'Jangan memaksakan mengangkat jika merasakan nyeri tajam pada sendi bahu',
       contraindication: 'Dislokasi bahu akut, fraktur klavikula yang belum menyambung',
-      tags: ['Bahu', 'Stroke', 'Rehabilitasi'],
+      tags: ['Bahu', 'Stroke', 'Rehabilitasi', 'Kursi Roda'],
       thumbnailAsset: 'assets/exercises/shoulder_abduction.png',
       animationAsset: 'assets/exercises/shoulder_abduction.gif',
     );
@@ -68,11 +70,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.workoutSurfaceDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Detail Latihan Rehabilitasi', style: TextStyle(color: Colors.white, fontSize: 16)),
+        title: Text(
+          'Detail Latihan Rehabilitasi',
+          style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => context.pop(),
@@ -81,7 +86,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           IconButton(
             icon: Icon(
               _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: _isFavorite ? Colors.redAccent : Colors.white,
+              color: _isFavorite ? AppColors.error : Colors.white,
             ),
             onPressed: () {
               setState(() => _isFavorite = !_isFavorite);
@@ -96,7 +101,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           IconButton(
             icon: Icon(
               _isDownloaded ? Icons.download_done_rounded : Icons.download_rounded,
-              color: _isDownloaded ? const Color(0xFF00E676) : Colors.white,
+              color: _isDownloaded ? AppColors.workoutAccentGreen : Colors.white,
             ),
             onPressed: () {
               setState(() => _isDownloaded = !_isDownloaded);
@@ -126,13 +131,19 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             // Preview Animation Banner
             GestureDetector(
               onTap: () {
-                context.push('/workout-session/preview', extra: _exercise);
+                context.push(
+                  '/workout-session/preview',
+                  extra: {
+                    'exercise': _exercise,
+                    'isChecklistComplete': _isChecklistComplete,
+                  },
+                );
               },
               child: Container(
                 height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: AppColors.workoutCardDark,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: Colors.white12),
                 ),
@@ -142,11 +153,11 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.fitness_center_rounded, size: 64, color: Color(0xFF00E676)),
+                        const Icon(Icons.fitness_center_rounded, size: 64, color: AppColors.workoutAccentGreen),
                         const SizedBox(height: 8),
                         Text(
                           _exercise.name,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: AppTextStyles.titleMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -156,16 +167,16 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF00E676),
+                          color: AppColors.workoutAccentGreen,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.play_circle_fill, color: Colors.black, size: 16),
-                            SizedBox(width: 4),
+                            const Icon(Icons.play_circle_fill, color: Colors.black, size: 16),
+                            const SizedBox(width: 4),
                             Text(
                               'PRATINJAU GERAKAN',
-                              style: TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.bold),
+                              style: AppTextStyles.labelSmall.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -180,12 +191,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             // Header Info
             Text(
               _exercise.name,
-              style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+              style: AppTextStyles.headlineSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
               _exercise.category,
-              style: const TextStyle(color: Color(0xFF00E676), fontSize: 13, fontWeight: FontWeight.w600),
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.workoutAccentGreen, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
 
@@ -210,8 +221,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               spacing: 8,
               children: _exercise.targetMuscles
                   .map((m) => Chip(
-                        label: Text(m, style: const TextStyle(color: Colors.white, fontSize: 12)),
-                        backgroundColor: const Color(0xFF1E293B),
+                        label: Text(m, style: AppTextStyles.labelSmall.copyWith(color: Colors.white)),
+                        backgroundColor: AppColors.workoutCardDark,
                         side: const BorderSide(color: Colors.white24),
                       ))
                   .toList(),
@@ -223,7 +234,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             const SizedBox(height: 6),
             Text(
               _exercise.benefit,
-              style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70, height: 1.4),
             ),
             const SizedBox(height: 16),
 
@@ -231,32 +242,32 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.redAccent.withValues(alpha: 0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.redAccent.withValues(alpha: 0.4)),
+                border: Border.all(color: AppColors.error.withValues(alpha: 0.4)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 20),
-                      SizedBox(width: 8),
+                      const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 20),
+                      const SizedBox(width: 8),
                       Text(
                         'PERINGATAN & KONTRAINDIKASI',
-                        style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 13),
+                        style: AppTextStyles.labelMedium.copyWith(color: AppColors.error, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
                     'Peringatan: ${_exercise.warning}',
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    style: AppTextStyles.bodySmall.copyWith(color: Colors.white70),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Kontraindikasi: ${_exercise.contraindication}',
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    style: AppTextStyles.bodySmall.copyWith(color: Colors.white70),
                   ),
                 ],
               ),
@@ -282,14 +293,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00E676),
+                  backgroundColor: AppColors.workoutAccentGreen,
                   foregroundColor: Colors.black,
                   disabledBackgroundColor: Colors.grey.shade800,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
-                child: const Text(
+                child: Text(
                   'MULAI LATIHAN',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                  style: AppTextStyles.titleMedium.copyWith(color: Colors.black, fontWeight: FontWeight.w900, letterSpacing: 0.5),
                 ),
               ),
             ),
@@ -303,7 +314,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   Widget _sectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+      style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
 
@@ -312,17 +323,17 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B),
+          color: AppColors.workoutCardDark,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: Colors.white12),
         ),
         child: Column(
           children: [
-            Icon(icon, color: const Color(0xFF00E676), size: 18),
+            Icon(icon, color: AppColors.workoutAccentGreen, size: 18),
             const SizedBox(height: 4),
-            Text(title, style: const TextStyle(color: Colors.grey, fontSize: 9, fontWeight: FontWeight.bold)),
+            Text(title, style: AppTextStyles.labelSmall.copyWith(color: Colors.grey, fontSize: 9, fontWeight: FontWeight.bold)),
             const SizedBox(height: 2),
-            Text(val, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+            Text(val, style: AppTextStyles.labelMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
           ],
         ),
       ),

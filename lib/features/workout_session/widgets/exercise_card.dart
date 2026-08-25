@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Top HUD Exercise Card pada Live Camera Screen.
 class ExerciseCardHUD extends StatelessWidget {
@@ -37,7 +39,7 @@ class ExerciseCardHUD extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.9),
+        color: AppColors.workoutSurfaceDark.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white12),
         boxShadow: const [
@@ -53,9 +55,8 @@ class ExerciseCardHUD extends StatelessWidget {
               Expanded(
                 child: Text(
                   exerciseName,
-                  style: const TextStyle(
+                  style: AppTextStyles.titleSmall.copyWith(
                     color: Colors.white,
-                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -73,9 +74,8 @@ class ExerciseCardHUD extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       _formatTimer(elapsedSeconds),
-                      style: const TextStyle(
+                      style: AppTextStyles.labelMedium.copyWith(
                         color: Colors.white,
-                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -88,9 +88,9 @@ class ExerciseCardHUD extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _metricCol('REPETISI', '$currentRep / $targetReps', const Color(0xFF00E676)),
-              _metricCol('SET', '$currentSet / $targetSets', Colors.lightBlueAccent),
-              _metricCol('SUDUT', '${currentAngle.round()}° / ${targetAngle.round()}°', Colors.amberAccent),
+              _metricCol('REPETISI', '$currentRep / $targetReps', AppColors.workoutAccentGreen),
+              _metricCol('SET', '$currentSet / $targetSets', AppColors.info),
+              _metricCol('SUDUT', '${currentAngle.round()}° / ${targetAngle.round()}°', AppColors.warning),
               _metricCol('CONFIDENCE', '${(poseConfidence * 100).round()}%', Colors.purpleAccent),
             ],
           ),
@@ -99,17 +99,17 @@ class ExerciseCardHUD extends StatelessWidget {
     );
   }
 
-  Widget _metricCol(String label, String val, Color color) {
+  Widget _metricCol(String label, String value, Color color) {
     return Column(
       children: [
         Text(
           label,
-          style: const TextStyle(color: Colors.grey, fontSize: 10, fontWeight: FontWeight.bold),
+          style: AppTextStyles.labelSmall.copyWith(color: Colors.grey, fontSize: 9, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 2),
         Text(
-          val,
-          style: TextStyle(color: color, fontSize: 15, fontWeight: FontWeight.bold),
+          value,
+          style: AppTextStyles.labelLarge.copyWith(color: color, fontWeight: FontWeight.w900),
         ),
       ],
     );

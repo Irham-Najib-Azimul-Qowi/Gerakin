@@ -7,7 +7,9 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
-/// Card untuk menampilkan item workout.
+/// Card untuk menampilkan item workout (Sesuai DESIGN.md).
+///
+/// Fitur: Thumbnail/Icon, Title, Metadata chips (durasi, kalori, level kesulitan), 24px border radius.
 class WorkoutCard extends StatelessWidget {
   const WorkoutCard({
     super.key,
@@ -37,7 +39,7 @@ class WorkoutCard extends StatelessWidget {
       case 'advanced':
         return AppColors.error;
       default:
-        return AppColors.info;
+        return AppColors.primary;
     }
   }
 
@@ -48,25 +50,32 @@ class WorkoutCard extends StatelessWidget {
       child: Container(
         padding: AppSpacing.paddingAllLg,
         decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLow,
-          borderRadius: AppRadius.borderRadiusLg,
-          boxShadow: AppShadows.sm,
+          color: AppColors.surface,
+          borderRadius: AppRadius.borderRadiusXxl,
+          boxShadow: AppShadows.softCard,
+          border: Border.all(color: AppColors.border, width: 1),
         ),
         child: Row(
           children: [
-            // Icon
+            // Thumbnail / Icon box
             Container(
-              width: 48,
-              height: 48,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
-                color: (iconColor ?? AppColors.primary)
-                    .withValues(alpha: 0.12),
-                borderRadius: AppRadius.borderRadiusMd,
+                gradient: LinearGradient(
+                  colors: [
+                    (iconColor ?? AppColors.primary).withValues(alpha: 0.15),
+                    AppColors.secondary.withValues(alpha: 0.15),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 icon,
                 color: iconColor ?? AppColors.primary,
-                size: 24,
+                size: 26,
               ),
             ),
             Gap(AppSpacing.md),
@@ -77,8 +86,9 @@ class WorkoutCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.titleSmall.copyWith(
-                      color: AppColors.onSurface,
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -86,29 +96,57 @@ class WorkoutCard extends StatelessWidget {
                   Gap(AppSpacing.xs),
                   Row(
                     children: [
-                      Icon(
-                        Icons.timer_outlined,
-                        size: 14,
-                        color: AppColors.neutral500,
-                      ),
-                      Gap(AppSpacing.xs),
-                      Text(
-                        duration,
-                        style: AppTextStyles.captionMedium.copyWith(
-                          color: AppColors.neutral600,
+                      // Durasi chip
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceVariant,
+                          borderRadius: AppRadius.borderRadiusSm, // 8px small chip
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.timer_outlined,
+                              size: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              duration,
+                              style: AppTextStyles.captionSmall.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Gap(AppSpacing.md),
-                      Icon(
-                        Icons.local_fire_department_outlined,
-                        size: 14,
-                        color: AppColors.neutral500,
-                      ),
                       Gap(AppSpacing.xs),
-                      Text(
-                        calories,
-                        style: AppTextStyles.captionMedium.copyWith(
-                          color: AppColors.neutral600,
+                      // Kalori chip
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceVariant,
+                          borderRadius: AppRadius.borderRadiusSm, // 8px small chip
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.local_fire_department_outlined,
+                              size: 12,
+                              color: Colors.orange,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              calories,
+                              style: AppTextStyles.captionSmall.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -117,21 +155,22 @@ class WorkoutCard extends StatelessWidget {
               ),
             ),
             Gap(AppSpacing.sm),
-            // Level badge
+            // Level badge chip
             Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 6,
               ),
               decoration: BoxDecoration(
                 color: _levelColor.withValues(alpha: 0.12),
-                borderRadius: AppRadius.borderRadiusSm,
+                borderRadius: AppRadius.borderRadiusSm, // 8px chip
+                border: Border.all(color: _levelColor.withValues(alpha: 0.3)),
               ),
               child: Text(
                 level,
                 style: AppTextStyles.captionSmall.copyWith(
                   color: _levelColor,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),

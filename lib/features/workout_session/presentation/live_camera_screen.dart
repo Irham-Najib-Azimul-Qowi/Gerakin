@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/loading/loading_overlay.dart';
 import '../../../shared/widgets/states/error_state.dart';
 import '../../camera/models/detected_pose.dart';
@@ -262,7 +263,7 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F172A).withValues(alpha: 0.9),
+                  color: AppColors.workoutSurfaceDark.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.white12),
                 ),
@@ -290,7 +291,7 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen>
                     // Pause / Resume Button
                     FloatingActionButton(
                       heroTag: 'pause_btn',
-                      backgroundColor: const Color(0xFF00E676),
+                      backgroundColor: AppColors.workoutAccentGreen,
                       foregroundColor: Colors.black,
                       onPressed: () {
                         if (uiState.workoutState == WorkoutState.paused) {
@@ -309,7 +310,7 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen>
 
                     // Emergency Stop Button
                     IconButton(
-                      icon: const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 28),
+                      icon: const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 28),
                       onPressed: () {
                         controller.cancelWorkout();
                         context.pop();
@@ -357,36 +358,36 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen>
           margin: const EdgeInsets.all(24),
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
+            color: AppColors.workoutCardDark,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.lightBlueAccent, width: 2),
+            border: Border.all(color: AppColors.info, width: 2),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.self_improvement_rounded, color: Colors.lightBlueAccent, size: 56),
+              const Icon(Icons.self_improvement_rounded, color: AppColors.info, size: 56),
               const SizedBox(height: 12),
               Text(
                 'WAKTU ISTIRAHAT SET ${state.currentSet - 1}',
-                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                style: AppTextStyles.titleMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
                 '${state.restSecondsRemaining}',
-                style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 64, fontWeight: FontWeight.w900),
+                style: AppTextStyles.displayLarge.copyWith(color: AppColors.info, fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 8),
-              const Text('detik', style: TextStyle(color: Colors.white70, fontSize: 14)),
+              Text('detik', style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70)),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: controller.skipRest,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlueAccent,
+                  backgroundColor: AppColors.info,
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
-                child: const Text('LEWATI ISTIRAHAT (SKIP)', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('LEWATI ISTIRAHAT (SKIP)', style: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -402,25 +403,25 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen>
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
+            color: AppColors.workoutCardDark,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.pause_circle_filled_rounded, color: Color(0xFF00E676), size: 64),
+              const Icon(Icons.pause_circle_filled_rounded, color: AppColors.workoutAccentGreen, size: 64),
               const SizedBox(height: 12),
-              const Text('LATIHAN DI-PAUSE', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('LATIHAN DI-PAUSE', style: AppTextStyles.titleMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: controller.resumeWorkout,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00E676),
+                  backgroundColor: AppColors.workoutAccentGreen,
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
-                child: const Text('LANJUTKAN LATIHAN', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('LANJUTKAN LATIHAN', style: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -433,16 +434,16 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Keluar dari Latihan?', style: TextStyle(color: Colors.white)),
-        content: const Text(
+        backgroundColor: AppColors.workoutCardDark,
+        title: Text('Keluar dari Latihan?', style: AppTextStyles.titleMedium.copyWith(color: Colors.white)),
+        content: Text(
           'Kemajuan sesi saat ini tidak akan disimpan jika Anda keluar sebelum selesai.',
-          style: TextStyle(color: Colors.white70),
+          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('BATAL', style: TextStyle(color: Colors.grey)),
+            child: Text('BATAL', style: AppTextStyles.labelLarge.copyWith(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () {
@@ -450,7 +451,7 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen>
               controller.cancelWorkout();
               context.pop();
             },
-            child: const Text('YA, KELUAR', style: TextStyle(color: Colors.redAccent)),
+            child: Text('YA, KELUAR', style: AppTextStyles.labelLarge.copyWith(color: AppColors.error)),
           ),
         ],
       ),

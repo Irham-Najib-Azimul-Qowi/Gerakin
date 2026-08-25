@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/router/route_names.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_shadows.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../controllers/profile_controller.dart';
 import '../../models/user_profile.dart';
 import '../../../gamification/presentation/controllers/gamification_controller.dart';
 
-/// Halaman Profil Pengguna untuk aplikasi GERAKIN.
+/// Halaman Profil Pengguna untuk aplikasi GERAKIN (Sesuai DESIGN.md).
+///
+/// Personality: Bright, Friendly, Inclusive, Cheerful, Modern, Premium.
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
@@ -15,20 +22,29 @@ class ProfilePage extends ConsumerWidget {
     final state = ref.watch(profileControllerProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Profil Pengguna', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        title: Text(
+          'Profil Pengguna',
+          style: AppTextStyles.titleLarge.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
+            icon: const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
             onPressed: () => context.pushNamed(RouteNames.settings),
             tooltip: 'Pengaturan',
           ),
         ],
       ),
       body: state.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
           : state.errorMessage != null
-              ? Center(child: Text(state.errorMessage!))
+              ? Center(child: Text(state.errorMessage!, style: AppTextStyles.bodyMedium))
               : _buildProfileContent(context, ref, state),
     );
   }
@@ -36,11 +52,16 @@ class ProfilePage extends ConsumerWidget {
   Widget _buildProfileContent(BuildContext context, WidgetRef ref, ProfileState state) {
     final active = state.activeProfile;
     if (active == null) {
-      return const Center(child: Text('Tidak ada profil aktif. Silakan buat profil.'));
+      return Center(
+        child: Text(
+          'Tidak ada profil aktif. Silakan buat profil.',
+          style: AppTextStyles.bodyMedium,
+        ),
+      );
     }
 
-
     return RefreshIndicator(
+      color: AppColors.primary,
       onRefresh: () => ref.read(profileControllerProvider.notifier).loadProfiles(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -61,7 +82,7 @@ class ProfilePage extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // ── MOBILITY PROFILE & ATTRIBUTES ──────────────────────
-            _buildSectionHeader('Profil Fisik & Mobilitas'),
+            _buildSectionHeader('Profil Fisik & Aksesibilitas'),
             const SizedBox(height: 12),
             _buildMobilityDetailsCard(context, active),
             const SizedBox(height: 24),
@@ -75,75 +96,94 @@ class ProfilePage extends ConsumerWidget {
   }
 
   Widget _buildProfileHeaderCard(BuildContext context, UserProfile active) {
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1),
+    return Container(
+      padding: const EdgeInsets.all(18.0),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.borderRadiusXxl,
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: AppShadows.softCard,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 36,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: active.photoUrl != null && active.photoUrl!.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(36),
-                      child: Image.network(active.photoUrl!, fit: BoxFit.cover),
-                    )
-                  : Text(
-                      active.displayName.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(fontSize: 28, color: Colors.white, fontWeight: FontWeight.bold),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 36,
+            backgroundColor: AppColors.primaryContainer,
+            child: active.photoUrl != null && active.photoUrl!.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(36),
+                    child: Image.network(active.photoUrl!, fit: BoxFit.cover),
+                  )
+                : Text(
+                    active.displayName.isNotEmpty ? active.displayName.substring(0, 1).toUpperCase() : 'G',
+                    style: AppTextStyles.headlineMedium.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
                     ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
+                  ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        active.displayName,
+                        style: AppTextStyles.titleMedium.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (active.isGuest)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceVariant,
+                          borderRadius: AppRadius.borderRadiusSm,
+                        ),
                         child: Text(
-                          active.displayName,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          'TAMU',
+                          style: AppTextStyles.captionSmall.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ),
-                      if (active.isGuest)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            'TAMU',
-                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black54),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  if (active.email != null && active.email!.isNotEmpty)
-                    Text(
-                      active.email!,
-                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    ),
-                  const SizedBox(height: 8),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                if (active.email != null && active.email!.isNotEmpty)
                   Text(
-                    '${active.gender} • ${active.height.toStringAsFixed(0)} cm • ${active.weight.toStringAsFixed(0)} kg',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                    active.email!,
+                    style: AppTextStyles.captionMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
-                ],
-              ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceVariant,
+                    borderRadius: AppRadius.borderRadiusSm,
+                  ),
+                  child: Text(
+                    '${active.gender} • ${active.height.toStringAsFixed(0)} cm • ${active.weight.toStringAsFixed(0)} kg',
+                    style: AppTextStyles.captionSmall.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -155,7 +195,7 @@ class ProfilePage extends ConsumerWidget {
         _buildSectionHeader('Ganti Profil Aktif'),
         const SizedBox(height: 12),
         SizedBox(
-          height: 60,
+          height: 48,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: state.allProfiles.length + 1,
@@ -166,10 +206,11 @@ class ProfilePage extends ConsumerWidget {
                   margin: const EdgeInsets.only(right: 8),
                   child: OutlinedButton.icon(
                     onPressed: () => _showCreateProfileDialog(context, ref),
-                    icon: const Icon(Icons.add_rounded),
+                    icon: const Icon(Icons.add_rounded, size: 18),
                     label: const Text('Profil Baru'),
                     style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+                      minimumSize: const Size(48, 44),
                     ),
                   ),
                 );
@@ -186,9 +227,18 @@ class ProfilePage extends ConsumerWidget {
                       ref.read(profileControllerProvider.notifier).switchProfile(profile.id);
                     }
                   },
-                  selectedColor: Theme.of(context).colorScheme.primaryContainer,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  selectedColor: AppColors.primaryContainer,
+                  backgroundColor: AppColors.surface,
+                  labelStyle: AppTextStyles.captionMedium.copyWith(
+                    fontWeight: profile.isActive ? FontWeight.bold : FontWeight.w500,
+                    color: profile.isActive ? AppColors.primary : AppColors.textPrimary,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.borderRadiusSm, // 8px chip
+                    side: BorderSide(
+                      color: profile.isActive ? AppColors.primary : AppColors.border,
+                    ),
+                  ),
                 ),
               );
             },
@@ -199,46 +249,47 @@ class ProfilePage extends ConsumerWidget {
   }
 
   Widget _buildMobilityDetailsCard(BuildContext context, UserProfile active) {
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainerLowest,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.8),
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.borderRadiusXxl,
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: AppShadows.softCard,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildDetailRow(context, 'Tipe Kursi Roda', active.wheelchairType.toUpperCase()),
-            const Divider(),
-            _buildDetailRow(context, 'Tingkat Mobilitas', active.mobilityLevel.toUpperCase()),
-            const Divider(),
-            _buildDetailRow(context, 'Tangan Dominan', active.dominantHand == 'right' ? 'KANAN' : 'KIRI'),
-            const Divider(),
-            _buildDetailRow(context, 'Target Rehabilitasi', active.rehabilitationGoal.toUpperCase()),
-            if (active.medicalNotes.isNotEmpty) ...[
-              const Divider(),
-              _buildDetailRow(context, 'Catatan Medis', active.medicalNotes),
-            ],
+      child: Column(
+        children: [
+          _buildDetailRow('Tipe Kursi Roda', active.wheelchairType.toUpperCase()),
+          const Divider(color: AppColors.border),
+          _buildDetailRow('Tingkat Mobilitas', active.mobilityLevel.toUpperCase()),
+          const Divider(color: AppColors.border),
+          _buildDetailRow('Tangan Dominan', active.dominantHand == 'right' ? 'KANAN' : 'KIRI'),
+          const Divider(color: AppColors.border),
+          _buildDetailRow('Target Kebugaran', active.rehabilitationGoal.toUpperCase()),
+          if (active.medicalNotes.isNotEmpty) ...[
+            const Divider(color: AppColors.border),
+            _buildDetailRow('Catatan Kesehatan', active.medicalNotes),
           ],
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, String label, String value) {
+  Widget _buildDetailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(label, style: AppTextStyles.captionMedium.copyWith(color: AppColors.textSecondary)),
           Expanded(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              style: AppTextStyles.captionMedium.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
         ],
@@ -253,11 +304,13 @@ class ProfilePage extends ConsumerWidget {
           width: double.infinity,
           height: 48,
           child: ElevatedButton.icon(
-            onPressed: () => context.pushNamed(RouteNames.settings), // routing to settings
-            icon: const Icon(Icons.settings_rounded),
+            onPressed: () => context.pushNamed(RouteNames.settings),
+            icon: const Icon(Icons.settings_rounded, size: 20),
             label: const Text('Kelola Profil & Pengaturan'),
             style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
             ),
           ),
         ),
@@ -266,11 +319,11 @@ class ProfilePage extends ConsumerWidget {
           width: double.infinity,
           height: 48,
           child: OutlinedButton.icon(
-            onPressed: () => context.push('/profile/edit'), // go to Edit Profile subroute
-            icon: const Icon(Icons.edit_rounded),
+            onPressed: () => context.push('/profile/edit'),
+            icon: const Icon(Icons.edit_rounded, size: 20),
             label: const Text('Edit Informasi Fisik'),
             style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
             ),
           ),
         ),
@@ -279,11 +332,11 @@ class ProfilePage extends ConsumerWidget {
           width: double.infinity,
           height: 48,
           child: OutlinedButton.icon(
-            onPressed: () => context.push('/assessment-wizard'), // go to wizard route
-            icon: const Icon(Icons.fitness_center_rounded),
-            label: const Text('Mulai Uji Fisik (Wizard)'),
+            onPressed: () => context.push('/assessment-wizard'),
+            icon: const Icon(Icons.fitness_center_rounded, size: 20),
+            label: const Text('Mulai Uji Mobilitas (Wizard)'),
             style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
             ),
           ),
         ),
@@ -294,9 +347,9 @@ class ProfilePage extends ConsumerWidget {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 15,
+      style: AppTextStyles.titleMedium.copyWith(
         fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -315,7 +368,9 @@ class ProfilePage extends ConsumerWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Tambah Profil Baru'),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+              backgroundColor: AppColors.surface,
+              title: Text('Tambah Profil Baru', style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.bold)),
               content: Form(
                 key: formKey,
                 child: SingleChildScrollView(
@@ -368,7 +423,7 @@ class ProfilePage extends ConsumerWidget {
               ),
               actions: [
                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
-                TextButton(
+                ElevatedButton(
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       formKey.currentState!.save();
@@ -378,7 +433,7 @@ class ProfilePage extends ConsumerWidget {
                             birthDate: DateTime(2000, 1, 1),
                             height: height,
                             weight: weight,
-                            wheelchairType: 'none',
+                            wheelchairType: 'manual',
                             mobilityLevel: 'intermediate',
                             dominantHand: hand,
                             rehabilitationGoal: 'Pelihara Kebugaran',
@@ -387,6 +442,11 @@ class ProfilePage extends ConsumerWidget {
                       Navigator.pop(context);
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+                  ),
                   child: const Text('Simpan'),
                 ),
               ],
@@ -402,62 +462,57 @@ class ProfilePage extends ConsumerWidget {
     final currentStreak = gamificationState.streak?.currentStreak ?? 1;
     final longestStreak = gamificationState.streak?.longestStreak ?? 1;
 
-    return Card(
-      elevation: 0,
-      color: Colors.orange.withValues(alpha: 0.1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.orange, width: 1.2),
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFBEB), // Warm yellow tint
+        borderRadius: AppRadius.borderRadiusXxl,
+        border: Border.all(color: const Color(0xFFFDE68A), width: 1.2),
+        boxShadow: AppShadows.softCard,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Center(
-                child: Text('🔥', style: TextStyle(fontSize: 26)),
-              ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF3C7),
+              borderRadius: BorderRadius.circular(16),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Streak Latihan Harian',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange.shade900,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '$currentStreak Hari Berturut-turut',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  Text(
-                    'Rekor Terpanjang: $longestStreak Hari',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                ],
-              ),
+            child: const Center(
+              child: Text('🔥', style: TextStyle(fontSize: 24)),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Streak Latihan Harian',
+                  style: AppTextStyles.captionSmall.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFFB45309),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '$currentStreak Hari Berturut-turut',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  'Rekor Terpanjang: $longestStreak Hari',
+                  style: AppTextStyles.captionSmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../models/workout_summary.dart';
 
 /// Screen 4: Workout Session Summary Screen (Ringkasan Lengkap Hasil Latihan Rehabilitasi).
@@ -20,12 +22,15 @@ class SessionSummaryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.workoutSurfaceDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text('Ringkasan Sesi Latihan', style: TextStyle(color: Colors.white, fontSize: 16)),
+        title: Text(
+          'Ringkasan Sesi Latihan',
+          style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.close_rounded, color: Colors.white),
@@ -43,15 +48,15 @@ class SessionSummaryScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+                  colors: [AppColors.workoutCardDark, AppColors.workoutSurfaceDark],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFF00E676), width: 1.5),
+                border: Border.all(color: AppColors.workoutAccentGreen, width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF00E676).withValues(alpha: 0.2),
+                    color: AppColors.workoutAccentGreen.withValues(alpha: 0.2),
                     blurRadius: 15,
                     spreadRadius: 2,
                   ),
@@ -59,16 +64,16 @@ class SessionSummaryScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 64),
+                  const Icon(Icons.emoji_events_rounded, color: AppColors.warning, size: 64),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'SESI LATIHAN SELESAI!',
-                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+                    style: AppTextStyles.headlineSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     summary.exerciseName,
-                    style: const TextStyle(color: Color(0xFF00E676), fontSize: 14, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.bodyMedium.copyWith(color: AppColors.workoutAccentGreen, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
 
@@ -78,17 +83,17 @@ class SessionSummaryScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.black45,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+                      border: Border.all(color: AppColors.warning.withValues(alpha: 0.5)),
                     ),
                     child: Column(
                       children: [
                         Text(
                           '${summary.score.totalScore.round()}',
-                          style: const TextStyle(color: Colors.amber, fontSize: 48, fontWeight: FontWeight.w900),
+                          style: AppTextStyles.displayLarge.copyWith(color: AppColors.warning, fontWeight: FontWeight.w900),
                         ),
                         Text(
                           'SKOR REHABILITASI: ${summary.score.grade}',
-                          style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                          style: AppTextStyles.labelSmall.copyWith(color: Colors.white70, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -105,13 +110,13 @@ class SessionSummaryScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 _metricTile('KALORI', '${summary.caloriesBurned.round()} kcal', Icons.local_fire_department, Colors.orangeAccent),
                 const SizedBox(width: 8),
-                _metricTile('REPS / SET', '${summary.totalRepsCompleted} / ${summary.totalSetsCompleted}', Icons.repeat, const Color(0xFF00E676)),
+                _metricTile('REPS / SET', '${summary.totalRepsCompleted} / ${summary.totalSetsCompleted}', Icons.repeat, AppColors.workoutAccentGreen),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                _metricTile('RERATA AKURASI', '${summary.averageAccuracy.round()}%', Icons.check_circle_outline, Colors.lightBlueAccent),
+                _metricTile('RERATA AKURASI', '${summary.averageAccuracy.round()}%', Icons.check_circle_outline, AppColors.info),
                 const SizedBox(width: 8),
                 _metricTile('RERATA ROM', '${summary.averageROM.round()}°', Icons.screen_rotation, Colors.purpleAccent),
                 const SizedBox(width: 8),
@@ -125,13 +130,16 @@ class SessionSummaryScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: AppColors.workoutCardDark,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Analisis Performa Repetisi', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                    Text(
+                      'Analisis Performa Repetisi',
+                      style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -149,7 +157,7 @@ class SessionSummaryScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: AppColors.workoutCardDark,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -158,14 +166,20 @@ class SessionSummaryScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Pencapaian & XP', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Pencapaian & XP',
+                        style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.amber.withValues(alpha: 0.2),
+                          color: AppColors.warning.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text('+${summary.xpEarned} XP', style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
+                        child: Text(
+                          '+${summary.xpEarned} XP',
+                          style: AppTextStyles.labelMedium.copyWith(color: AppColors.warning, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
@@ -174,8 +188,8 @@ class SessionSummaryScreen extends StatelessWidget {
                     spacing: 8,
                     children: summary.achievements
                         .map((a) => Chip(
-                              avatar: const Icon(Icons.star, color: Colors.amber, size: 16),
-                              label: Text(a, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                              avatar: const Icon(Icons.star, color: AppColors.warning, size: 16),
+                              label: Text(a, style: AppTextStyles.labelSmall.copyWith(color: Colors.white)),
                               backgroundColor: Colors.black26,
                             ))
                         .toList(),
@@ -189,17 +203,20 @@ class SessionSummaryScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: AppColors.workoutCardDark,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.medical_services_outlined, color: Color(0xFF00E676), size: 18),
-                      SizedBox(width: 8),
-                      Text('Saran Fisioterapis AI', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                      const Icon(Icons.medical_services_outlined, color: AppColors.workoutAccentGreen, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Saran Fisioterapis AI',
+                        style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -208,8 +225,13 @@ class SessionSummaryScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('• ', style: TextStyle(color: Color(0xFF00E676), fontSize: 16)),
-                            Expanded(child: Text(imp, style: const TextStyle(color: Colors.white70, fontSize: 13))),
+                            const Text('• ', style: TextStyle(color: AppColors.workoutAccentGreen, fontSize: 16)),
+                            Expanded(
+                              child: Text(
+                                imp,
+                                style: AppTextStyles.bodySmall.copyWith(color: Colors.white70),
+                              ),
+                            ),
                           ],
                         ),
                       )),
@@ -227,7 +249,10 @@ class SessionSummaryScreen extends StatelessWidget {
                       context.push('/workout-session/replay', extra: summary);
                     },
                     icon: const Icon(Icons.replay_rounded, color: Colors.cyanAccent),
-                    label: const Text('REPLAY SESI', style: TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold)),
+                    label: Text(
+                      'REPLAY SESI',
+                      style: AppTextStyles.labelLarge.copyWith(color: Colors.cyanAccent, fontWeight: FontWeight.bold),
+                    ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       side: const BorderSide(color: Colors.cyanAccent),
@@ -240,12 +265,15 @@ class SessionSummaryScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () => context.go('/home'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00E676),
+                      backgroundColor: AppColors.workoutAccentGreen,
                       foregroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
-                    child: const Text('SIMPAN & SELESAI', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'SIMPAN & SELESAI',
+                      style: AppTextStyles.labelLarge.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
@@ -262,16 +290,16 @@ class SessionSummaryScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B),
+          color: AppColors.workoutCardDark,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(height: 6),
-            Text(label, style: const TextStyle(color: Colors.grey, fontSize: 9, fontWeight: FontWeight.bold)),
+            Text(label, style: AppTextStyles.labelSmall.copyWith(color: Colors.grey, fontSize: 9, fontWeight: FontWeight.bold)),
             const SizedBox(height: 2),
-            Text(val, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+            Text(val, style: AppTextStyles.labelMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -281,11 +309,11 @@ class SessionSummaryScreen extends StatelessWidget {
   Widget _repPerformanceCol(String tag, dynamic rep) {
     return Column(
       children: [
-        Text(tag, style: const TextStyle(color: Color(0xFF00E676), fontSize: 11, fontWeight: FontWeight.bold)),
+        Text(tag, style: AppTextStyles.labelSmall.copyWith(color: AppColors.workoutAccentGreen, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        Text('Rep #${rep.repNumber}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        Text('Max ROM: ${rep.maxROM.round()}°', style: const TextStyle(color: Colors.white70, fontSize: 12)),
-        Text('Akurasi: ${rep.accuracyScore.round()}%', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+        Text('Rep #${rep.repNumber}', style: AppTextStyles.bodyMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text('Max ROM: ${rep.maxROM.round()}°', style: AppTextStyles.bodySmall.copyWith(color: Colors.white70)),
+        Text('Akurasi: ${rep.accuracyScore.round()}%', style: AppTextStyles.bodySmall.copyWith(color: Colors.white70)),
       ],
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Overlay hitung mundur (3, 2, 1, Mulai!) dengan animasi skala & suara.
 class CountdownOverlay extends StatefulWidget {
@@ -73,12 +74,12 @@ class _CountdownOverlayState extends State<CountdownOverlay> with SingleTickerPr
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 36),
             decoration: BoxDecoration(
-              color: const Color(0xFF0F172A),
+              color: AppColors.workoutSurfaceDark,
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF00E676), width: 4),
+              border: Border.all(color: AppColors.workoutAccentGreen, width: 4),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00E676).withValues(alpha: 0.4),
+                  color: AppColors.workoutAccentGreen.withValues(alpha: 0.4),
                   blurRadius: 30,
                   spreadRadius: 5,
                 ),
@@ -87,7 +88,7 @@ class _CountdownOverlayState extends State<CountdownOverlay> with SingleTickerPr
             child: Text(
               _counter > 0 ? '$_counter' : 'MULAI!',
               style: TextStyle(
-                color: _counter > 0 ? Colors.white : const Color(0xFF00E676),
+                color: _counter > 0 ? Colors.white : AppColors.workoutAccentGreen,
                 fontSize: _counter > 0 ? 72 : 48,
                 fontWeight: FontWeight.w900,
               ),

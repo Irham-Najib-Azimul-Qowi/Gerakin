@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Checklist persiapan sebelum latihan (Pre-Workout Safety Checklist).
 class PreWorkoutChecklistWidget extends StatefulWidget {
@@ -27,22 +29,21 @@ class _PreWorkoutChecklistWidgetState extends State<PreWorkoutChecklistWidget> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: AppColors.workoutCardDark,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.fact_check_outlined, color: Color(0xFF00E676), size: 20),
-              SizedBox(width: 8),
+              const Icon(Icons.fact_check_outlined, color: AppColors.workoutAccentGreen, size: 20),
+              const SizedBox(width: 8),
               Text(
                 'CHECKLIST SEBELUM MULAI',
-                style: TextStyle(
+                style: AppTextStyles.labelLarge.copyWith(
                   color: Colors.white,
-                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
@@ -83,8 +84,8 @@ class _PreWorkoutChecklistWidgetState extends State<PreWorkoutChecklistWidget> {
     return CheckboxListTile(
       value: val,
       onChanged: onChanged,
-      title: Text(title, style: const TextStyle(color: Colors.white70, fontSize: 13)),
-      activeColor: const Color(0xFF00E676),
+      title: Text(title, style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70)),
+      activeColor: AppColors.workoutAccentGreen,
       checkColor: Colors.black,
       contentPadding: EdgeInsets.zero,
       dense: true,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Bubble percakapan fisioterapis AI (Realtime AI Coach Bubble).
 class RealtimeCoachBubble extends StatelessWidget {
@@ -23,10 +25,10 @@ class RealtimeCoachBubble extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF00E676), width: 1.5),
+        border: Border.all(color: AppColors.workoutAccentGreen, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00E676).withValues(alpha: 0.3),
+            color: AppColors.workoutAccentGreen.withValues(alpha: 0.3),
             blurRadius: 10,
             spreadRadius: 1,
           ),
@@ -37,12 +39,12 @@ class RealtimeCoachBubble extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF00E676).withValues(alpha: 0.2),
+              color: AppColors.workoutAccentGreen.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.psychology_outlined,
-              color: Color(0xFF00E676),
+              color: AppColors.workoutAccentGreen,
               size: 24,
             ),
           ),
@@ -52,21 +54,20 @@ class RealtimeCoachBubble extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'AI PHYSIO COACH',
-                  style: TextStyle(
-                    color: Color(0xFF00E676),
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.workoutAccentGreen,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.1,
+                    letterSpacing: 0.5,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   message,
-                  style: const TextStyle(
+                  style: AppTextStyles.bodyMedium.copyWith(
                     color: Colors.white,
-                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -76,7 +77,7 @@ class RealtimeCoachBubble extends StatelessWidget {
           IconButton(
             icon: Icon(
               isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-              color: isMuted ? Colors.grey : const Color(0xFF00E676),
+              color: isMuted ? Colors.grey : AppColors.workoutAccentGreen,
               size: 22,
             ),
             onPressed: onToggleMute,

@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/router/route_names.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_error_banner.dart';
 
-/// Halaman login dengan email dan password.
+/// Halaman login dengan email dan password (Sesuai DESIGN.md).
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
@@ -56,13 +57,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authState = ref.watch(authControllerProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          color: AppColors.onSurface,
+          color: AppColors.textPrimary,
           onPressed: () => context.pop(),
         ),
       ),
@@ -80,16 +81,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 // ── Header ────────────────────────────────────────────
                 Text(
                   'Selamat Datang\nKembali 👋',
-                  style: AppTextStyles.headlineMedium.copyWith(
-                    color: AppColors.onSurface,
-                    height: 1.3,
+                  style: AppTextStyles.displaySmall.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                    height: 1.25,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'Masuk untuk melanjutkan latihan adaptifmu.',
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.neutral600,
+                    color: AppColors.textSecondary,
                   ),
                 ),
 
@@ -108,6 +110,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   autocorrect: false,
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
                   onChanged: (_) {
                     if (ref.read(authControllerProvider).errorMessage != null) {
                       ref.read(authControllerProvider.notifier).clearError();
@@ -138,6 +141,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) => _submit(),
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
                   decoration: _inputDecoration(
                     hint: 'Masukkan password',
                     prefixIcon: Icons.lock_outline_rounded,
@@ -146,7 +150,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         _obscurePassword
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
-                        color: AppColors.neutral500,
+                        color: AppColors.textSecondary,
                         size: 20,
                       ),
                       onPressed: () =>
@@ -178,6 +182,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       'Lupa Password?',
                       style: AppTextStyles.labelMedium.copyWith(
                         color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -187,7 +192,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                 // ── Tombol Masuk ──────────────────────────────────────
                 SizedBox(
-                  height: 56,
+                  height: 52,
                   child: ElevatedButton(
                     onPressed: authState.isLoading ? null : _submit,
                     style: ElevatedButton.styleFrom(
@@ -197,7 +202,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           AppColors.primary.withValues(alpha: 0.5),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: AppRadius.borderRadiusXxl,
                       ),
                     ),
                     child: authState.isLoading
@@ -213,6 +218,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             'Masuk',
                             style: AppTextStyles.labelLarge.copyWith(
                               color: AppColors.onPrimary,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                   ),
@@ -227,7 +233,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     Text(
                       'Belum punya akun? ',
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.neutral600,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     GestureDetector(
@@ -236,6 +242,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         'Daftar',
                         style: AppTextStyles.labelLarge.copyWith(
                           color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                           decorationColor: AppColors.primary,
                         ),
@@ -256,7 +263,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: AppTextStyles.labelLarge.copyWith(color: AppColors.onSurface),
+      style: AppTextStyles.labelMedium.copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
@@ -268,29 +278,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.neutral400),
-      prefixIcon: Icon(prefixIcon, color: AppColors.neutral500, size: 20),
+      prefixIcon: Icon(prefixIcon, color: AppColors.textSecondary, size: 20),
       suffixIcon: suffix,
       filled: true,
-      fillColor: AppColors.surfaceContainerLow,
+      fillColor: AppColors.surface,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.outlineVariant),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.border),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.outlineVariant),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.border),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.primary, width: 2),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.error, width: 1.5),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.error, width: 2),
+        borderRadius: AppRadius.borderRadiusXxl,
+        borderSide: const BorderSide(color: AppColors.error, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
