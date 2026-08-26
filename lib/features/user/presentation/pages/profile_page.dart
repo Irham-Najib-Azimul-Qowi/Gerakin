@@ -54,7 +54,7 @@ class ProfilePage extends ConsumerWidget {
     if (active == null) {
       return Center(
         child: Text(
-          'Tidak ada profil aktif. Silakan buat profil.',
+          'Tidak ada profil aktif. Silakan buat profil atau masuk.',
           style: AppTextStyles.bodyMedium,
         ),
       );
@@ -69,6 +69,12 @@ class ProfilePage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── GUEST PROMPT BANNER (IF IN GUEST MODE) ─────────────
+            if (active.isGuest) ...[
+              _buildGuestPromptCard(context),
+              const SizedBox(height: 16),
+            ],
+
             // ── PROFILE HEADER (CARD) ──────────────────────────────
             _buildProfileHeaderCard(context, active),
             const SizedBox(height: 16),
@@ -78,7 +84,7 @@ class ProfilePage extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // ── PROFILE PICKER / SWITCHER ──────────────────────────
-            _buildProfileSwitcherSection(context, ref, state),
+            _buildProfileSwitcherSection(context, ref, state, active),
             const SizedBox(height: 24),
 
             // ── MOBILITY PROFILE & ATTRIBUTES ──────────────────────
@@ -91,6 +97,67 @@ class ProfilePage extends ConsumerWidget {
             _buildActionSection(context, active),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildGuestPromptCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.primaryContainer.withValues(alpha: 0.4),
+        borderRadius: AppRadius.borderRadiusXxl,
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1.2),
+        boxShadow: AppShadows.softCard,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.cloud_upload_rounded, color: Colors.white, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Mode Tamu Aktif',
+                  style: AppTextStyles.labelLarge.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+                Text(
+                  'Masuk untuk menyimpan riwayat latihan & membuka fitur komunitas.',
+                  style: AppTextStyles.captionSmall.copyWith(color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () => context.pushNamed(RouteNames.auth),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              minimumSize: const Size(60, 36),
+            ),
+            child: Text(
+              'Masuk',
+              style: AppTextStyles.captionMedium.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -188,7 +255,12 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileSwitcherSection(BuildContext context, WidgetRef ref, ProfileState state) {
+  Widget _buildProfileSwitcherSection(
+    BuildContext context,
+    WidgetRef ref,
+    ProfileState state,
+    UserProfile active,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -198,10 +270,26 @@ class ProfilePage extends ConsumerWidget {
           height: 48,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: state.allProfiles.length + 1,
+            itemCount: state.allProfiles.length + (active.isGuest ? 1 : 1),
             itemBuilder: (context, index) {
               if (index == state.allProfiles.length) {
-                // Tombol tambah profil
+                // Jika Tamu -> Arahkan ke Login/Register
+                if (active.isGuest) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    child: OutlinedButton.icon(
+                      onPressed: () => context.pushNamed(RouteNames.auth),
+                      icon: const Icon(Icons.login_rounded, size: 18),
+                      label: const Text('Masuk Akun'),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+                        minimumSize: const Size(48, 44),
+                      ),
+                    ),
+                  );
+                }
+
+                // Tombol tambah profil untuk akun terdaftar
                 return Container(
                   margin: const EdgeInsets.only(right: 8),
                   child: OutlinedButton.icon(

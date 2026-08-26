@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../auth/data/repositories/auth_repository_impl.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../domain/repositories/community_repository.dart';
 import '../../models/community_comment.dart';
@@ -52,8 +53,8 @@ class CommunityFeedController extends Notifier<CommunityFeedState> {
     return const CommunityFeedState(isLoading: true);
   }
 
-  Future<void> fetchFeed() async {
-    state = state.copyWith(isLoading: true, clearErrors: true);
+  Future<void> fetchFeed({bool clearErrors = false}) async {
+    state = state.copyWith(isLoading: true, clearErrors: clearErrors);
     try {
       final posts = await _repository.getFeed(
         searchQuery: state.searchQuery.isNotEmpty ? state.searchQuery : null,
@@ -69,7 +70,7 @@ class CommunityFeedController extends Notifier<CommunityFeedState> {
 
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query);
-    fetchFeed();
+    fetchFeed(clearErrors: true);
   }
 
   /// Membuat post baru. Mengembalikan false jika tidak diizinkan atau melanggar moderasi.
@@ -82,7 +83,8 @@ class CommunityFeedController extends Notifier<CommunityFeedState> {
 
     // 1. Verifikasi User Authenticated (Guest tidak diizinkan di TRD)
     final authState = ref.read(authControllerProvider);
-    final user = authState.currentUser;
+    final authRepo = ref.read(authRepositoryProvider);
+    final user = authState.currentUser ?? authRepo.currentUser;
     if (user == null) {
       state = state.copyWith(errorMessage: 'GUEST_NOT_ALLOWED');
       return false;
@@ -125,7 +127,8 @@ class CommunityFeedController extends Notifier<CommunityFeedState> {
 
   Future<void> toggleLike(int postId) async {
     final authState = ref.read(authControllerProvider);
-    final user = authState.currentUser;
+    final authRepo = ref.read(authRepositoryProvider);
+    final user = authState.currentUser ?? authRepo.currentUser;
     if (user == null) return;
 
     try {
@@ -146,7 +149,8 @@ class CommunityFeedController extends Notifier<CommunityFeedState> {
 
     // 1. Verifikasi Auth
     final authState = ref.read(authControllerProvider);
-    final user = authState.currentUser;
+    final authRepo = ref.read(authRepositoryProvider);
+    final user = authState.currentUser ?? authRepo.currentUser;
     if (user == null) {
       state = state.copyWith(errorMessage: 'GUEST_NOT_ALLOWED');
       return false;
@@ -181,7 +185,8 @@ class CommunityFeedController extends Notifier<CommunityFeedState> {
     required String reason,
   }) async {
     final authState = ref.read(authControllerProvider);
-    final user = authState.currentUser;
+    final authRepo = ref.read(authRepositoryProvider);
+    final user = authState.currentUser ?? authRepo.currentUser;
     final reporterUid = user?.uid ?? 'anonymous_reporter';
 
     await _repository.reportContent(
