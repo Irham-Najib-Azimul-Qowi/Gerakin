@@ -10,6 +10,14 @@ import 'package:gerakin/features/community/models/community_comment.dart';
 import 'package:gerakin/features/community/presentation/controllers/community_feed_controller.dart';
 import 'package:gerakin/features/community/services/community_providers.dart';
 import 'package:gerakin/features/community/services/content_moderation_service.dart';
+import 'package:gerakin/features/user/domain/repositories/user_repository.dart';
+import 'package:gerakin/features/user/models/user_profile.dart';
+import 'package:gerakin/features/user/models/user_preference.dart';
+import 'package:gerakin/features/user/models/assessment_profile.dart';
+import 'package:gerakin/features/user/models/wheelchair_profile.dart';
+import 'package:gerakin/features/user/models/rehabilitation_goal.dart';
+import 'package:gerakin/features/user/models/app_setting.dart';
+import 'package:gerakin/features/user/data/repositories/user_repository_impl.dart';
 
 class MockAuthRepository implements AuthRepository {
   AuthUser? _currentUser;
@@ -125,20 +133,89 @@ class MockCommunityRepository implements CommunityRepository {
   }) async {}
 }
 
+class MockUserRepository implements UserRepository {
+  UserProfile? _activeProfile;
+  final List<UserProfile> _profiles = [];
+
+  @override
+  Future<UserProfile?> getActiveProfile() async => _activeProfile;
+
+  @override
+  Future<int> saveProfile(UserProfile profile) async {
+    _profiles.add(profile);
+    _activeProfile = profile;
+    return profile.id;
+  }
+
+  @override
+  Future<UserProfile?> getProfileById(int id) async => null;
+
+  @override
+  Future<List<UserProfile>> getAllProfiles() async => _profiles;
+
+  @override
+  Future<void> deleteProfile(int id) async {}
+
+  @override
+  Future<void> switchProfile(int id) async {}
+
+  @override
+  Future<UserPreference> getPreferences(int userId) async => UserPreference(
+        userId: userId,
+        themeMode: 'light',
+        enableAudioCues: true,
+        enableTts: false,
+        dailyReminderTime: '08:00',
+      );
+
+  @override
+  Future<void> savePreferences(UserPreference preference) async {}
+
+  @override
+  Future<List<AssessmentProfile>> getAssessments(int userId) async => [];
+
+  @override
+  Future<void> saveAssessment(AssessmentProfile assessment) async {}
+
+  @override
+  Future<WheelchairProfile?> getWheelchairProfile(int userId) async => null;
+
+  @override
+  Future<void> saveWheelchairProfile(WheelchairProfile wheelchair) async {}
+
+  @override
+  Future<List<RehabilitationGoal>> getGoals(int userId) async => [];
+
+  @override
+  Future<void> saveGoal(RehabilitationGoal goal) async {}
+
+  @override
+  Future<AppSetting> getAppSettings() async => AppSetting(
+        languageCode: 'id',
+        isOfflineMode: false,
+      );
+
+  @override
+  Future<void> saveAppSettings(AppSetting setting) async {}
+}
+
 void main() {
   group('Community Guest Restriction & Permission Tests', () {
     late ProviderContainer container;
     late MockAuthRepository mockAuthRepo;
     late MockCommunityRepository mockCommunityRepo;
+    late MockUserRepository mockUserRepo;
 
     setUp(() {
       mockAuthRepo = MockAuthRepository();
       mockCommunityRepo = MockCommunityRepository();
+      mockUserRepo = MockUserRepository();
 
       container = ProviderContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(mockAuthRepo),
           communityRepositoryProvider.overrideWithValue(mockCommunityRepo),
+          userRepositoryProvider.overrideWithValue(mockUserRepo),
           contentModerationServiceProvider.overrideWithValue(ContentModerationService()),
         ],
       );
@@ -149,7 +226,6 @@ void main() {
     });
 
     test('Guest is restricted from creating posts (GUEST_NOT_ALLOWED)', () async {
-      // Pengguna adalah tamu (belum login / currentUser == null)
       mockAuthRepo.setCurrentUser(null);
       final controller = container.read(communityFeedControllerProvider.notifier);
 
