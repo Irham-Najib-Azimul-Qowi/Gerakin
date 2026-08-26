@@ -25,6 +25,7 @@ class RouteNames {
   static const String presentation = 'presentation';
   static const String exerciseEducation = 'exerciseEducation';
   static const String interactiveExercise = 'interactiveExercise';
+  static const String assessmentWizard = 'assessmentWizard';
 }
 
 /// Konstanta path route di aplikasi GERAKIN.
@@ -54,4 +55,5 @@ class RoutePaths {
   static const String gamification = '/gamification';
   static const String collaboration = '/collaboration';
   static const String presentation = '/presentation';
+  static const String assessmentWizard = '/assessment-wizard';
 }

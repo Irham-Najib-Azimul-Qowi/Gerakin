@@ -11,6 +11,7 @@ import 'package:gerakin/features/user/models/app_setting.dart';
 import 'package:gerakin/features/user/services/guest_session_manager.dart';
 import 'package:gerakin/features/user/services/multi_profile_manager.dart';
 import 'package:gerakin/features/user/services/profile_validator.dart';
+import 'package:gerakin/features/user/services/assessment_wizard_service.dart';
 
 /// Mock in-memory implementation dari [LocalUserDataSource].
 class MockLocalUserDataSource implements LocalUserDataSource {
@@ -258,6 +259,54 @@ void main() {
       final all = await manager.getAllProfiles();
       expect(all.length, equals(1));
       expect(all.first.id, equals(p1.id));
+    });
+
+    // ── 5. ASSESSMENT WIZARD SERVICE TESTS ─────────────────────────────
+    test('AssessmentWizardService evaluates endurance, upper body, core, and calculates mobility levels correctly', () async {
+      final wizardService = AssessmentWizardService(repository);
+
+      // Validasi skor
+      expect(wizardService.validateScore(-5), isFalse);
+      expect(wizardService.validateScore(105), isFalse);
+      expect(wizardService.validateScore(50), isTrue);
+
+      // Evaluasi Level Beginner (avg < 40)
+      final beginnerLevel = wizardService.calculateMobilityLevel(
+        upperBodyScore: 30,
+        coreScore: 35,
+        enduranceScore: 30,
+      );
+      expect(beginnerLevel, equals('beginner'));
+
+      // Evaluasi Level Intermediate (40 <= avg < 75)
+      final intermediateLevel = wizardService.calculateMobilityLevel(
+        upperBodyScore: 60,
+        coreScore: 55,
+        enduranceScore: 50,
+      );
+      expect(intermediateLevel, equals('intermediate'));
+
+      // Evaluasi Level Advanced (avg >= 75)
+      final advancedLevel = wizardService.calculateMobilityLevel(
+        upperBodyScore: 85,
+        coreScore: 80,
+        enduranceScore: 90,
+      );
+      expect(advancedLevel, equals('advanced'));
+
+      // Simpan hasil penilaian fisik
+      await wizardService.saveAssessmentResult(
+        userId: 1,
+        upperBodyScore: 80,
+        coreScore: 75,
+        enduranceScore: 85,
+      );
+
+      final assessments = await repository.getAssessmentsByUserId(1);
+      expect(assessments.length, equals(1));
+      expect(assessments.first.enduranceLevel, equals(85));
+      expect(assessments.first.upperBodyMobilityScore, equals(80));
+      expect(assessments.first.coreStabilityScore, equals(75));
     });
   });
 }

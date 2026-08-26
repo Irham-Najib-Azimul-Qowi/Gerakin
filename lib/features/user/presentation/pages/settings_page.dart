@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/router/route_names.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_shadows.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../sync/presentation/widgets/sync_status_indicator.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/profile_controller.dart';
 import '../controllers/settings_controller.dart';
 import '../../models/user_preference.dart';
 
-/// Halaman Pengaturan Aplikasi terintegrasi dengan preferensi profil dan sesi.
+/// Halaman Pengaturan Aplikasi terintegrasi dengan preferensi profil dan sesi (Sesuai DESIGN.md).
+///
+/// Kebijakan Mode Tamu (Task 1):
+/// Transisi dari mode Tamu ke akun resmi harus melalui alur Autentikasi/Login/Registrasi (RoutePaths.auth).
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -18,11 +26,20 @@ class SettingsPage extends ConsumerWidget {
     final settingsState = ref.watch(settingsControllerProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Pengaturan & Sesi', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        title: Text(
+          'Pengaturan & Sesi',
+          style: AppTextStyles.titleLarge.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
       ),
       body: settingsState.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
           : _buildSettingsContent(context, ref, profileState, settingsState),
     );
   }
@@ -42,52 +59,55 @@ class SettingsPage extends ConsumerWidget {
       children: [
         const SyncStatusIndicator(),
         const SizedBox(height: 16),
+
         // ── CATEGORY 1: EXERCISE PREFERENCES ────────────────────────
-        _buildSectionHeader('Preferensi Latihan'),
+        _buildSectionHeader('Preferensi Latihan & Aksesibilitas'),
         const SizedBox(height: 8),
         if (pref != null) ...[
-          Card(
-            elevation: 0,
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.8),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: AppRadius.borderRadiusXxl,
+              border: Border.all(color: AppColors.border, width: 1),
+              boxShadow: AppShadows.softCard,
             ),
             child: Column(
               children: [
                 SwitchListTile(
-                  title: const Text('Petunjuk Suara (Audio Cues)'),
-                  subtitle: const Text('Mengeluarkan suara saat pergantian repetisi'),
+                  title: Text('Petunjuk Suara (Audio Cues)', style: AppTextStyles.labelLarge),
+                  subtitle: Text('Mengeluarkan suara saat pergantian repetisi', style: AppTextStyles.captionSmall),
                   value: pref.enableAudioCues,
+                  activeTrackColor: AppColors.primary,
                   onChanged: (val) {
                     ref.read(settingsControllerProvider.notifier).updatePreferences(
                           pref.copyWith(enableAudioCues: val),
                         );
                   },
                 ),
-                const Divider(height: 1),
+                const Divider(height: 1, color: AppColors.border),
                 SwitchListTile(
-                  title: const Text('Text-to-Speech (TTS)'),
-                  subtitle: const Text('Membacakan deskripsi gerakan secara otomatis'),
+                  title: Text('Text-to-Speech (TTS)', style: AppTextStyles.labelLarge),
+                  subtitle: Text('Membacakan instruksi dan koreksi otomatis', style: AppTextStyles.captionSmall),
                   value: pref.enableTts,
+                  activeTrackColor: AppColors.primary,
                   onChanged: (val) {
                     ref.read(settingsControllerProvider.notifier).updatePreferences(
                           pref.copyWith(enableTts: val),
                         );
                   },
                 ),
-                const Divider(height: 1),
+                const Divider(height: 1, color: AppColors.border),
                 ListTile(
-                  title: const Text('Tema Tampilan'),
-                  subtitle: Text('Tema aktif: ${pref.themeMode.toUpperCase()}'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
+                  title: Text('Tema Tampilan', style: AppTextStyles.labelLarge),
+                  subtitle: Text('Tema aktif: ${pref.themeMode.toUpperCase()}', style: AppTextStyles.captionSmall),
+                  trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
                   onTap: () => _showThemePicker(context, ref, pref),
                 ),
-                const Divider(height: 1),
+                const Divider(height: 1, color: AppColors.border),
                 ListTile(
-                  title: const Text('Pengingat Latihan Harian'),
-                  subtitle: Text('Pengingat pada jam: ${pref.dailyReminderTime}'),
-                  trailing: const Icon(Icons.access_time_rounded),
+                  title: Text('Pengingat Latihan Harian', style: AppTextStyles.labelLarge),
+                  subtitle: Text('Pengingat pada jam: ${pref.dailyReminderTime}', style: AppTextStyles.captionSmall),
+                  trailing: const Icon(Icons.access_time_rounded, color: AppColors.textSecondary),
                   onTap: () => _showTimePicker(context, ref, pref),
                 ),
               ],
@@ -96,67 +116,148 @@ class SettingsPage extends ConsumerWidget {
         ],
         const SizedBox(height: 24),
 
-        // ── CATEGORY 2: SESSION MANAGEMENT ──────────────────────────
-        _buildSectionHeader('Manajemen Sesi Profil'),
+        // ── CATEGORY 2: SESSION & ACCOUNT MANAGEMENT ────────────────
+        _buildSectionHeader('Manajemen Sesi & Akun'),
         const SizedBox(height: 8),
-        Card(
-          elevation: 0,
-          color: Theme.of(context).colorScheme.surfaceContainerLowest,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.8),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: AppRadius.borderRadiusXxl,
+            border: Border.all(color: AppColors.border, width: 1),
+            boxShadow: AppShadows.softCard,
           ),
           child: Column(
             children: [
-              if (activeProfile == null) ...[
-                ListTile(
-                  title: const Text('Belum Ada Sesi Aktif'),
-                  subtitle: const Text('Masuk dengan akun atau gunakan mode tamu'),
-                  leading: const Icon(Icons.account_circle_outlined, color: Colors.grey),
-                  trailing: TextButton.icon(
-                    onPressed: () => context.go(RoutePaths.auth),
-                    icon: const Icon(Icons.login_rounded, size: 16),
-                    label: const Text('Masuk / Daftar'),
+              if (activeProfile == null || activeProfile.isGuest) ...[
+                // Sesi Tamu (Guest Mode)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: AppColors.warningContainer,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.person_outline_rounded, color: Color(0xFFB45309)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      activeProfile?.displayName ?? 'Pengguna Tamu',
+                                      style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.surfaceVariant,
+                                        borderRadius: AppRadius.borderRadiusSm,
+                                      ),
+                                      child: Text(
+                                        'TAMU',
+                                        style: AppTextStyles.captionSmall.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Progres hanya tersimpan di perangkat lokal.',
+                                  style: AppTextStyles.captionSmall.copyWith(color: AppColors.textSecondary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // Tombol Masuk / Daftar Akun Resmi (Masuk ke halaman Login/Register)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          onPressed: () => context.pushNamed(RouteNames.auth),
+                          icon: const Icon(Icons.login_rounded, size: 20),
+                          label: const Text('Masuk atau Daftar Akun'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      // Tombol Akhiri Sesi Tamu
+                      SizedBox(
+                        width: double.infinity,
+                        height: 44,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            if (activeProfile != null) {
+                              await ref.read(profileControllerProvider.notifier).endGuestSession(activeProfile.id);
+                            }
+                            if (context.mounted) context.go(RoutePaths.auth);
+                          },
+                          icon: const Icon(Icons.logout_rounded, size: 18, color: AppColors.error),
+                          label: Text(
+                            'Keluar Mode Tamu',
+                            style: AppTextStyles.labelMedium.copyWith(
+                              color: AppColors.error,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: AppColors.error, width: 1.2),
+                            shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ] else ...[
+                // Sesi Akun Terdaftar (Authenticated User)
                 ListTile(
-                  title: Text(activeProfile.displayName),
-                  subtitle: Text(activeProfile.isGuest
-                      ? 'Sesi Tamu Aktif'
-                      : 'Profil Terdaftar (${activeProfile.email ?? "-"})'),
-                  leading: Icon(
-                    activeProfile.isGuest ? Icons.person_outline_rounded : Icons.verified_user_outlined,
-                    color: activeProfile.isGuest ? Colors.grey : Colors.green,
+                  title: Text(activeProfile.displayName, style: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                    'Akun Terdaftar (${activeProfile.email ?? "-"})',
+                    style: AppTextStyles.captionSmall.copyWith(color: AppColors.success),
                   ),
-                  trailing: activeProfile.isGuest
-                      ? TextButton.icon(
-                          onPressed: () async {
-                            await ref
-                                .read(profileControllerProvider.notifier)
-                                .endGuestSession(activeProfile.id);
-                            if (context.mounted) context.go(RoutePaths.auth);
-                          },
-                          icon: const Icon(Icons.exit_to_app_rounded, size: 16, color: Colors.red),
-                          label: const Text('Akhiri Tamu', style: TextStyle(color: Colors.red)),
-                        )
-                      : TextButton.icon(
-                          onPressed: () async {
-                            await ref.read(authControllerProvider.notifier).signOut();
-                            await ref.read(profileControllerProvider.notifier).loadProfiles();
-                            if (context.mounted) context.go(RoutePaths.auth);
-                          },
-                          icon: const Icon(Icons.logout_rounded, size: 16, color: Colors.red),
-                          label: const Text('Keluar (Sign Out)', style: TextStyle(color: Colors.red)),
-                        ),
+                  leading: const CircleAvatar(
+                    backgroundColor: AppColors.primaryContainer,
+                    child: Icon(Icons.verified_user_rounded, color: AppColors.primary),
+                  ),
+                  trailing: TextButton.icon(
+                    onPressed: () async {
+                      await ref.read(authControllerProvider.notifier).signOut();
+                      await ref.read(profileControllerProvider.notifier).loadProfiles();
+                      if (context.mounted) context.go(RoutePaths.auth);
+                    },
+                    icon: const Icon(Icons.logout_rounded, size: 16, color: AppColors.error),
+                    label: Text(
+                      'Keluar',
+                      style: AppTextStyles.labelMedium.copyWith(color: AppColors.error, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-              ],
-              if (activeProfile != null && !activeProfile.isGuest) ...[
-                const Divider(height: 1),
+                const Divider(height: 1, color: AppColors.border),
                 ListTile(
-                  title: const Text('Hapus Profil Ini', style: TextStyle(color: Colors.red)),
-                  subtitle: const Text('Semua riwayat latihan profil ini akan dihapus secara permanen'),
-                  trailing: const Icon(Icons.delete_sweep_rounded, color: Colors.red),
+                  title: Text('Hapus Profil Ini', style: AppTextStyles.labelMedium.copyWith(color: AppColors.error, fontWeight: FontWeight.bold)),
+                  subtitle: Text('Semua riwayat latihan profil ini akan dihapus secara permanen', style: AppTextStyles.captionSmall),
+                  trailing: const Icon(Icons.delete_sweep_rounded, color: AppColors.error),
                   onTap: () => _confirmDeleteProfile(context, ref, activeProfile.id),
                 ),
               ],
@@ -169,26 +270,23 @@ class SettingsPage extends ConsumerWidget {
         _buildSectionHeader('Sistem Aplikasi'),
         const SizedBox(height: 8),
         if (app != null) ...[
-          Card(
-            elevation: 0,
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.8),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: AppRadius.borderRadiusXxl,
+              border: Border.all(color: AppColors.border, width: 1),
+              boxShadow: AppShadows.softCard,
             ),
-            child: Column(
-              children: [
-                SwitchListTile(
-                  title: const Text('Mode Offline-First'),
-                  subtitle: const Text('Mencegah sync otomatis dengan cloud database'),
-                  value: app.isOfflineMode,
-                  onChanged: (val) {
-                    ref.read(settingsControllerProvider.notifier).updateAppSettings(
-                          app.copyWith(isOfflineMode: val),
-                        );
-                  },
-                ),
-              ],
+            child: SwitchListTile(
+              title: Text('Mode Offline-First', style: AppTextStyles.labelLarge),
+              subtitle: Text('Mencegah sync otomatis dengan cloud database', style: AppTextStyles.captionSmall),
+              value: app.isOfflineMode,
+              activeTrackColor: AppColors.primary,
+              onChanged: (val) {
+                ref.read(settingsControllerProvider.notifier).updateAppSettings(
+                      app.copyWith(isOfflineMode: val),
+                    );
+              },
             ),
           ),
         ],
@@ -197,33 +295,36 @@ class SettingsPage extends ConsumerWidget {
         // ── CATEGORY 4: DEVELOPER MENU ──────────────────────────────
         _buildSectionHeader('Menu Pengembang'),
         const SizedBox(height: 8),
-        Card(
-          elevation: 0,
-          color: Theme.of(context).colorScheme.surfaceContainerLowest,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.8),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: AppRadius.borderRadiusXxl,
+            border: Border.all(color: AppColors.border, width: 1),
+            boxShadow: AppShadows.softCard,
           ),
           child: Column(
             children: [
               ListTile(
-                title: const Text('Design System Component Gallery'),
-                subtitle: const Text('Komponen galeri dan token visual'),
-                leading: const Icon(Icons.palette_rounded),
+                title: Text('Design System Component Gallery', style: AppTextStyles.labelLarge),
+                subtitle: Text('Komponen galeri dan token visual', style: AppTextStyles.captionSmall),
+                leading: const Icon(Icons.palette_rounded, color: AppColors.primary),
+                trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
                 onTap: () => context.pushNamed(RouteNames.componentGallery),
               ),
-              const Divider(height: 1),
+              const Divider(height: 1, color: AppColors.border),
               ListTile(
-                title: const Text('Adaptive Training Engine Debugger'),
-                subtitle: const Text('Dashboard metriks dan evaluasi validator pose'),
-                leading: const Icon(Icons.bug_report_rounded),
+                title: Text('Adaptive Training Engine Debugger', style: AppTextStyles.labelLarge),
+                subtitle: Text('Dashboard metriks dan evaluasi validator pose', style: AppTextStyles.captionSmall),
+                leading: const Icon(Icons.bug_report_rounded, color: AppColors.skyBlue),
+                trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
                 onTap: () => context.pushNamed(RouteNames.adaptiveDebug),
               ),
-              const Divider(height: 1),
+              const Divider(height: 1, color: AppColors.border),
               ListTile(
-                title: const Text('AI Validation & Calibration'),
-                subtitle: const Text('Penyelarasan visual sensor pose AI'),
-                leading: const Icon(Icons.speed_rounded),
+                title: Text('AI Validation & Calibration', style: AppTextStyles.labelLarge),
+                subtitle: Text('Penyelarasan visual sensor pose AI', style: AppTextStyles.captionSmall),
+                leading: const Icon(Icons.speed_rounded, color: AppColors.mint),
+                trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
                 onTap: () => context.pushNamed(RouteNames.aiValidation),
               ),
             ],
@@ -238,52 +339,63 @@ class SettingsPage extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 13,
+        style: AppTextStyles.titleMedium.copyWith(
           fontWeight: FontWeight.bold,
-          color: Colors.grey,
+          color: AppColors.textPrimary,
         ),
       ),
     );
   }
 
   void _showThemePicker(BuildContext context, WidgetRef ref, UserPreference pref) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+      backgroundColor: AppColors.surface,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Pilih Tema'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text('Terang (Light)'),
-                onTap: () {
-                  ref.read(settingsControllerProvider.notifier).updatePreferences(
-                        pref.copyWith(themeMode: 'light'),
-                      );
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text('Gelap (Dark)'),
-                onTap: () {
-                  ref.read(settingsControllerProvider.notifier).updatePreferences(
-                        pref.copyWith(themeMode: 'dark'),
-                      );
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text('Sistem'),
-                onTap: () {
-                  ref.read(settingsControllerProvider.notifier).updatePreferences(
-                        pref.copyWith(themeMode: 'system'),
-                      );
-                  Navigator.pop(context);
-                },
-              ),
-            ],
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Pilih Tema Tampilan', style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: const Icon(Icons.light_mode_rounded, color: AppColors.primary),
+                  title: const Text('Light Mode (Terang)'),
+                  trailing: pref.themeMode == 'light' ? const Icon(Icons.check_circle_rounded, color: AppColors.primary) : null,
+                  onTap: () {
+                    ref.read(settingsControllerProvider.notifier).updatePreferences(
+                          pref.copyWith(themeMode: 'light'),
+                        );
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.dark_mode_rounded, color: AppColors.textSecondary),
+                  title: const Text('Dark Mode (Gelap)'),
+                  trailing: pref.themeMode == 'dark' ? const Icon(Icons.check_circle_rounded, color: AppColors.primary) : null,
+                  onTap: () {
+                    ref.read(settingsControllerProvider.notifier).updatePreferences(
+                          pref.copyWith(themeMode: 'dark'),
+                        );
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.settings_suggest_rounded, color: AppColors.textSecondary),
+                  title: const Text('Ikuti Sistem'),
+                  trailing: pref.themeMode == 'system' ? const Icon(Icons.check_circle_rounded, color: AppColors.primary) : null,
+                  onTap: () {
+                    ref.read(settingsControllerProvider.notifier).updatePreferences(
+                          pref.copyWith(themeMode: 'system'),
+                        );
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -292,39 +404,56 @@ class SettingsPage extends ConsumerWidget {
 
   void _showTimePicker(BuildContext context, WidgetRef ref, UserPreference pref) async {
     final parts = pref.dailyReminderTime.split(':');
-    final time = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: time,
+    final initialTime = TimeOfDay(
+      hour: int.tryParse(parts[0]) ?? 8,
+      minute: int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0,
     );
 
-    if (picked != null) {
-      final hourStr = picked.hour.toString().padLeft(2, '0');
-      final minStr = picked.minute.toString().padLeft(2, '0');
+    final selected = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+    );
+
+    if (selected != null) {
+      final hour = selected.hour.toString().padLeft(2, '0');
+      final min = selected.minute.toString().padLeft(2, '0');
       ref.read(settingsControllerProvider.notifier).updatePreferences(
-            pref.copyWith(dailyReminderTime: '$hourStr:$minStr'),
+            pref.copyWith(dailyReminderTime: '$hour:$min'),
           );
     }
   }
 
-  void _confirmDeleteProfile(BuildContext context, WidgetRef ref, int id) {
+  void _confirmDeleteProfile(BuildContext context, WidgetRef ref, int profileId) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Hapus Profil?'),
-          content: const Text(
-            'Apakah Anda yakin ingin menghapus profil ini? Semua riwayat latihan profil ini akan dihapus secara permanen.',
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+          backgroundColor: AppColors.surface,
+          title: Text('Hapus Profil Ini?', style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.bold)),
+          content: Text(
+            'Profil dan riwayat latihan terkait akan dihapus secara permanen.',
+            style: AppTextStyles.bodyMedium,
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
             TextButton(
-              onPressed: () {
-                ref.read(profileControllerProvider.notifier).deleteProfile(id);
-                Navigator.pop(context);
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await ref.read(profileControllerProvider.notifier).deleteProfile(profileId);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  context.go(RoutePaths.auth);
+                }
               },
-              child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.borderRadiusXxl),
+              ),
+              child: const Text('Hapus'),
             ),
           ],
         );
