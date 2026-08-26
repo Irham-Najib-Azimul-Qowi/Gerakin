@@ -8,8 +8,7 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/router/route_names.dart';
-import '../../../user/data/repositories/user_repository_impl.dart';
-import '../../../user/services/guest_session_manager.dart';
+import '../controllers/app_session_controller.dart';
 
 /// Halaman gateway autentikasi — pintu masuk ke Login, Register, atau mode Tamu (Sesuai DESIGN.md).
 ///
@@ -228,9 +227,7 @@ class AuthPage extends ConsumerWidget {
   Widget _buildGuestButton(BuildContext context, WidgetRef ref) {
     return OutlinedButton.icon(
       onPressed: () async {
-        final userRepo = ref.read(userRepositoryProvider);
-        final guestManager = GuestSessionManager(userRepo);
-        await guestManager.startGuestSession();
+        await ref.read(appSessionProvider.notifier).startGuestSession();
         if (context.mounted) {
           context.go('/');
         }

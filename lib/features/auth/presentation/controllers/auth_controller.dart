@@ -5,6 +5,7 @@ import '../../domain/auth_exception.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../models/auth_user.dart';
 import '../../services/auth_session_bridge.dart';
+import 'app_session_controller.dart';
 import '../../../../core/security/security_hardening.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -68,12 +69,10 @@ class AuthState {
 /// persis seperti [ProfileController] di modul `user`.
 class AuthController extends Notifier<AuthState> {
   late final AuthRepository _authRepository;
-  late final AuthSessionBridge _sessionBridge;
 
   @override
   AuthState build() {
     _authRepository = ref.watch(authRepositoryProvider);
-    _sessionBridge = ref.watch(authSessionBridgeProvider);
     return const AuthState();
   }
 
@@ -90,7 +89,6 @@ class AuthController extends Notifier<AuthState> {
     required String password,
     required String displayName,
   }) async {
-    // Sanitasi input sebelum dikirim ke Firebase (sesuai TRD §10)
     final cleanEmail = SecurityHardening.sanitizeInput(email.trim());
     final cleanName = SecurityHardening.sanitizeInput(displayName.trim());
 
@@ -103,7 +101,7 @@ class AuthController extends Notifier<AuthState> {
         displayName: cleanName,
       );
 
-      final linkOutput = await _sessionBridge.linkAuthToProfile(authUser);
+      final linkOutput = await ref.read(appSessionProvider.notifier).onLoginSuccess(authUser);
 
       state = state.copyWith(
         isLoading: false,
@@ -129,7 +127,7 @@ class AuthController extends Notifier<AuthState> {
 
   /// Login dengan email dan password.
   ///
-  /// Setelah berhasil, memanggil [AuthSessionBridge.linkAuthToProfile].
+  /// Setelah berhasil, memanggil [AppSessionNotifier.onLoginSuccess].
   Future<void> signIn({
     required String email,
     required String password,
@@ -144,7 +142,7 @@ class AuthController extends Notifier<AuthState> {
         password: password,
       );
 
-      final linkOutput = await _sessionBridge.linkAuthToProfile(authUser);
+      final linkOutput = await ref.read(appSessionProvider.notifier).onLoginSuccess(authUser);
 
       state = state.copyWith(
         isLoading: false,
@@ -173,7 +171,7 @@ class AuthController extends Notifier<AuthState> {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      await _authRepository.signOut();
+      await ref.read(appSessionProvider.notifier).signOut();
       state = const AuthState(); // reset ke state awal
     } on AuthException catch (e) {
       state = state.copyWith(

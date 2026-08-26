@@ -7,7 +7,10 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../../shared/widgets/guest_lock_dialog.dart';
+import '../../../auth/domain/app_session_state.dart';
+import '../../../auth/domain/session_access_policy.dart';
+import '../../../auth/presentation/controllers/app_session_controller.dart';
 import '../controllers/community_feed_controller.dart';
 import '../widgets/post_card.dart';
 
@@ -20,37 +23,16 @@ class CommunityFeedPage extends ConsumerWidget {
   const CommunityFeedPage({super.key});
 
   void _showLoginPrompt(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.lock_outline, color: Colors.white, size: 20),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(fontSize: 13),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: AppColors.primary,
-        duration: const Duration(seconds: 4),
-        action: SnackBarAction(
-          label: 'MASUK',
-          textColor: AppColors.secondary,
-          onPressed: () {
-            context.push(RoutePaths.login);
-          },
-        ),
-      ),
+    GuestLockDialog.show(
+      context,
+      feature: AppFeature.communityPost,
+      message: message,
     );
   }
 
   void _handleCreatePost(BuildContext context, WidgetRef ref) {
-    final authState = ref.read(authControllerProvider);
-    final user = authState.currentUser;
-    if (user == null) {
+    final session = ref.read(appSessionProvider);
+    if (!SessionAccessPolicy.canAccess(session, AppFeature.communityPost)) {
       _showLoginPrompt(context, 'Anda harus masuk terlebih dahulu untuk membuat postingan.');
     } else {
       context.push(RoutePaths.communityCreate);
@@ -61,8 +43,8 @@ class CommunityFeedPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final feedState = ref.watch(communityFeedControllerProvider);
     final feedController = ref.read(communityFeedControllerProvider.notifier);
-    final authState = ref.watch(authControllerProvider);
-    final isGuest = authState.currentUser == null;
+    final session = ref.watch(appSessionProvider);
+    final isGuest = session is SessionGuest || session is SessionSignedOut;
 
     // Listen for errors (Guest redirection or Moderation warning)
     ref.listen<CommunityFeedState>(communityFeedControllerProvider, (prev, next) {

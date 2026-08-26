@@ -8,7 +8,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../sync/presentation/widgets/sync_status_indicator.dart';
-import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../auth/presentation/controllers/app_session_controller.dart';
 import '../controllers/profile_controller.dart';
 import '../controllers/settings_controller.dart';
 import '../../models/user_preference.dart';
@@ -184,12 +184,12 @@ class SettingsPage extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // Tombol Masuk / Daftar Akun Resmi (Masuk ke halaman Login/Register)
+                      // Tombol Masuk / Daftar Akun Resmi
                       SizedBox(
                         width: double.infinity,
                         height: 48,
                         child: ElevatedButton.icon(
-                          onPressed: () => context.pushNamed(RouteNames.auth),
+                          onPressed: () => context.pushNamed(RouteNames.login),
                           icon: const Icon(Icons.login_rounded, size: 20),
                           label: const Text('Masuk atau Daftar Akun'),
                           style: ElevatedButton.styleFrom(
@@ -200,20 +200,18 @@ class SettingsPage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      // Tombol Akhiri Sesi Tamu
+                      // Tombol Keluar dari Mode Tamu
                       SizedBox(
                         width: double.infinity,
                         height: 44,
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            if (activeProfile != null) {
-                              await ref.read(profileControllerProvider.notifier).endGuestSession(activeProfile.id);
-                            }
+                            await ref.read(appSessionProvider.notifier).exitGuestMode();
                             if (context.mounted) context.go(RoutePaths.auth);
                           },
                           icon: const Icon(Icons.logout_rounded, size: 18, color: AppColors.error),
                           label: Text(
-                            'Keluar Mode Tamu',
+                            'Keluar dari Mode Tamu',
                             style: AppTextStyles.labelMedium.copyWith(
                               color: AppColors.error,
                               fontWeight: FontWeight.bold,
@@ -242,14 +240,13 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   trailing: TextButton.icon(
                     onPressed: () async {
-                      await ref.read(authControllerProvider.notifier).signOut();
-                      await ref.read(profileControllerProvider.notifier).loadProfiles();
+                      await ref.read(appSessionProvider.notifier).signOut();
                       if (context.mounted) context.go(RoutePaths.auth);
                     },
                     icon: const Icon(Icons.logout_rounded, size: 16, color: AppColors.error),
                     label: Text(
-                      'Keluar',
-                      style: AppTextStyles.labelMedium.copyWith(color: AppColors.error, fontWeight: FontWeight.bold),
+                      'Keluar Akun',
+                      style: AppTextStyles.labelSmall.copyWith(color: AppColors.error, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

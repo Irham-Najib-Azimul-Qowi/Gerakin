@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/router/route_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../auth/domain/app_session_state.dart';
+import '../../auth/presentation/controllers/app_session_controller.dart';
 import '../models/workout_summary.dart';
 
 /// Screen 4: Workout Session Summary Screen (Ringkasan Lengkap Hasil Latihan Rehabilitasi).
-class SessionSummaryScreen extends StatelessWidget {
+class SessionSummaryScreen extends ConsumerWidget {
   const SessionSummaryScreen({
     super.key,
     required this.summary,
@@ -20,7 +24,9 @@ class SessionSummaryScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final session = ref.watch(appSessionProvider);
+    final isGuest = session is SessionGuest || session is SessionSignedOut;
     return Scaffold(
       backgroundColor: AppColors.workoutSurfaceDark,
       appBar: AppBar(
@@ -238,7 +244,61 @@ class SessionSummaryScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
+
+            // Banner CTA Simpan Progres untuk Guest
+            if (isGuest) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.primary, width: 1),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.cloud_upload_outlined, color: AppColors.primary, size: 22),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Simpan Progres Latihan Anda',
+                          style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Masuk atau buat akun agar hasil dan grafik perkembangan latihan Anda tersimpan dengan aman.',
+                      style: AppTextStyles.bodySmall.copyWith(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 42,
+                      child: ElevatedButton(
+                        onPressed: () => context.pushNamed(RouteNames.login),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Masuk / Daftar Akun',
+                          style: AppTextStyles.labelMedium.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ] else ...[
+              const SizedBox(height: 4),
+            ],
 
             // Action Buttons (Replay Session & Finish)
             Row(

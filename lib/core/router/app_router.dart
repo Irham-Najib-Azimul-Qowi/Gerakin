@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/adaptive/presentation/pages/adaptive_debug_dashboard_page.dart';
 import '../../features/analytics/presentation/pages/analytics_dashboard_page.dart';
+import '../../features/auth/domain/app_session_state.dart';
+import '../../features/auth/presentation/controllers/app_session_controller.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
@@ -38,10 +41,18 @@ import '../../features/exercise/presentation/exercise_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 import 'route_names.dart';
 
+/// Helper Notifier agar GoRouter merespons perubahan [AppSessionState].
+class RouterNotifier extends ChangeNotifier {
+  final Ref _ref;
+
+  RouterNotifier(this._ref) {
+    _ref.listen<AppSessionState>(appSessionProvider, (previous, next) {
+      notifyListeners();
+    });
+  }
+}
+
 /// Konfigurasi GoRouter untuk aplikasi GERAKIN.
-///
-/// Menggunakan [StatefulShellRoute] untuk mendukung Bottom Navigation
-/// dengan state persistence di setiap tab.
 class AppRouter {
   AppRouter._();
 
@@ -49,12 +60,44 @@ class AppRouter {
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'root');
 
-  /// Instance GoRouter.
-  static final GoRouter router = GoRouter(
-    navigatorKey: _rootNavigatorKey,
-    initialLocation: RoutePaths.auth,
-    debugLogDiagnostics: true,
-    routes: [
+  /// Membuat instance GoRouter yang reaktif terhadap state session.
+  static GoRouter createRouter(Ref ref) {
+    final notifier = RouterNotifier(ref);
+
+    return GoRouter(
+      navigatorKey: _rootNavigatorKey,
+      initialLocation: RoutePaths.auth,
+      refreshListenable: notifier,
+      debugLogDiagnostics: true,
+      redirect: (context, state) {
+        final sessionState = ref.read(appSessionProvider);
+        final loc = state.matchedLocation;
+        final isAuthRoute = loc.startsWith(RoutePaths.auth);
+
+        // 1. Jika masih inisialisasi, jangan lakukan redirect paksa
+        if (sessionState is SessionInitializing) {
+          return null;
+        }
+
+        // 2. Jika SignedOut dan mencoba membuka halaman terproteksi, alihkan ke /auth
+        if (sessionState is SessionSignedOut) {
+          if (!isAuthRoute) {
+            return RoutePaths.auth;
+          }
+          return null;
+        }
+
+        // 3. Jika Guest / Authenticated dan berada di halaman /auth, alihkan ke / (Beranda)
+        if (sessionState is SessionGuest || sessionState is SessionAuthenticated) {
+          if (isAuthRoute) {
+            return RoutePaths.home;
+          }
+          return null;
+        }
+
+        return null;
+      },
+      routes: [
       // ── Shell Route (Bottom Navigation) ───────────────
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -299,4 +342,5 @@ class AppRouter {
       ),
     ],
   );
+  }
 }
