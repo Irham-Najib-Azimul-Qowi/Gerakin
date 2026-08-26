@@ -302,7 +302,7 @@ void main() {
         enduranceScore: 85,
       );
 
-      final assessments = await repository.getAssessmentsByUserId(1);
+      final assessments = await repository.getAssessments(1);
       expect(assessments.length, equals(1));
       expect(assessments.first.enduranceLevel, equals(85));
       expect(assessments.first.upperBodyMobilityScore, equals(80));
